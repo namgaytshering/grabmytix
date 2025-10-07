@@ -1,0 +1,180 @@
+{% extends "../includes/base.html" %}
+{% block content %}
+<main class="content-wrapper">
+  <div class="container pt-5 pb-5">
+
+    <!-- Search Form -->
+    <div class=" container justify-content-center mb-5">
+      <!-- Forms validation: status tooltips -->
+<form class="needs-validation" novalidate>
+  <div class="row">
+    <div class="col-md-4 position-relative mb-4">
+ 
+      <input type="number" name="ticket_number" class="form-control" id="validationTooltipt01" placeholder="Ticket number" value="{{ticket_number}}"  required>
+      <div class="valid-tooltip">Looks good!</div>
+    </div>
+    <div class="col-md-4 position-relative mb-4">
+    
+      <input type="email" name="email" class="form-control" id="validationTooltipt02" placeholder="Email" {% if email %}value="{{ email }}"{% endif %}   required>
+      <div class="valid-tooltip">Looks good!</div>
+    </div>
+    <div class="col-md-4 position-relative mb-4">
+       <button class="btn btn-primary" type="submit">Submit form</button>
+    </div>
+  </div>
+  
+ 
+
+</form>
+    </div>
+
+    <!-- Ticket Display -->
+    {% if booking %}
+    
+  <div id="ticket" class="ticket paper-ticket p-3 mb-5">
+
+  <!-- Brand Bar -->
+  <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded-top border-bottom">
+    <span class="fw-bold text-dark">GrabMyTix</span>
+    <button class="btn btn-outline-danger btn-sm" id="downloadTicket">Download Ticket</button>
+  </div>
+
+  <div class="row g-2">
+    <!-- Poster -->
+    <div class="col-6 col-md-4">
+      {% if booking.poster_image %}
+        <img class="poster img-fluid rounded" src="/media/{{ booking.poster_image }}" alt="{{ booking.title }} poster" />
+      {% else %}
+        <div class="poster d-flex align-items-center justify-content-center bg-light text-muted rounded" style="height:150px;">No Poster</div>
+      {% endif %}
+    </div>
+
+    <!-- Details -->
+    <div class="col-6 col-md-8">
+      <h5 class="title text-dark mb-1">{{ booking.title }}</h5>
+      <div class="small  mb-2">Ticket number: #{{ booking.id }}</div>
+          <div class="small  mb-2">Payment: # {%if booking.payment_status %}<i class="ci-check-circle text-success"></i> Paid{%else%}<i class="ci-close-octagon text-danger"></i> Pending{%endif%}</div>
+        {% if qr_code_base64 %}
+              <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="Ticket QR Code" style="width:40%">
+          {% endif %}
+        </div>
+    </div>
+    <div class="col-12 mt-3">
+
+  {%if booking.payment_status != 1%}
+   <a href="/payment/{{booking.id}}" target="_blank" class="btn btn-sm btn-primary mb-2" data-bs-toggle="tooltip" data-bs-placement="top"
+                        data-bs-title="Pyament Pending"  >
+                        <i class="ci-banned"></i> &nbsp;Payment required
+                </a>
+  {%endif%}
+      <p class="mb-1"><strong>Attendee:</strong> {{ booking.full_name }}</p>
+      <p class="small   mb-2">{{ booking.email }} · {{ booking.phone }}</p>
+
+      <p class="mb-1"><strong>Venue:</strong> {{ booking.theater_name }}</p>
+      <p class="mb-1"><strong>Address:</strong> {{ booking.street }}, {{ booking.state.state_short }}, {{ booking.country.name }}</p>
+
+      <div class=" mb-2">
+        <div><strong>Date:</strong> {{ booking.show_date|date:"D, d M Y" }}</div>
+        <div><strong>Time:</strong> {{ booking.show_time|time:"g:i A" }}</div>
+      </div>
+
+      <hr class="my-2"/>
+
+      <div>
+        
+        {%if booking.type == 'Movie'%}
+            {% if booking.no_adult > 0 %}
+              <li>Adult: {{ booking.no_adult }} × ${{ booking.price_adult }}</li>
+            {% endif %}
+            
+            {% if booking.no_child > 0 %}
+              <li>Child: {{ booking.no_child }} × ${{ booking.price_child }}</li>
+            {% endif %}
+      
+      {%else%}
+        {% if booking.economy_quantity > 0 %}
+          <li>{{ booking.economy_label }}: {{ booking.economy_quantity }} × ${{ booking.economy_price }}</li>
+        {% endif %}
+        {% if booking.general_quantity > 0 %}
+          <li> {% if booking.economy_quantity > 0 and booking.vip_quantity > 0 %} 
+            {{ booking.general_label }}:
+            {%else%}
+            Ticket:
+            {%endif%} {{ booking.general_quantity }} × ${{ booking.general_price }}</li>
+        {% endif %}
+        {% if booking.vip_quantity > 0 %}
+          <li>{{ booking.vip_label }}: {{ booking.vip_quantity }} × ${{ booking.vip_price }}</li>
+        {% endif %}
+    {% endif %}
+
+        <div class="fw-bold mt-2 text-dark">Total: {{ booking.currency }} {{ booking.total_payment }}</div>
+      </div>
+
+      <p class="small text-muted mt-3 mb-0">Delivered to {{ booking.email }} | Powered by GrabMyTix - 0451081907 / 0433814363</p>
+    </div>
+  </div>
+
+</div>
+
+
+
+    
+    {% else %}
+     <div class="text-center py-5">
+ 
+  <p class="lead mb-3">No ticket was found with the details you provided.</p>
+  <p>Please check your ticket number and email, or try again.</p>
+  
+</div>
+    {% endif %}
+
+  </div>
+</main>
+
+<!-- Include html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+{% if booking %}
+<script>
+  document.getElementById('downloadTicket').addEventListener('click', function () {
+    html2canvas(document.getElementById('ticket'), { scale: 2 }).then(function(canvas) {
+      const link = document.createElement('a');
+      link.download = 'ticket_{{ booking.id }}.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  });
+</script>
+{% endif %}
+
+<style>
+.paper-ticket {
+  background: #fff;
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  max-width: 700px;
+  margin: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.paper-ticket .poster {
+  height: 150px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.paper-ticket .title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.paper-ticket hr {
+  border-top: 1px dashed #ccc;
+}
+
+.paper-ticket button {
+  cursor: pointer;
+}
+</style>
+{% endblock %}

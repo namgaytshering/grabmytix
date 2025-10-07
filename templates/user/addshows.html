@@ -1,0 +1,200 @@
+{% extends "../includes/user_base.html" %}
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb  ">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item "><a href="/user/movies/">Movies</a></li>
+            <li class="breadcrumb-item  "> <a href="/user/movies/add">Add Movie </a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add shows</li>
+        </ol>
+    </nav>
+    {%if messages%}
+    {% for message in messages%}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {%endfor%}
+    {%endif%}
+    <h5 class="card-title">{{film.title}}</h5>
+    <div class="card  overflow-hidden mt-3 mb-3">
+
+        <div class="row g-0 ">
+            <div class="col-sm-4 position-relative">
+                <img src="/media/{{film.poster_image}}"
+                    class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Card image">
+            </div>
+            <div class="col-sm-8 p-3">
+
+                {{film.description|linebreaks| truncatewords:30}}
+                <br />
+                <small><b>Genre:</b> {{ film.genre }}</small> <br />
+                <small>
+                    <b>Duration:</b> {{ film.duration }} hr{{ film.duration|pluralize }}
+                </small><br />
+                <small><b>Director:</b> {{ film.director }}</small><br>
+                <small><b>Language:</b> {{ film.language }}</small>
+                <br />
+                <a href="/user/movies/edit/{{film.slug}}" class="btn btn-sm btn-danger"><i class="ci-edit"></i>&nbsp;
+                    edit</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-md-flex align-items-center justify-content-between gap-3 pb-2 pb-sm-3 mb-md-2">
+        <h5 class="h5 mb-md-0">Show list</h5>
+        <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
+            <div class="position-relative" style="min-width: 190px">
+
+                <button type="button" class="btn btn-danger rounded-pill w-100 animate-scale  " data-bs-toggle="modal"
+                    data-bs-target="#modalId">
+                    <i class="ci-plus-circle fs-base animate-target me-2 ms-n1"></i>
+                    Add new show
+                </button>
+            </div>
+        </div>
+    </div>
+    <table class="table align-middle fs-sm mb-0">
+        <thead>
+            <tr>
+
+                <th class="ps-0" scope="col">
+                    <span class="fw-normal text-body">Location</span>
+                </th>
+                <th class="d-none d-md-table-cell" scope="col">
+                    <button type="button" class="btn fw-normal text-body product-sort p-0" data-sort="date">Ticket
+                        cost</button>
+                </th>
+                <th class="d-none d-md-table-cell" scope="col">
+                    <button type="button" class="btn fw-normal text-body product-sort p-0" data-sort="date">Show
+                        Date</button>
+                </th>
+
+                <th class="d-none d-md-table-cell" scope="col">
+                    <button type="button" class="btn fw-normal text-body product-sort p-0" data-sort="date">
+                        Status</button>
+                </th>
+
+                <th class="text-end d-none d-sm-table-cell" scope="col">
+                   
+                </th>
+
+                <th class="text-end pe-0" scope="col">
+                     
+                </th>
+
+            </tr>
+        </thead>
+        <tbody class="product-list">
+            {% for movie in movies%}
+            <!-- Item -->
+
+            <tr>
+
+                <td class="d-none d-md-table-cell py-3">
+                    {{movie.theater_name}}<br />
+                    {{movie.street}},{{movie.state}}, {{movie.country}}
+                </td>
+                <td class="d-none d-md-table-cell py-3">
+                    Adult: $ {{movie.adult}}, Child: $ {{movie.child}}
+                </td>
+                <td class="d-none d-md-table-cell py-3">
+                    {{movie.show_date}}- {{movie.show_time|date:'h:i A' }}
+                </td>
+                <td class="d-none d-md-table-cell py-3">
+                    {% now "Y-m-d" as today %}
+
+                    {% if movie.show_date|date:"Y-m-d" < today %}
+                    <span class="text-red-600 btn btn-sm btn-outline-warning"><i class="ci-close-circle"></i> &nbsp;Ended</span>
+                    {% else %}
+                    <span class="text-green-600 btn btn-sm btn-success"><i class="ci-check-circle"></i> &nbsp;Active</span>
+                    {% endif %}
+                </td>
+
+                <td class="tendered text-start d-none d-sm-table-cell py-3">
+
+
+                </td>
+                <td class="earning text-start py-3 pe-0">
+                    {% if movie.show_date|date:"Y-m-d" > today %}
+                    <a href="" class="btn btn-sm btn-danger"><i class="ci-edit"></i>&nbsp;edit</a>
+                        {% endif %}
+                </td>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+
+    <!-- Vertically centered modal -->
+    <div class="modal fade" id="modalId" tabindex="-1" role="dialog">
+        <div class="modal-dialog  modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add new show</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <!-- Forms validation: status text -->
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="validationText01" class="form-label">Date</label>
+                                {{form.show_date}}
+
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="validationText02" class="form-label">Time</label>
+                                {{form.show_time}}
+
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="validationText03" class="form-label">Theater Name</label>
+                                {{form.theater_name}}
+
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="validationTextUsername" class="form-label">Currency</label>
+                                {{form.currency}}
+
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="validationTextUsername" class="form-label">Adult Price</label>
+                                {{form.adult}}
+
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="validationTextUsername" class="form-label">Child Price</label>
+                                {{form.child}}
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="validationText03" class="form-label">Country</label>
+                                {{form.country}}
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="validationText04" class="form-label">State</label>
+                                {{form.state}}
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="validationText05" class="form-label">Street Address</label>
+                                {{form.street}}
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer flex-column flex-sm-row align-items-stretch">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">add show</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{%endblock%}

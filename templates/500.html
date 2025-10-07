@@ -1,0 +1,44 @@
+{% extends "includes/base.html" %}
+
+{% block content %}
+<style>
+  .error-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 50vh;
+      text-align: center;
+ 
+      padding: 40px 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  .error-container h1 {
+      font-size: 120px;
+      font-weight: bold;
+      margin-bottom: 20px;
+     
+  }
+  .error-container p {
+      font-size: 20px;
+      margin: 10px 0;
+  }
+  
+ 
+  @media (max-width: 600px) {
+      .error-container h1 {
+          font-size: 80px;
+      }
+      .error-container p {
+          font-size: 18px;
+      }
+  }
+</style>
+
+<div class="error-container">
+    <h1>404</h1>
+    <p>Sorry, the page you are looking for cannot be found.</p>
+    <p>It might have been removed, had its name changed, or is temporarily unavailable.</p>
+    <a href="{% url 'home' %}" class="btn btn-sm btn-danger">Return to Home</a>
+</div>
+{% endblock %}

@@ -1,0 +1,182 @@
+{% load static %}
+<!-- Navbar with multi-level dropdown + CTA button -->
+ <header class="navbar navbar-expand-lg bg-body shadow sticky-top px-0">
+  <div class="container py-1">
+    <a class="navbar-brand" href="/">
+            <img src="/media/logo_grab.svg" width="40" height="40" class="d-inline-block align-top" alt="">
+         <span style="color:#FFC107; font-size:18px;"><b>grabMytix</b></span>
+        </a>
+   
+    <nav class="collapse navbar-collapse" id="navbarCollapse1">
+      <ul class="navbar-nav pt-2 pt-lg-0 me-auto">
+       
+        <li class="nav-item">
+          <a class="nav-link" href="/movies">Movies</a>
+        </li>
+        <li class="nav-item">
+                    <a class="nav-link  *:" href="/events">Events</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link  *:" href="/ticket">Get ticket</a>
+                </li>
+        
+      </ul>
+      
+    </nav>
+      <div class="d-flex align-items-center py-lg-1">
+      <div class="dropdown">
+        <button type="button" class="theme-switcher btn btn-icon btn-lg btn-outline-secondary fs-lg border-0 rounded-circle animate-scale" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Toggle theme (light)">
+          <span class="theme-icon-active d-flex animate-target">
+            <i class="ci-sun"></i>
+          </span>
+        </button>
+        <ul class="dropdown-menu" style="--cz-dropdown-min-width: 9rem">
+          <li>
+            <button type="button" class="dropdown-item active" data-bs-theme-value="light" aria-pressed="true">
+              <span class="theme-icon d-flex fs-base me-2">
+                <i class="ci-sun"></i>
+              </span>
+              <span class="theme-label">Light</span>
+              <i class="item-active-indicator ci-check ms-auto"></i>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false">
+              <span class="theme-icon d-flex fs-base me-2">
+                <i class="ci-moon"></i>
+              </span>
+              <span class="theme-label">Dark</span>
+              <i class="item-active-indicator ci-check ms-auto"></i>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="dropdown-item" data-bs-theme-value="auto" aria-pressed="false">
+              <span class="theme-icon d-flex fs-base me-2">
+                <i class="ci-auto"></i>
+              </span>
+              <span class="theme-label">Auto</span>
+              <i class="item-active-indicator ci-check ms-auto"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+      {% if request.user.is_authenticated %}
+
+           <div class="dropdown">
+  <a class="btn btn-sm btn-none dropdown-toggle d-flex align-items-center" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="ci-user fs-5 ms-n1 me-2"></i>
+    <span class="d-none d-md-flex">{{ request.user|upper }}</span>
+  </a>
+
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+    <li><a class="dropdown-item" href="/user/">Profile</a></li>
+    
+    <li><a class="dropdown-item" href="/user/logout">Logout</a></li>
+  </ul>
+</div>
+
+            {%else%}
+            
+            <a class="btn btn-sm btn-danger animate-shake   mt-lg-0" href="/login">
+                <i class="ci-log-in animate-target ms-n1 me-2"></i>
+                login
+            </a>
+            
+           
+            {%endif%}
+      
+    </div>
+     <button type="button" class="navbar-toggler collapsed ms-3" data-bs-toggle="collapse" data-bs-target="#navbarCollapse1" aria-controls="navbarCollapse1" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </div>
+</header>
+<!-- 
+<header class="navbar sticky-top  navbar-expand-lg bg-body shadow px-0">
+    <div class="container py-1">
+        <a class="navbar-brand" href="/">
+            <img src="/media/logo_grab.svg" width="40" height="40" class="d-inline-block align-top" alt="">
+           <span style="color:#FFC107"><b>grabMytix</b></span>
+        </a>
+        
+        
+        <nav class="collapse navbar-collapse" id="navbarCollapse1">
+            <ul class="navbar-nav pt-2 pt-lg-0 me-auto">
+                
+                <li class="nav-item">
+                    <a class="nav-link  *:" href="/movies">Movies</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link  *:" href="/events">Events</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link  *:" href="/about">About us</a>
+                </li>
+                
+                
+            </ul>
+           
+        </nav>
+        
+    <div class="d-flex align-items-center py-lg-1">
+      <div class="dropdown">
+        <button type="button" class="theme-switcher btn btn-icon btn-lg btn-outline-secondary fs-lg border-0 rounded-circle animate-scale" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Toggle theme (light)">
+          <span class="theme-icon-active d-flex animate-target">
+            <i class="ci-sun"></i>
+          </span>
+        </button>
+        <ul class="dropdown-menu" style="--cz-dropdown-min-width: 9rem">
+          <li>
+            <button type="button" class="dropdown-item active" data-bs-theme-value="light" aria-pressed="true">
+              <span class="theme-icon d-flex fs-base me-2">
+                <i class="ci-sun"></i>
+              </span>
+              <span class="theme-label">Light</span>
+              <i class="item-active-indicator ci-check ms-auto"></i>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false">
+              <span class="theme-icon d-flex fs-base me-2">
+                <i class="ci-moon"></i>
+              </span>
+              <span class="theme-label">Dark</span>
+              <i class="item-active-indicator ci-check ms-auto"></i>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="dropdown-item" data-bs-theme-value="auto" aria-pressed="false">
+              <span class="theme-icon d-flex fs-base me-2">
+                <i class="ci-auto"></i>
+              </span>
+              <span class="theme-label">Auto</span>
+              <i class="item-active-indicator ci-check ms-auto"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+      {% if request.user.is_authenticated %}
+
+            <a class="btn btn-sm btn-none animate-shake" href="/user/">
+                <i class="ci-user fs-5 animate-target ms-n1 me-2"></i>
+                   <span class="d-none d-md-flex"> {{request.user|upper}} </span>
+                </a>
+            {%else%}
+            
+            <a class="btn btn-sm btn-danger animate-shake   mt-lg-0" href="/login">
+                <i class="ci-log-in animate-target ms-n1 me-2"></i>
+                login
+            </a>
+            &nbsp;
+            &nbsp;
+            <div class="d-none d-md-block">
+            <a class="btn btn-sm btn-outline-danger  animate-shake   mt-lg-0" href="/register">
+                <i class=" ci-user-plus  animate-target ms-n1 me-2"></i>
+                Sign Up
+            </a>
+          </div>
+            {%endif%}
+      
+    </div>
+    </div>
+</header> -->

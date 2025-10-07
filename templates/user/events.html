@@ -1,0 +1,96 @@
+{% extends "../includes/user_base.html" %}
+{% block content %}
+<!-- Page content -->
+<div class="container ">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active"><a href="/user/events/">Events/</a></li>
+        </ol>
+    </nav>
+    <div
+        data-filter-list='{"searchClass": "product-search", "listClass": "product-list", "sortClass": "product-sort", "valueNames": ["product", "date", "tendered", "earning"]}'>
+           {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <!-- Header -->
+        <div class="d-md-flex align-items-center justify-content-between gap-3 pb-2 pb-sm-3 mb-md-2">
+            <h6 class="mb-md-0">Events</h6>
+            <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
+                <div class="position-relative" style="min-width: 190px">
+                    <a href="/user/events/add">
+                        <button type="button" class="btn btn-sm btn-danger rounded-pill w-100 animate-scale">
+                            <i class="ci-plus-circle fs-base animate-target me-2 ms-n1"></i>
+                            Add new event
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Cards -->
+        {% for event in events %}
+        <div class="card overflow-hidden mb-3">
+            <div class="row g-0">
+                <h5 class="card-title p-2">
+                    {{ event.title }}
+                    <a href="/user/events/edit/{{ event.slug }}" class="btn btn-sm btn-danger">
+                        <i class="ci-edit"></i>&nbsp;edit
+                    </a>
+                </h5>
+                <div class="col-sm-4 position-relative" style="min-height: 220px">
+                    <img src="/media/{{ event.poster_image }}"
+                        class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                        alt="{{ event.title }}">
+                </div>
+                <div class="col-sm-8">
+                    <div class="card-body">
+                        <p><i class="ci-map-pin"></i>
+                            {{ event.place }}, {{ event.state }}, {{ event.country }}
+                        </p>
+                        <p><i class="ci-calendar"></i>
+                            {{ event.show_date }} at {{ event.show_time }}
+                        </p>
+
+                        <b>Tickets</b>
+                        <ul class="list-group list-group-flush">
+                             <li class="list-group-item">
+                                <b> {{ event.general_label }}: </b> {{ event.currency }} {{ event.price }} Ticket Qty: {{ event.quantity }}
+                                 
+                            </li>
+                         
+                            {% if event.vip_price %}
+                            <li class="list-group-item">
+                                <b> {{ event.vip_label }}: </b> {{ event.currency }} {{ event.vip_price }} Ticket Qty: {{ event.vip_quantity }}
+                            </li>
+                            {% endif %}                          
+
+                            {% if event.economy_price %}
+                            <li class="list-group-item">
+                                 <b> {{ event.economy_label }}: </b> {{ event.currency }} {{ event.economy_price }} Ticket Qty: {{ event.economy_quantity }}
+                            </li>
+                            {% endif %}
+                        </ul>
+
+                        <a class="btn btn-primary btn-sm mt-3" href="/user/events/view/{{ event.slug }}">
+                            <i class="ci-eye fs-base animate-target me-2 ms-n1"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert d-sm-flex alert-warning pb-4 pt-sm-4" role="alert">
+            <i class="ci-check-circle fs-4 mt-1 mb-2 mb-sm-0"></i>
+            <div class="ps-sm-3 pe-sm-4">
+                <h5 class="alert-heading mb-2">No events added</h5>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

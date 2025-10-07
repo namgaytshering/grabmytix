@@ -1,0 +1,83 @@
+{% extends "../includes/base.html" %}
+{% block content %}
+ 
+<main class="content-wrapper">
+<div class="container">
+ 
+        <div class="alert d-sm-flex alert-white  " role="alert">
+            <h1 class="alert-heading mb-2">
+                <i class="ci-map-pin animate-target fs-md "></i>
+                Find Movies Near You</h1>
+        </div>
+
+        {% regroup upcomings by state as state_list %}
+
+        <!-- Nav Tabs -->
+        <ul class="nav nav-pills mb-3" id="stateTab" role="tablist">
+            {% for group in state_list %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if forloop.first %} active  {% endif %} " id="tab-{{ forloop.counter }}"
+                    data-bs-toggle="tab" data-bs-target="#content-{{ forloop.counter }}" type="button" role="tab">
+                   <i class="ci-map-pin animate-target fs-md "></i> &nbsp;&nbsp;{{ group.grouper }}
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content mt-4" id="stateTabContent">
+            {% for group in state_list %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="content-{{ forloop.counter }}"
+                role="tabpanel">
+
+                <div class="row">
+                    {% for upcoming in group.list %}
+                    <div class="col-md-6 mb-3">
+                        <article class="row pb-2 align-items-start align-items-md-center gx-0 gy-4">
+                            <div class="col-sm-5 pe-sm-4">
+                                <a class="ratio d-flex hover-effect-scale rounded overflow-hidden flex-md-shrink-0"
+                                    href="/show/{{ upcoming.slug }}"
+                                    style="--cz-aspect-ratio: calc(226 / 306 * 100%)">
+                                    <img src="/media/{{ upcoming.film.poster_image }}" class="hover-effect-target"
+                                        alt="Image">
+                                </a>
+                            </div>
+                            <div class="col-sm-7">
+                                <h3 class="h5 mb-2 mb-md-3">
+                                    <a class="hover-effect-underline"
+                                        href="/show/{{ upcoming.slug }}">
+                                        {{ upcoming.film.title }}
+                                    </a>
+                                </h3>
+                                <small>
+                                    <span class="text text-success">
+                                        <i class="ci-ticket"></i> movie, {{ upcoming.film.duration }} hr{{upcoming.film.duration|pluralize }}
+                                    </span>
+                                </small>
+                                <div class="nav align-items-center gap-2 pb-2 mt-1 mb-1">
+                                    <span class="text text-info fs-xs">
+                                        <i class="ci-schedule"></i> {{upcoming.show_date}}, {{upcoming.show_time|date:'h:i A' }}
+                                    </span>
+                                </div>
+                                <small><i class="ci-map-pin text-success"></i></small> {{ upcoming.theater_name }}
+                                <br />
+                                <i class="ci-map-pin text-success"></i> {{ upcoming.street }}, {{ upcoming.state }}, 
+                                {{upcoming.country }}
+                                <br />
+                                <a href="/show/{{ upcoming.slug }}"
+                                    class="btn btn-sm btn-danger mt-3">
+                                    <i class="ci-ticket"></i> &nbsp;Grab a ticket &nbsp;&nbsp;
+                                    <i class="ci-chevron-right"></i>
+                                </a>
+                            </div>
+                        </article>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+     
+</div>
+</main>
+    {% endblock content %}

@@ -1,0 +1,39 @@
+{% extends "../includes/base.html" %}
+{% block content %}
+<main class="content-wrapper w-100 d-flex justify-content-center align-items-top">
+    <div class="d-flex flex-column align-items-center w-100 py-4" style="max-width: 416px;">
+        <h1 class="h2">Sign In</h1>
+        <form method="POST" class="needs-validation w-100" novalidate>
+            {% csrf_token %}
+            <div class="position-relative mb-4">
+                {{ form.email }}
+                <div class="invalid-tooltip bg-transparent py-0">Enter a valid email address!</div>
+            </div>
+            <div class="mb-4">
+                <div class="password-toggle">
+                    {{ form.password }}
+                    <div class="invalid-tooltip bg-transparent py-0">Password is incorrect!</div>
+                </div>
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-primary" role="alert">
+                {% for error in form.non_field_errors %}
+                <p class="mb-0"> <i class="ci-banned fs-lg pe-1 mt-1 me-2"></i>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <button type="submit" class="btn w-100 btn-sm btn-danger animate-shake mt-3 mt-lg-0">
+                <i class="ci-log-in animate-target ms-n1 me-2"></i> Sign In
+            </button>
+        </form>
+        <div class="nav fs-sm mt-4">
+            <a class="nav-link text-decoration-underline p-0 ms-2" href="/register">Forgot password?</a>
+        </div>
+        <div class="nav fs-sm mt-4">
+            Don't have an account?
+            <a class="nav-link text-decoration-underline p-0 ms-2" href="/register">Create an account</a>
+        </div>
+    </div>
+</main>
+{% endblock %}

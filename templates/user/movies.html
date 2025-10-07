@@ -1,0 +1,71 @@
+{% extends "../includes/user_base.html" %}
+{% block content %}
+<!-- Page content -->
+<div class="container ">
+    <nav aria-label="breadcrumb  ">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active"><a href="/user/movies/">Movies/</a></li>
+        </ol>
+    </nav>
+    <div
+        data-filter-list='{"searchClass": "product-search", "listClass": "product-list", "sortClass": "product-sort", "valueNames": ["product", "date", "tendered", "earning"]}'>
+        <!-- Header -->
+        <div class="d-md-flex align-items-center justify-content-between gap-3 pb-2 pb-sm-3 mb-md-2">
+            <h6 class="<h5></h5> mb-md-0">Movies</h6>
+            <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
+                <div class="position-relative" style="min-width: 190px">
+                    <a href="/user/movies/add">
+                        <button type="button" class="btn btn-sm btn-danger rounded-pill w-100 animate-scale  ">
+                            <i class="ci-plus-circle fs-base animate-target me-2 ms-n1"></i>
+                            Add new movie
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Horizontal card: Image on the left -->
+
+        {% for movie in movies%}
+        <div class="card overflow-hidden mb-3">
+            <div class="row g-0">
+                <h5 class="card-title  p-2">{{movie.title}} <a href="/user/movies/edit/{{movie.slug}}" class="btn btn-sm btn-danger"><i class="ci-edit"></i>&nbsp;edit</a></h5>
+                <div class="col-sm-4 position-relative" style="min-height: 220px">
+
+                    <img src="/media/{{movie.poster_image}}"
+                        class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Card image">
+                </div>
+                <div class="col-sm-8">
+                    <div class="card-body">
+                        <b class="list-group-item">Shows</b>
+                        {% if movie.filmshow.all %}
+                        <ul class="list-group list-group-flush">
+
+                            {% for address in movie.filmshow.all %}
+                            <li class="list-group-item">
+                                <i class="ci-map-pin"></i>
+                                &nbsp; {{address.theater_name}},{{address.state}}, {{address.country}} on
+                                {{address.show_date}}
+                                &nbsp;
+                            </li>
+                            {%endfor%}
+
+                        </ul>
+                        {%else%}
+                        <div class="alert d-sm-flex alert-warning pb-4 pt-sm-4" role="alert">
+                            <i class="ci-check-circle fs-4 mt-1 mb-2 mb-sm-0"></i>
+                            <div class="ps-sm-3 pe-sm-4">
+                                <h5 class="alert-heading mb-2">No shows added</h5>
+                            </div>
+                        </div>
+                        {%endif%}
+                        <a class="btn btn-primary btn-sm" href="/user/movies/add/addshow/{{movie.slug}}">
+                            <i class="ci-plus-circle fs-base animate-target me-2 ms-n1"></i> View shows</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {%endfor%}
+    </div>
+</div>
+
+{% endblock %}

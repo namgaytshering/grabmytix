@@ -1,0 +1,318 @@
+{% extends "../includes/base.html" %}
+
+{% block title %}{{ event.title }} | GrabMyTix{% endblock title %}
+{% load tz %}  {# to ensure timezone-aware date comparisons #}
+{% block meta %}
+<meta name="description"
+  content="Show: {{ event.place }},{{ event.state.state_short|upper }} - {{ event.show_date }} , {{ event.show_time |date:'h:i A' }}">
+<meta property="og:title" content="{{ event.title }} - GrabMyTix" />
+<meta property="og:description"
+  content="Show: {{ event.place }}, {{ event.state.state_short|upper }} - {{ event.show_date }} , {{ event.show_time |date:'h:i A' }}" />
+<meta property="og:image" content="https://www.grabmytix.com/media/{{event.poster_image}}" />
+<meta property="og:image:alt" content="{{ event.title }} Poster" />
+<meta property="og:url" content="https://www.grabmytix.com/event/{{ event.slug }}/" />
+<meta property="og:type" content="article" />
+<meta name="keywords" content="{{ event.title }}, movie tickets, {{ event.genre }}, book online" />
+<meta name="author" content="GrabMyTix">
+{% endblock meta %}
+
+{% block content %}
+<main class="content-wrapper">
+  <div class="d-block d-md-none">
+    <img src="/media/{{ event.poster_image }}" alt="{{ event.title }} Poster">
+  </div>
+  <div class="d-none d-md-block">
+    <section class="position-relative" style="height: 40vh; min-height: 400px; overflow: hidden;">
+
+      <!-- Blurred Background -->
+      <div class="position-absolute top-0 start-0 w-100 h-100" style="
+      background-image: url('/media/{{ event.poster_image }}');
+      background-size: cover;
+      background-position: center;
+      filter: blur(10px);
+      transform: scale(1.1);
+      z-index: 1;">
+      </div>
+
+      <!-- Dark overlay -->
+      <div class="position-absolute top-0 start-0 w-80 h-100" style="background: rgba(0,0,0,0.25); z-index: 2;">
+      </div>
+
+      <!-- Foreground image (same height as section) -->
+      <div class="position-relative d-flex justify-content-center align-items-center h-100" style="z-index: 3;">
+        <img src="/media/{{ event.poster_image }}" alt="{{ event.title }} Poster" style="
+           height: 100%;
+           border-radius:20px;
+           object-fit: contain;
+           object-position: top;
+           filter: brightness(1.01);
+         ">
+      </div>
+
+      <!-- Hero text -->
+
+    </section>
+  </div>
+
+
+  <section class="container py-3">
+    <!-- Messages -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="row g-4  ">
+
+
+
+      <!-- Event Details -->
+      <div class="col-md-7">
+        <!-- Title -->
+        <h1 class="alert  p-0 alert-white mt-3  mb-3">{{ event.title }}</h1>
+
+        <!-- Description -->
+        <p class="text-muted d-none d-md-block">{{ event.description }}</p>
+
+        <!-- Date & Time -->
+        <div class="d-flex align-items-center mb-3">
+          <i class="ci-calendar me-2  "></i>
+          <time datetime="{{ event.show_date }}T{{ event.show_time }}" class="fw-semibold">
+            {{ event.show_date }} • {{ event.show_time |date:'h:i A' }}
+          </time>
+        </div>
+
+        <!-- Theater -->
+        <div class="d-flex align-items-center mb-2">
+          <i class="ci-map-pin me-2  "></i>
+          <span class="fw-semibold">{{ event.place }}</span>
+        </div>
+
+        <!-- Address -->
+        <div class="d-flex align-items-center mb-4">
+          <i class="ci-bookmark"></i>
+          <span> &nbsp;{{ event.street }}, {{ event.state }}, {{ event.country }}</span>
+        </div>
+
+        <!-- Type & Price -->
+
+      </div>
+      <div class="col-md-5 pt-3">
+
+        <h5 class="fw-bold">
+          <i class="ci-ticket me-2 "></i>
+          {{ event.event_type }} —
+          {% if event.price %}
+          ${{ event.price }}
+          {% else %}
+          Free
+          {% endif %}
+        </h5>
+        <h6>Primary Person Details</h6>
+        <form method="POST">
+          {% csrf_token %}
+
+          <div class="mb-3 position-relative">
+            <i class="ci-user position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+            {{ form.full_name }}
+          </div>
+          <div class="mb-3 position-relative">
+            <i class="ci-phone position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+            {{ form.phone }}
+          </div>
+          <div class="mb-3 position-relative">
+            <i class="ci-mail position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+            {{ form.email }}
+          </div>
+
+          <!-- Quantity Selector -->
+          <!-- <div class="col-md-6 mb-3">
+            <span class="fs-6 fw-semibold">Ticket</span><br /><br />
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="input-group input-group-sm" style="width: 140px;">
+                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="adult"
+                  data-action="decrement" data-decrement>−</button>
+                <input type="number" min="1" id="adult-qty" name="no_adult" class="form-control text-center"
+                  value="{{ form.no_adult.value|default:1 }}">
+                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="adult" data-increment
+                  data-action="increment">+</button>
+              </div>
+            </div>
+          </div> -->
+
+
+
+
+          <h6 class="mt-4">Select Tickets</h6>
+
+          {% comment %} Economy Ticket {% endcomment %}
+          {% if event.economy_price  > 0 %}
+          <div class="col-md-6 mb-3">
+            <span class="fs-6 fw-semibold">{{event.economy_label}}</span><br />
+            <div class="d-flex mt-2 justify-content-between align-items-center">
+              <div class="input-group input-group-sm" style="width: 140px;">
+                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="economy"
+                  data-decrement>−</button>
+                <input type="number" min="0" id="economy-qty" name="economy_quantity" class="form-control text-center"
+                  value="{{ form.economy_quantity.value|default:0 }}">
+                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="economy"
+                  data-increment>+</button>
+              </div>
+              <span class="ms-3 text-muted">${{ event.economy_price }}</span>
+            </div>
+          </div>
+          {% endif %}
+
+         
+
+          {% comment %} VIP Ticket {% endcomment %}
+          {% if event.vip_price  > 0 %}
+          <div class="col-md-6 mb-3">
+            <span class="fs-6 fw-semibold">{{event.vip_label}} </span><br />
+            <div class="d-flex mt-2 justify-content-between align-items-center">
+              <div class="input-group input-group-sm" style="width: 140px;">
+                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="vip"
+                  data-decrement>−</button>
+                <input type="number" min="0" id="vip-qty" name="vip_quantity" class="form-control text-center"
+                  value="{{ form.vip_quantity.value|default:0 }}">
+                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="vip"
+                  data-increment>+</button>
+              </div>
+              <span class="ms-3 text-muted">${{ event.vip_price }}</span>
+            </div>
+          </div>
+          {% endif %}
+
+           {% comment %} General Ticket {% endcomment %}
+         {% if event.price == 0   %}
+          <div class="col-md-6 mb-3">
+            <span class="fs-6 fw-semibold"> {% if event.vip_price > 0 or  event.economy_price > 0  %}  {{event.general_label}}
+              {%endif%}
+            </span><br />
+            <div class="d-flex mt-2 justify-content-between align-items-center">
+              <div class="input-group input-group-sm" style="width: 140px;">
+                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="general"
+                  data-decrement>−</button>
+                <input type="number" min="0" id="general-qty" name="general_quantity" class="form-control text-center"
+                  value="{{ form.general_quantity.value|default:0 }}">
+                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="general"
+                  data-increment>+</button>
+              </div>
+              <span class="ms-3 text-muted">{%if  event.price > 0%}${{ event.price }}{%else%} Free {%endif%}</span>
+            </div>
+          </div>
+          {% endif %}
+
+
+
+
+          <p class="mb-3  fw-semibold">Price: <span class="text-danger">$ <span id="final-total">{{ event.price }}</span></span></p>
+ 
+          {% if is_expired %}
+          <button type="submit" disabled class="btn btn-dark  rounded-pill fw-semibold">
+            <i class="ci-shopping-bag me-2"></i>
+         Expired – no more tickets available.
+          </button>
+          {%else%}
+          <!-- Submit Button -->
+          <button type="submit"  class="btn btn-danger  rounded-pill fw-semibold">
+            <i class="ci-shopping-bag me-2"></i>
+            {% if event.price %} Proceed to Payment {% else %} Confirm {% endif %}
+          </button>
+          {%endif%}
+        </form>
+      </div>
+    </div>
+  </section>
+
+
+
+  <section class="container  ">
+    <!-- Breadcrumb -->
+    <!-- <nav aria-label="breadcrumb" class="pt-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/events">Events</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ event.title }}</li>
+            </ol>
+        </nav> -->
+
+
+
+    <div class="mt-4 mb-5 d-lg-none d-flex">
+      <p class="d-lg-none d-flex">{{ event.description }}</p>
+    </div>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+       document.addEventListener("DOMContentLoaded", function () {
+    const decrementButtons = document.querySelectorAll("[data-decrement]");
+    const incrementButtons = document.querySelectorAll("[data-increment]");
+
+    function updateTotal() {
+        let total = 0;
+
+        const adult = parseInt(document.getElementById("adult-qty")?.value) || 0;
+        const economy = parseInt(document.getElementById("economy-qty")?.value) || 0;
+        const general = parseInt(document.getElementById("general-qty")?.value) || 0;
+        const vip = parseInt(document.getElementById("vip-qty")?.value) || 0;
+
+        total += adult * {{ event.price|default:0 }};
+        total += economy * {{ event.economy_price|default:0 }};
+        total += general * {{ event.price|default:0 }};
+        total += vip * {{ event.vip_price|default:0 }};
+
+        document.getElementById("final-total").textContent = total.toFixed(2);
+    }
+
+    decrementButtons.forEach(btn => {
+        btn.addEventListener("click", function () {
+            const type = btn.getAttribute("data-type");
+            const input = document.getElementById(type + "-qty");
+            if (!input) return;
+            let val = parseInt(input.value) || 0;
+            if (val > 0) input.value = val - 1;
+            updateTotal();
+        });
+    });
+
+    incrementButtons.forEach(btn => {
+        btn.addEventListener("click", function () {
+            const type = btn.getAttribute("data-type");
+            const input = document.getElementById(type + "-qty");
+            if (!input) return;
+            let val = parseInt(input.value) || 0;
+            input.value = val + 1;
+            updateTotal();
+        });
+    });
+
+    ["adult-qty","economy-qty","general-qty","vip-qty"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("input", updateTotal);
+    });
+
+    updateTotal();
+});
+
+    </script>
+
+
+
+    </script>
+</main>
+{% endblock content %}

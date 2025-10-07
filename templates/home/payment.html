@@ -1,0 +1,479 @@
+{% extends "../includes/base.html" %}
+{% load static %}
+{% block content %}
+
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+  input {
+    border-radius: 6px;
+    margin-bottom: 6px;
+    padding: 12px;
+    border: 1px solid rgba(50, 50, 93, 0.1);
+    height: 44px;
+    font-size: 16px;
+    width: 100%;
+    background: white;
+  }
+
+  .result-message {
+    line-height: 22px;
+    font-size: 16px;
+  }
+
+  .result-message a {
+    color: rgb(89, 111, 214);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  #card-error {
+    color: rgb(105, 115, 134);
+    text-align: left;
+    font-size: 13px;
+    line-height: 17px;
+    margin-top: 12px;
+  }
+
+  #card-element {
+    border-radius: 50px;
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    height: 50px;
+    width: 100%;
+    background: #181d25;
+    /* Dark background */
+    color: #ffffff;
+    /* White text */
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  #payment-request-button {
+    margin-bottom: 32px;
+  }
+
+  /* Buttons and links */
+  button {
+    background: #5469d4;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    border-radius: 0 0 4px 4px;
+    border: 0;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: block;
+    transition: all 0.2s ease;
+    box-shadow: 0px 4px 5.5px 0px rgba(0, 0, 0, 0.07);
+    width: 100%;
+  }
+
+  button:hover {
+    filter: contrast(115%);
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  /* spinner/processing state, errors */
+  .spinner,
+  .spinner:before,
+  .spinner:after {
+    border-radius: 50%;
+  }
+
+  .spinner {
+    color: #ffffff;
+    font-size: 22px;
+    text-indent: -99999px;
+    margin: 0px auto;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    box-shadow: inset 0 0 0 2px;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+
+  .spinner:before,
+  .spinner:after {
+    position: absolute;
+    content: "";
+  }
+
+  .spinner:before {
+    width: 10.4px;
+    height: 20.4px;
+    background: #f4b702;
+    border-radius: 20.4px 0 0 20.4px;
+    top: -0.2px;
+    left: -0.2px;
+    -webkit-transform-origin: 10.4px 10.2px;
+    transform-origin: 10.4px 10.2px;
+    -webkit-animation: loading 2s infinite ease 1.5s;
+    animation: loading 2s infinite ease 1.5s;
+  }
+
+  .spinner:after {
+    width: 10.4px;
+    height: 10.2px;
+    background: #e5cb04;
+    border-radius: 0 10.2px 10.2px 0;
+    top: -0.1px;
+    left: 10.2px;
+    -webkit-transform-origin: 0px 10.2px;
+    transform-origin: 0px 10.2px;
+    -webkit-animation: loading 2s infinite ease;
+    animation: loading 2s infinite ease;
+  }
+
+  @-webkit-keyframes loading {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+
+    100% {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes loading {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+
+    100% {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+
+  @media only screen and (max-width: 600px) {}
+</style>
+<main class="content-wrapper">
+
+  <!-- Page content -->
+  <div class="container pt-4 pt-md-5 pb-5 mt-sm-3 mt-md-0 mb-2 mb-md-3 mb-lg-4 mb-xl-5">
+
+    <section class=" "  >
+      {%if messages%}
+      {% for message in messages%}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {%endfor%}
+      {%endif%}
+
+
+      <h2 class="fw-bold alert-heading mb-3">{{ booking.title }}</h2>
+
+      <h5 class="fw-bold alert-heading "><strong>Order No:</strong> #{{ booking.id }}</h5>
+      <div class="row g-4">
+
+        <!-- Image Column -->
+        <div class="col-md-4 mb-4 mb-md-0 d-flex justify-content-center">
+
+          <img src="/media/{{booking.poster_image}}" alt="{{ movie.title }} Poster" class="img-fluid rounded shadow-sm"
+            style="max-height: 320px; object-fit: contain;">
+
+        </div>
+
+        <!-- Text/Details Column -->
+   <div class="col-md-8">
+  <div class="vstack gap-2">
+
+    <p class="mb-1"><strong>Theatre:</strong> {{ booking.theater_name }}</p>
+    <p class="mb-1"><strong>Address:</strong> {{ booking.street }}, {{ booking.state }}, {{ booking.country }}</p>
+
+    <p class="mb-1"><strong>Tickets:</strong></p>
+    <ul class="list-unstyled mb-0">
+      {%if booking.type == 'Movie'%}
+          {% if booking.no_adult > 0 %}
+            <li>Adult: {{ booking.no_adult }} × ${{ booking.price_adult }}</li>
+          {% endif %}
+      {% endif %}
+      {% if booking.no_child > 0 %}
+        <li>Child: {{ booking.no_child }} × ${{ booking.price_child }}</li>
+      {% endif %}
+      {% if booking.economy_quantity > 0 %}
+        <li>{{ booking.economy_label }}: {{ booking.economy_quantity }} × ${{ booking.economy_price }}</li>
+      {% endif %}
+      {% if booking.general_quantity > 0 %}
+        <li> {% if booking.economy_quantity > 0 and booking.vip_quantity > 0 %} 
+          {{ booking.general_label }}:
+          {%else%}
+          Ticket:
+          {%endif%} {{ booking.general_quantity }} × ${{ booking.general_price }}</li>
+      {% endif %}
+      {% if booking.vip_quantity > 0 %}
+        <li>{{ booking.vip_label }}: {{ booking.vip_quantity }} × ${{ booking.vip_price }}</li>
+      {% endif %}
+    </ul>
+
+    <p class="mb-0">
+      <strong>Total Cost:</strong> ${{ booking.total_payment }}
+    </p>
+
+  </div>
+</div>
+
+      </div>
+
+    </section>
+    <section class="  mt-3">
+      {%if booking.payment_status%}
+
+      <div class="alert d-sm-flex alert-success pb-4 pt-sm-4" role="alert">
+        <i class="ci-check-circle fs-4 mt-1 mb-2 mb-sm-0"></i>
+        <div class="ps-sm-3 pe-sm-4">
+          <h4 class="alert-heading mb-2">Payment Status</h4>
+          <p class="mb-3">
+            Thank you for your purchase. Your ticket has been successfully booked.
+
+          </p>
+          <hr class="text-success opacity-25 my-3">
+          <p> An order confirmation has been sent to your email.</p>
+          Ticket Number: {{booking.id}}<br />
+          Paid on Date: {{booking.payment_date}}<br />
+        </div>
+      </div>
+
+      {%else%}
+      <!-- Payment -->
+
+      <h4 class="fw-bold alert-heading">Proceed with Payment :</h4>
+
+      <form id="payment-form">
+  <div class="row g-4">
+    <!-- Left Column: Name and Email -->
+    <div class="col-md-6">
+      <div class="position-relative mb-3">
+        <i class="ci-user position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+        <input type="text" value="{{ booking.full_name }}" disabled
+               class="form-control form-icon-start rounded-pill ps-5"
+               placeholder="Full name">
+      </div>
+      </div>
+          <div class="col-md-6">
+      <div class="position-relative mb-3">
+        <i class="ci-mail position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+        <input type="email" value="{{ booking.email }}" disabled id="email"
+               class="form-control form-icon-start rounded-pill ps-5"
+               placeholder="Email">
+      </div>
+    </div>
+
+    <!-- Right Column: Card Element -->
+    <div class="col-md-6">
+      <div id="card-element" class="form-control p-3 rounded">
+        <!-- Stripe.js injects the Card Element -->
+      </div>
+    </div>
+    <!-- Submit Button (Full Width Below) -->
+  <div class="col-md-6">
+     {% if is_expired %}
+          <button type="submit" disabled class="btn btn-dark  rounded-pill fw-semibold">
+            <i class="ci-shopping-bag me-2"></i>
+             Expired – no more tickets available.
+          </button>
+          {%else%}
+
+    <button id="submit" class="btn btn-lg btn-danger w-100 rounded-pill">
+      <div class="spinner hidden" id="spinner"></div>
+      <span id="button-text">Pay $ {{ total_cost }} &nbsp;&nbsp;<i class="ci-chevron-right"></i></span>
+    </button>
+    {%endif%}
+  </div>
+  </div>
+
+  
+
+  <!-- Feedback messages -->
+  <p id="card-error" role="alert" class="mt-3 text-danger"></p>
+  <p class="result-message hidden alert alert-success mt-3">
+    Payment succeeded
+  </p>
+</form>
+
+
+
+      {%endif%}
+
+
+    </section>
+  </div>
+</main>
+
+
+<div class="modal fade" id="exampleModal" data-keyboard="false" data-backdrop="static" tabindex="-1"
+  aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog  modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-success" id="exampleModalLabel">Payment success</h5>
+
+      </div>
+      <div class="modal-body">
+        <p>Your payment is successfully made for the order.</p>
+      </div>
+      <div class="modal-footer">
+
+        <a type="button" href="{{ request.get_full_path }} " class="btn btn-primary">Ok</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"
+  integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+
+{% csrf_token %}
+
+<script type="text/javascript">
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  // Create an instance of the Stripe object with your publishable API key
+  var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+  console.log("Stripe Public Key:", "{{ STRIPE_PUBLIC_KEY }}");
+  console.log("Stripe Object:", stripe);
+  // Disable the button until we have Stripe set up on the page
+  document.querySelector("button").disabled = true;
+
+  var elements = stripe.elements();
+  var style = {
+    base: {
+      color: "#ffffff",
+      fontFamily: 'Arial, sans-serif',
+      fontSmoothing: "antialiased",
+      fontSize: "16px",
+      "::placeholder": {
+        color: "#eeeeee"
+      }
+    },
+    invalid: {
+      fontFamily: 'Arial, sans-serif',
+      color: "#fa755a",
+      iconColor: "#fa755a"
+    }
+  };
+  var card = elements.create("card",
+    {
+      hidePostalCode: true,
+      style: style
+    });
+  // Stripe injects an iframe into the DOM
+  card.mount("#card-element");
+  card.on("change", function (event) {
+    // Disable the Pay button if there are no card details in the Element
+    document.querySelector("button").disabled = event.empty;
+    document.querySelector("#card-error").textContent = event.error ? event.error.message : "";
+  });
+  var form = document.getElementById("payment-form");
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    // Complete payment when the submit button is clicked
+    fetch("{% url 'create-payment-intent' booking.id %}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        'X-CSRFToken': csrftoken
+      },
+      body: JSON.stringify({
+        email: document.getElementById('email').value
+
+      })
+    })
+      .then(function (result) {
+
+        return result.json();
+      })
+      .then(function (data) {
+        //console.log(data)
+       // console.log(data.clientSecret)
+        payWithCard(stripe, card, data.clientSecret);
+      });
+  });
+
+  // Calls stripe.confirmCardPayment
+  // If the card requires authentication Stripe shows a pop-up modal to
+  // prompt the user to enter authentication details without leaving your page.
+  var payWithCard = function (stripe, card, clientSecret) {
+    loading(true);
+
+
+    if (!clientSecret) {
+
+      return;
+    }
+    stripe
+      .confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: card
+        }
+      })
+      .then(function (result) {
+
+        if (result.error) {
+          // Show error to your customer
+               // console.log('err');
+         // console.error(result.error.message);
+          showError(result.error.message);
+        }
+        //else {
+        //alert("Payment succeeded!");
+        orderComplete(result.paymentIntent.id);
+        //}
+      });
+  };
+  /* ------- UI helpers ------- */
+  // Shows a success message when the payment is complete
+  var orderComplete = function (paymentIntentId) {
+    loading(false);
+    // document
+    //   .querySelector(".result-message a")
+    //   .setAttribute(
+    //     "href",
+    //     "https://dashboard.stripe.com/test/payments/" + paymentIntentId
+    //   );
+    document.querySelector(".result-message").classList.remove("hidden");
+    document.querySelector("button").disabled = true;
+    $("#exampleModal").modal('show');
+
+  };
+  // Show the customer the error from Stripe if their card fails to charge
+  var showError = function (errorMsgText) {
+    loading(false);
+    var errorMsg = document.querySelector("#card-error");
+    errorMsg.textContent = errorMsgText;
+    setTimeout(function () {
+      errorMsg.textContent = "";
+    }, 4000);
+
+  };
+  // Show a spinner on payment submission
+  var loading = function (isLoading) {
+    if (isLoading) {
+      // Disable the button and show a spinner
+      document.querySelector("button").disabled = true;
+      document.querySelector("#spinner").classList.remove("hidden");
+      document.querySelector("#button-text").classList.add("hidden");
+    } else {
+      document.querySelector("button").disabled = false;
+      document.querySelector("#spinner").classList.add("hidden");
+      document.querySelector("#button-text").classList.remove("hidden");
+    }
+  };
+
+</script>
+
+{%endblock%}

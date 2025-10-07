@@ -1,0 +1,59 @@
+{% load static %}
+<aside class="col-lg-2  ">
+    <div class="offcanvas-lg offcanvas-start pe-lg-0 pe-xl-4" id="accountSidebar">
+        <div class="offcanvas-header d-lg-block py-3 p-lg-0">
+            <div class="d-flex align-items-center">
+                <div class="min-w-0 ps-3">
+                    <h5 class="h6 mb-1">{{request.user}}</h5>
+                    <div class="nav flex-nowrap text-nowrap min-w-0">
+                        <a class="nav-link animate-underline text-body p-0" href="#bonusesModal"
+                            data-bs-toggle="modal">
+
+                            <span class="animate-target me-1">{{request.user.email}}</span>
+
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn-close d-lg-none" data-bs-dismiss="offcanvas"
+                data-bs-target="#accountSidebar" aria-label="Close"></button>
+        </div>
+
+        <!-- Body (Navigation) -->
+        <div class="offcanvas-body d-block pt-2 pt-lg-4 pb-lg-0">
+
+
+            <nav class="list-group list-group-borderless">
+                <a class="list-group-item list-group-item-action d-flex align-items-center"  href="/user/">
+                    <i class="ci-shopping-bag fs-base opacity-75 me-2"></i>
+                   Ticket Booking
+                </a>
+               
+                {%if request.user.is_admin %}
+                <!-- <a class="list-group-item list-group-item-action d-flex align-items-center" pe-none " href="/user/movies/">
+                    <i class="ci-user fs-base opacity-75 me-2"></i>
+                    Check in
+                </a>   -->
+                <a class="list-group-item list-group-item-action d-flex align-items-center" pe-none " href="/user/movies/">
+                    <i class="ci-user fs-base opacity-75 me-2"></i>
+                    Movies
+                </a>
+                <a class="list-group-item list-group-item-action d-flex align-items-center" pe-none " href="/user/events/">
+                    <i class="ci-user fs-base opacity-75 me-2"></i>
+                    Events
+                </a>
+                {%endif%}
+                
+            </nav>
+
+            <nav class="list-group list-group-borderless pt-3">
+               
+                <a class="list-group-item list-group-item-action d-flex align-items-center"
+                    href="/user/logout">
+                    <i class="ci-log-out fs-base opacity-75 me-2"></i>
+                    Log out
+                </a>
+            </nav>
+        </div>
+    </div>
+</aside>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" data-bs-theme="dark" data-pwa="true">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+    <!-- Mobile & PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes"> <!-- Updated from deprecated apple tag -->
+    <meta name="theme-color" content="#ffffff"> <!-- Customize to your brand color -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default"> 
+
+    {% block meta %}
+    <meta name="description" content="Grabmytix is your ultimate destination for seamless online movie and event ticket booking. Reserve seats effortlessly from home with real-time updates on showtimes, availability, and pricing. Enjoy secure transactions and instant confirmations for blockbuster movies, live concerts, and more. Simplify your entertainment plans with Grabmytix today!" />
+    <meta property="og:title" content="GrabMyTix - Your Gateway to Seamless Movie and Event Ticket Booking"/>
+    <meta name="author" content="GrabMyTix">
+    <meta property="og:image" content="https://www.grabmytix.com/media/icon_logo.png" />
+    <meta property="og:image:alt" content="GrabMyTix - Your Gateway to Seamless Movie and Event Ticket Booking" />
+    <meta name="keywords" content="online ticket booking, movie tickets, event tickets, book tickets online, Grabmytix, secure ticketing, instant ticket confirmation, live events, cinema tickets, Bhutanese movie" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:description" content="Book movie and event tickets online with Grabmytix. Enjoy a user-friendly platform offering real-time updates, secure payments, and instant confirmations for all your entertainment needs." />
+    <meta property="og:url" content="https://www.grabmytix.com" />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href="https://www.grabmytix.com" />
+    {% endblock meta %}
+    
+
+<link rel="icon" type="image/png" href="/media/logo_grab.svg" sizes="32x32">
+    <link rel="stylesheet" href="{% static 'assets/vendor/flatpickr/dist/flatpickr.min.css' %}">
+    <!-- Theme switcher (color modes) -->
+    <!-- <script defer src="{% static 'assets/js/theme-switcher.js' %}"></script> -->
+
+    <!-- Preloaded local web font (Inter) -->
+    <link rel="preload" href="{% static 'assets/fonts/inter-variable-latin.woff2' %}" as="font" type="font/woff2"
+        crossorigin="anonymous">
+
+    <!-- Font icons -->
+    <link rel="stylesheet" href="{% static 'assets/icons/cartzilla-icons.min.css' %}">
+
+    <!-- Vendor styles -->
+    <link rel="stylesheet" href="{% static 'assets/vendor/choices.js/public/assets/styles/choices.min.css' %}">
+
+    <!-- Bootstrap + Theme styles -->
+
+    <link rel="stylesheet" href="{% static 'assets/css/theme.min.css' %}" id="theme-styles">
+    <link rel="stylesheet" href="{% static 'assets/vendor/swiper/swiper-bundle.min.css'%}">
+    <link rel="stylesheet" href="{% static  'assets/vendor/nouislider/dist/nouislider.min.css'%}">
+
+    <link rel="preload" href="{% static 'assets/css/theme.min.css' %}" as="style">
+
+
+</head>
+
+<body>
+    {% include "../includes/menu.html" %}
+    <main class="content-wrapper">
+        <div class="container py-5 mt-n2 mt-sm-0">
+            <div class="row pt-md-2 pt-lg-3 pb-sm-2 pb-md-3 pb-lg-4 pb-xl-5">
+                <!-- Sidebar navigation that turns into offcanvas on screens < 992px wide (lg breakpoint) -->
+                {% include "../includes/user_menu.html" %}
+                <!-- Personal info content -->
+                <div class="col-lg-10">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+
+    {% include "../includes/footer.html" %}
+</body>
+<!-- Vendor scripts -->
+<script src="{% static 'assets/vendor/nouislider/dist/nouislider.min.js'%}"></script>
+
+<script src="{% static 'assets/vendor/flatpickr/dist/flatpickr.min.js' %}"></script>
+<script src="{% static 'assets/vendor/cleave.js/dist/cleave.min.js' %}"></script>
+<script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js'%}"></script>
+
+<script src="{% static  'assets/vendor/choices.js/public/assets/scripts/choices.min.js' %}"></script>
+<script src="{% static  'assets/vendor/list.js/dist/list.min.js'%}"></script>
+<script src="{% static  'assets/vendor/flatpickr/dist/flatpickr.min.js'%}"></script>
+<!-- Bootstrap + Theme scripts -->
+<!-- <script src="assets/vendor/chart.js/dist/chart.umd.js"></script> -->
+<script src="{% static 'assets/js/theme.min.js' %}"></script>
+
+</html>

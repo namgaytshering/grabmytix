@@ -1,0 +1,58 @@
+{% extends "../includes/user_base.html" %}
+{% block content %}
+<!-- Page content -->
+<div class="container">
+    <h5>Your movie bookings:</h5>
+    {% for booking in bookings%}
+    <div class="card mb-3 overflow-hidden">
+        <div class="row g-0">
+            <div class="col-sm-4 position-relative" style="min-height: 220px">
+                
+                    <img src="/media/{{booking.poster_image}}"
+                    class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Card image">
+          
+               
+            </div>
+            <div class="col-sm-6">
+                <div class="card-body">
+                     
+                    <h5 class="card-title">{{booking.title}}</h5>
+                   
+                    <p class="card-text">
+                        <h5 class="text text-info"> <b>Ticket No:{{booking.id}}</b></h5> 
+                        <b> Location: </b>{{booking.theater_name}},
+                        <br/>
+                         <span class="text text-success"> <i class="ci-ticket"></i> {% if booking.type == "Movie" %} {{booking.type|capfirst}} {%else%}{{booking.event.type|capfirst}} {%endif%}</span>
+                        <br/>
+                        <b> Street: </b>{{booking.street}},{{booking.state}},{{booking.country}}
+                        
+                        <br/>
+                        <b>Date/Time:</b> {{booking.show_date}}
+                        {{booking.show_time}}
+
+                        <br />
+                        Ticket: Audult: {{booking.no_adult}} * ${{booking.price_adult}}
+                        {% if booking.film %} Child :{{booking.no_child}} *  ${{booking.price_child}} {%endif%}
+                        <br />Total cost = <b>${{booking.total_payment}}</b>
+                    </p>
+                    {%if booking.payment_status %}
+                    
+                    <button type="button" class="mb-2 btn btn-sm btn-success" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" title="Pyament Status" data-bs-content="You have already paid for this ticket.">
+                        <i class="ci-check-circle animate-target fs-base me-2 ms-n1"></i>
+                        Payment done
+                      </button>
+
+                    <a class="btn btn-sm btn-warning mb-2" href="#"> <i class="ci-code"></i> &nbsp; Generate QR code</a>
+                    {%else%}
+                    <a class="btn btn-sm btn-primary mb-2" target="_blank" href="/payment/{{booking.id}}"><i class="ci-banned"></i> &nbsp; 
+                        Payment
+                        needed ${{booking.total_payment}}</a>
+                    {%endif%}
+                </div>
+            </div>
+        </div>
+    </div>
+    {%endfor%}
+
+</div>
+{% endblock %}
