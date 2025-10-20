@@ -246,8 +246,10 @@ class Booking(models.Model):
     payment_date = models.DateTimeField()
 
     attended = models.BooleanField(default=False)
+    attended_no =  models.IntegerField(default=0)
     attend_remarks = models.TextField(blank=True, null=True)
     attended_at = models.DateTimeField(null=True, blank=True)
+
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
