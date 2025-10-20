@@ -366,7 +366,7 @@ def movies_view(request):
     return render(request, 'home/movies.html',context)
 
 def events_view(request):
-    events = Event.objects.all()
+    events = Event.objects.all().order_by('-created_at')
     context = {'events':events}
     return render(request, 'home/events.html',context)
 
