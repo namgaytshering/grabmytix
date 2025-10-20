@@ -187,7 +187,9 @@ def tickets_owner_view(request, id,*args, **kwargs):
     filmshow = Filmshow.objects.get(id = id)
     ticket_no = ''
     email = ''
-    bookings = Booking.objects.filter(filmshow=filmshow)
+    bookings = Booking.objects.filter(filmshow=filmshow).annotate(
+    total_tickets=F('no_adult') + F('no_child')
+        )
     if request.method == 'GET':
         ticket_no = request.GET.get('ticket_no', '')  # Default to empty string if 'name' is not present
         email = request.GET.get('email', '')
@@ -243,9 +245,14 @@ def event_tickets_owner_view(request, id,*args, **kwargs):
         email = request.GET.get('email', '')
         
         if ticket_no != '' and email !='':
-            bookings = Booking.objects.filter(id=ticket_no, email=email,event=event)
+            bookings = Booking.objects.filter(id=ticket_no, email=email,event=event).annotate(
+            total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
+                )
         else:
-            bookings = Booking.objects.filter(event__id=id,payment_status=1,event=event)
+            bookings = Booking.objects.filter(event__id=id,payment_status=1,event=event).annotate(
+            total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
+                )
+        
 
     if request.method == 'POST':
         booking_id_str = request.POST.get("booking_id", "")

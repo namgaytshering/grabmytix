@@ -212,7 +212,7 @@
           </div>
      <!-- {{is_expired}} -->
           
-            {% if is_expired %}
+            {% if not is_expired %}
           <button type="submit" disabled class="btn btn-dark  rounded-pill fw-semibold" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="This is a demo; bookings are not available.">
             <i class="ci-shopping-bag me-2"></i>
          Expired – no more tickets available.
