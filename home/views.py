@@ -335,7 +335,8 @@ def eventdetail_view(request,slug_text):
                     saveform.payment_status = 1
                 saveform.save()
 
-
+                if event.price == 0:
+                    send_payment_success_email(saveform)
                 # send_mail(
                 #     'We received your booking for '+ str(saveform.title),                 # Subject
                 #     'Thank you for booking with grabmytix and your booking for '+str(saveform.title)+'number is '+ str(saveform.id)+", Please proceed Thank you",         # Message body
@@ -420,15 +421,17 @@ def view_ticket_view(request):
     )
     
 def payment_view(request,id,*args, **kwargs):
-    
+    total_cost = 0
     booking = Booking.objects.get(id=id)
     if booking.type == "Event":
         is_expired = get_event_datetime_local(booking.event)
+        total_cost = (booking.economy_price * booking.economy_quantity) +  (booking.general_price * booking.general_quantity)+  (booking.vip_price * booking.vip_quantity)
     elif booking.type == "Movie":
-        is_expired = get_event_datetime_local(booking.filmshow)
+        is_expired = get_movie_datetime_local(booking.filmshow)
+        total_cost = (booking.no_adult * booking.price_adult) +  (booking.no_child * booking.price_child)
     else:
         is_expired = False
-    total_cost = (booking.no_adult * booking.price_adult) +  (booking.no_child * booking.price_child)
+   
     return render(request, 'home/payment.html',{'booking':booking,'total_cost':total_cost,"STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,'is_expired':is_expired})
  
  #Stripe payment
@@ -473,7 +476,7 @@ class StripeIntentView(View):
             return JsonResponse({ 'error': str(e) })
 
 def send_payment_success_email(booking):
-    subject = 'Thank You – Your Payment Was Received'
+    subject = 'Thank You – Your booking confirmation - '+booking.title
     from_email = None
     recipient_list = [booking.email]
 

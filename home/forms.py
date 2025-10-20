@@ -4,7 +4,7 @@ from db.models import *
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
-
+from django_recaptcha.fields import ReCaptchaField
 
 GENDER_CHOICES = [
     ('', '--- Select Sex--'),
@@ -38,10 +38,10 @@ class RegistrationForm(UserCreationForm):
         widget=forms.PasswordInput(attrs={'class': 'form-control  form-icon-start', 'placeholder': 'Confirm Password'}))
   
     gender = forms.CharField(label='Gender', widget=forms.Select(choices=GENDER_CHOICES,attrs={'class': 'form-control form-icon-start'}))
-   
+    captcha = ReCaptchaField()
     class Meta:
         model = User
-        fields = ('email', 'name', 'phone', 'password1', 'password2', 'gender')
+        fields = ('email', 'name', 'phone', 'password1', 'password2', 'gender','captcha')
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'form-control  form-icon-start', 'placeholder': 'Enter valid email id'}),
             'name': forms.TextInput(attrs={'class': 'form-control  form-icon-start', 'placeholder': 'Name'}), 
