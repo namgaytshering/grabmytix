@@ -245,8 +245,8 @@ class Booking(models.Model):
     payment_status = models.IntegerField(default=0, choices=[(0, "Pending"), (1, "Paid")])
     payment_date = models.DateTimeField()
 
-    attended = models.BooleanField(default=False)
-    attended_no =  models.IntegerField(default=0)
+    attended = models.BooleanField(default=False) #aattended or not
+    attended_no =  models.IntegerField(default=0) #number of people attended
     attend_remarks = models.TextField(blank=True, null=True)
     attended_at = models.DateTimeField(null=True, blank=True)
 

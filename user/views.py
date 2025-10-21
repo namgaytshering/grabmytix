@@ -202,17 +202,18 @@ def tickets_owner_view(request, id,*args, **kwargs):
         if booking_id_str.isdigit():
             booking_id = int(booking_id_str)
             try:
-                book =  Booking.objects.get(id=booking_id,filmshow=filmshow)
+                book =  Booking.objects.filter(id=booking_id,filmshow=filmshow).annotate(total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')).first()
+               
                 if book:
-                    if book.attended:
-                        messages.warning(request, f"{book.full_name} has already checked in. Des: {book.attend_remarks}")
-                    else:
+                    total_attend =int(request.POST.get("total_ticket_number", 0) )
+                    if book.total_tickets == total_attend:
                         book.attended = True
-                        book.attend_remarks = request.POST.get("remarks", "")
-                        book.attended_at = timezone.now()
-                        book.save()
-                    
-                        messages.success(request, f"{book.full_name} checked in successfully!")
+                    book.attend_remarks = request.POST.get("remarks", "")
+                    book.attended_at = timezone.now()
+                    book.attended_no =  total_attend
+        
+                    book.save()
+                    messages.success(request, f"{book.full_name} checked in successfully!")
                 else:
                     messages.error(request, f"{book.full_name} not found!")
             except Exception as e:
@@ -259,11 +260,17 @@ def event_tickets_owner_view(request, id,*args, **kwargs):
         if booking_id_str.isdigit():
             booking_id = int(booking_id_str)
             try:
-                book =  Booking.objects.get(id=booking_id,event=event)
+                book =  Booking.objects.filter(id=booking_id,event=event).annotate(total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')).first()
+                 
+        
                 if book:
-                    book.attended = True
+                    total_attend =int(request.POST.get("total_ticket_number", 0) )
+                    if book.total_tickets == total_attend:
+                        book.attended = True
                     book.attend_remarks = request.POST.get("remarks", "")
                     book.attended_at = timezone.now()
+                    book.attended_no =  total_attend
+        
                     book.save()
                 
                     messages.success(request, f"{book.full_name} checked in successfully!")
