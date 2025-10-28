@@ -32,7 +32,7 @@
             <b>Date/Time:</b> {{ date }} @ {{ time }}
         </div>
             <div class="ps-sm-3 pe-sm-4 col-6">
- <canvas height="80" data-chart='{
+ <canvas height="100" data-chart='{
   "type": "line",
   "data": {
     "labels": {{ label|safe }},
@@ -62,6 +62,7 @@
       },
       "y": {
         "beginAtZero": true,
+         "display": false,
         "grid": { "color": "rgba(133,140,151,.1)" },
         "border": { "color": "rgba(133,140,151,.1)" }
       }
