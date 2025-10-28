@@ -8,7 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from django.utils import timezone 
 from django.utils.text import slugify
- 
+from django.db.models import Sum, F
+from django.db.models.functions import TruncDate
 from django.db.models import Q
  
 from django.db.models import Avg, Count, Min, Sum,ExpressionWrapper,F,FloatField
@@ -16,7 +17,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash  
 from .forms import AddMovieForm,FilmShowForm,EventForm
-
+import json
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404, redirect
@@ -197,6 +198,13 @@ def tickets_owner_view(request, id,*args, **kwargs):
         if ticket_no != '' and email !='':
             bookings = bookings.filter(id=ticket_no, email=email,filmshow=filmshow)
     
+    # time_series = ( bookings
+    # .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
+    # .order_by('date')) 
+    
+    # labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    # data = [b['total'] for b in time_series]
+
     if request.method == 'POST':
         booking_id_str = request.POST.get("booking_id", "")
         if booking_id_str.isdigit():
@@ -226,6 +234,8 @@ def tickets_owner_view(request, id,*args, **kwargs):
     context = {'id':id,'ticket_no':ticket_no,'email':email,'bookings': bookings,
                     'title':filmshow,
                     'type':'movie',
+                    # 'label' : json.dumps(labels),
+                    # 'data':json.dumps(data),
                     'poster_image':filmshow.film.poster_image,
                     'theater_name':filmshow.theater_name,
                     'date':filmshow.show_date,
@@ -246,13 +256,22 @@ def event_tickets_owner_view(request, id,*args, **kwargs):
         email = request.GET.get('email', '')
         
         if ticket_no != '' and email !='':
-            bookings = Booking.objects.filter(id=ticket_no, email=email,event=event).annotate(
+            booking_data = Booking.objects.filter(id=ticket_no, email=email,event=event)
+            bookings = booking_data.annotate(
             total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
                 )
         else:
-            bookings = Booking.objects.filter(event__id=id,payment_status=1,event=event).annotate(
+            booking_data = Booking.objects.filter(event__id=id,payment_status=1,event=event)
+            bookings = booking_data.annotate(
             total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
-                )
+               )
+   
+    # time_series = ( bookings
+    # .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
+    # .order_by('date')) 
+    # labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    # data = [b['total'] for b in time_series]
+
         
 
     if request.method == 'POST':
@@ -285,6 +304,8 @@ def event_tickets_owner_view(request, id,*args, **kwargs):
      
     context = {'id':id,'ticket_no':ticket_no,'email':email,'bookings': bookings,
                     'title':event,
+                    # 'label' : json.dumps(labels),
+                    # 'data':json.dumps(data),
                     'type':'event',
                     'poster_image':event.poster_image,
                     'theater_name':event.place,
