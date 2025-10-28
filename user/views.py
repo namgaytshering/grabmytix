@@ -198,13 +198,13 @@ def tickets_owner_view(request, id,*args, **kwargs):
         if ticket_no != '' and email !='':
             bookings = bookings.filter(id=ticket_no, email=email,filmshow=filmshow)
     
-    # time_series = ( bookings
-    # .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
-    # .order_by('date')) 
+    time_series = ( bookings
+    .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
+    .order_by('date')) 
     
-    # labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
-    # data = [b['total'] for b in time_series]
-
+    labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    data = [int(b['total']) for b in time_series] 
+    
     if request.method == 'POST':
         booking_id_str = request.POST.get("booking_id", "")
         if booking_id_str.isdigit():
@@ -234,8 +234,8 @@ def tickets_owner_view(request, id,*args, **kwargs):
     context = {'id':id,'ticket_no':ticket_no,'email':email,'bookings': bookings,
                     'title':filmshow,
                     'type':'movie',
-                    # 'label' : json.dumps(labels),
-                    # 'data':json.dumps(data),
+                    'label' : json.dumps(labels),
+                    'data':json.dumps(data),
                     'poster_image':filmshow.film.poster_image,
                     'theater_name':filmshow.theater_name,
                     'date':filmshow.show_date,
@@ -266,11 +266,11 @@ def event_tickets_owner_view(request, id,*args, **kwargs):
             total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
                )
    
-    # time_series = ( bookings
-    # .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
-    # .order_by('date')) 
-    # labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
-    # data = [b['total'] for b in time_series]
+    time_series = ( bookings
+    .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
+    .order_by('date')) 
+    labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    data = [int(b['total']) for b in time_series]
 
         
 
@@ -304,8 +304,8 @@ def event_tickets_owner_view(request, id,*args, **kwargs):
      
     context = {'id':id,'ticket_no':ticket_no,'email':email,'bookings': bookings,
                     'title':event,
-                    # 'label' : json.dumps(labels),
-                    # 'data':json.dumps(data),
+                    'label' : json.dumps(labels),
+                    'data':json.dumps(data),
                     'type':'event',
                     'poster_image':event.poster_image,
                     'theater_name':event.place,
