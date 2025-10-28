@@ -21,43 +21,18 @@
 
     <!-- Event Header -->
 
-    <div class="  mb-3">
+    <div class=" row mb-3">
         <!-- <div class="col-2 d-none d-md-block">
           
             <img src="/media/{{ poster_image }}" class="hover-effect-target" alt="Event Poster" width="150">
         </div> -->
-        <div class="ps-sm-3 pe-sm-4 col-10">
+        <div class="ps-sm-3 pe-sm-4 col-6">
             <h6 class="alert-heading mb-2">{{ title }}</h6>
             {{ theater_name }}, {{ state }}, {{ street }}<br />
             <b>Date/Time:</b> {{ date }} @ {{ time }}
         </div>
-    </div>
- 
-    <!-- Filter Form + Scan QR Button -->
-    <div class="col-sm-12 mb-3">
-        <form class="needs-validation" method="GET" novalidate>
-            <div class="row">
-                <div class="col-md-3 p-2 position-relative">
-                    <input type="number" value="{{ ticket_no }}" name="ticket_no" class="form-control"
-                        id="validationTooltipt01" placeholder="Ticket number" required>
-                    <div class="valid-tooltip">Looks good!</div>
-                </div>
-                <div class="col-md-4 p-2  position-relative">
-                    <input type="email" {% if email %} value="{{ email }}" {% endif %} name="email" class="form-control"
-                        id="validationTooltipt02" placeholder="Email" required>
-                </div>
-                <div class="col-md-2 p-2  d-flex align-items-center">
-                    <button type="submit" class="btn btn-danger btn-sm">
-                        <i class="ci-filter"></i> Filter <i class="ci-chevron-right"></i>
-                    </button>
-                    <!-- Scan QR Button -->
-
-                </div>
-            </div>
-        </form>
-    </div>
-    <div class="col-md-6 mb-3">
-    <canvas height="80" data-chart='{
+            <div class="ps-sm-3 pe-sm-4 col-6">
+ <canvas height="80" data-chart='{
   "type": "line",
   "data": {
     "labels": {{ label|safe }},
@@ -93,6 +68,34 @@
     }
   }
 }'></canvas>
+            </div>
+    </div>
+ 
+    <!-- Filter Form + Scan QR Button -->
+    <div class="col-sm-12 mb-3">
+        <form class="needs-validation" method="GET" novalidate>
+            <div class="row">
+                <div class="col-md-3 p-2 position-relative">
+                    <input type="number" value="{{ ticket_no }}" name="ticket_no" class="form-control"
+                        id="validationTooltipt01" placeholder="Ticket number" required>
+                    <div class="valid-tooltip">Looks good!</div>
+                </div>
+                <div class="col-md-4 p-2  position-relative">
+                    <input type="email" {% if email %} value="{{ email }}" {% endif %} name="email" class="form-control"
+                        id="validationTooltipt02" placeholder="Email" required>
+                </div>
+                <div class="col-md-2 p-2  d-flex align-items-center">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="ci-filter"></i> Filter <i class="ci-chevron-right"></i>
+                    </button>
+                    <!-- Scan QR Button -->
+
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6 mb-3">
+   
 
 
     </div>
