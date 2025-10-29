@@ -161,6 +161,7 @@ def booking_owner_view(request, *args, **kwargs):
         user=request.user,
         can_view=True
     ).values_list('film_show_id', flat=True)
+
     bookings = (
     Booking.objects
     .filter(Q(payment_status=1) &
@@ -176,7 +177,7 @@ def booking_owner_view(request, *args, **kwargs):
                 output_field=FloatField()
             )
         )
-    )
+    ) .order_by('-show_date', '-show_time')
     )   
 
     return render(request, "user/bookingowner.html",{'bookings': bookings})
