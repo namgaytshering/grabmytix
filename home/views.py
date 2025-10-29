@@ -53,22 +53,31 @@ def get_event_datetime_local(event):
 #compare time with movies
 def get_movie_datetime_local(flimshow):
      # Combine date + time into naive datetime
+    if not flimshow.show_date or not flimshow.show_time:
+        return True  # consider expired if incomplete
+    
+    # Combine date + time into a naive datetime
     naive_dt = datetime.combine(flimshow.show_date, flimshow.show_time)
-    tz_key = (flimshow.state.time_zone or "").strip()  # remove whitespace, handle None
+    print(flimshow.state.time_zone)
+    # Determine timezone
+    tz_key = (flimshow.state.time_zone or "").strip()
     try:
         tz = ZoneInfo(tz_key)
     except Exception:
-        tz = ZoneInfo("UTC")  # fallback
+        tz = ZoneInfo("UTC")  # fallback if invalid or missing
 
-    # Make it timezone-aware in the event's state timezone
+    # Make timezone-aware datetime
     flimshow_time_local = naive_dt.replace(tzinfo=tz)
 
-    # Current time in that state
+    # Current time in that timezone
     now_local = datetime.now(tz)
-
-    # Check if expired
+    print(tz)
+    print(flimshow_time_local)
+    print(now_local)
+    # Compare
     is_expired = flimshow_time_local <= now_local
-    return is_expired   
+
+    return is_expired
 
 def home_view(request):
     now = timezone.now() 
