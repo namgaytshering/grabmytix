@@ -242,76 +242,67 @@ def tickets_owner_view(request, id,*args, **kwargs):
                     'time':filmshow.show_time}
     
     return render(request, "user/ticketsowner.html",context)
-
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")
-def event_tickets_owner_view(request, id,*args, **kwargs):
-    ticket_no = ''
-    email = ''
-    event = Event.objects.get(id = id)
-    
-    bookings =''
-    if request.method == 'GET':
-        ticket_no = request.GET.get('ticket_no', '')  # Default to empty string if 'name' is not present
-        email = request.GET.get('email', '')
-        
-        if ticket_no != '' and email !='':
-            booking_data = Booking.objects.filter(id=ticket_no, email=email,event=event)
-            bookings = booking_data.annotate(
-            total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
-                )
+def event_tickets_owner_view(request, id, *args, **kwargs):
+    ticket_no = request.GET.get('ticket_no', '').strip()
+    email = request.GET.get('email', '').strip().lower()  # normalize email
+    event = Event.objects.get(id=id)
+
+    bookings = Booking.objects.filter(event=event, payment_status=1).annotate(
+        total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
+    )
+
+    if ticket_no and email:
+        if ticket_no.isdigit():
+            ticket_no_int = int(ticket_no)
+            bookings = bookings.filter(id=ticket_no_int, email=email)
         else:
-            booking_data = Booking.objects.filter(event__id=id,payment_status=1,event=event)
-            bookings = booking_data.annotate(
-            total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
-               )
-   
-    time_series = ( bookings
-    .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
-    .order_by('date')) 
+            bookings = bookings.none()
+
+    # Prepare time series for Chart.js
+    time_series = bookings.values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets')).order_by('date')
     labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
     data = [int(b['total']) for b in time_series]
-
-        
 
     if request.method == 'POST':
         booking_id_str = request.POST.get("booking_id", "")
         if booking_id_str.isdigit():
             booking_id = int(booking_id_str)
-            try:
-                book =  Booking.objects.filter(id=booking_id,event=event).annotate(total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')).first()
-                 
-        
-                if book:
-                    total_attend =int(request.POST.get("total_ticket_number", 0) )
-                    if book.total_tickets == total_attend:
-                        book.attended = True
-                    book.attend_remarks = request.POST.get("remarks", "")
-                    book.attended_at = timezone.now()
-                    book.attended_no =  total_attend
-        
-                    book.save()
-                
-                    messages.success(request, f"{book.full_name} checked in successfully!")
-                else:
-                    messages.error(request, f"{book.full_name} not found!")
-            except Exception as e:
-                messages.error(request, f"Error: {e}")
+            book = Booking.objects.filter(id=booking_id, event=event).first()
+            if book:
+                total_tickets = book.economy_quantity + book.general_quantity + book.vip_quantity
+                total_attend = int(request.POST.get("total_ticket_number", 0))
+
+                if total_attend == total_tickets:
+                    book.attended = True
+                book.attend_remarks = request.POST.get("remarks", "Checked in")
+                book.attended_at = timezone.now()
+                book.attended_no = total_attend
+                book.save()
+
+                messages.success(request, f"{book.full_name} checked in successfully!")
+            else:
+                messages.error(request, "Booking not found!")
         else:
             messages.error(request, "Invalid booking ID")
-        
         return redirect('event_tickets_owner', id=id)
-     
-    context = {'id':id,'ticket_no':ticket_no,'email':email,'bookings': bookings,
-                    'title':event,
-                    'label' : json.dumps(labels),
-                    'data':json.dumps(data),
-                    'type':'event',
-                    'poster_image':event.poster_image,
-                    'theater_name':event.place,
-                    'date':event.show_date,
-                    'time':event.show_time}
-    return render(request, "user/ticketsowner.html",context)
+
+    context = {
+        'id': id,
+        'ticket_no': ticket_no,
+        'email': email,
+        'bookings': bookings,
+        'title': event,
+        'label': json.dumps(labels),
+        'data': json.dumps(data),
+        'type': 'event',
+        'poster_image': event.poster_image,
+        'theater_name': event.place,
+        'date': event.show_date,
+        'time': event.show_time
+    }
+    return render(request, "user/ticketsowner.html", context)
 
 def scan_qrcode_view(request, *args, **kwargs):
  

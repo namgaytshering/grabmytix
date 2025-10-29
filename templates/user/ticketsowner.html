@@ -1,12 +1,10 @@
 {% extends "../includes/user_base.html" %}
 
 {% block content %}
-
-
 <div class="container p-0">
     <!-- Messages -->
     {% if messages %}
-    <div class="  mt-2">
+    <div class="mt-2">
         {% for message in messages %}
         <div class="alert 
             {% if message.tags == 'success' %}alert-success
@@ -20,131 +18,85 @@
     {% endif %}
 
     <!-- Event Header -->
-
-    <div class=" row mb-3">
-        <!-- <div class="col-2 d-none d-md-block">
-          
-            <img src="/media/{{ poster_image }}" class="hover-effect-target" alt="Event Poster" width="150">
-        </div> -->
+    <div class="row mb-3">
         <div class="ps-sm-3 pe-sm-4 col-6">
             <h6 class="alert-heading mb-2">{{ title }}</h6>
             {{ theater_name }}, {{ state }}, {{ street }}<br />
             <b>Date/Time:</b> {{ date }} @ {{ time }}
         </div>
-            <div class="ps-sm-3 pe-sm-4 col-6">
- <canvas height="100" data-chart='{
-  "type": "line",
-  "data": {
-    "labels": {{ label|safe }},
-    "datasets": [
-      {
-        "label": "",
-        "data": {{ data|safe }},
-        "fill": true,
-        "backgroundColor": "rgba(245, 82, 102, 0.2)",
-        "borderColor": "#F54927",
-        "borderWidth": 2,
-        "tension": 0.3,
-        "pointRadius": 0
-      }
-    ]
-  },
-  "options": {
-    "plugins": {
-      "legend": { "display": false },
-      "title": { "display": false }
-    },
-    "scales": {
-      "x": {
-        "display": false,
-        "grid": { "color": "#eeeeee" },
-        "border": { "color": "rgba(133,140,151,.1)" }
-      },
-      "y": {
-        "beginAtZero": true,
-         "display": false,
-        "grid": { "color": "rgba(133,140,151,.1)" },
-        "border": { "color": "rgba(133,140,151,.1)" }
-      }
-    }
-  }
-}'></canvas>
-            </div>
+        <div class="ps-sm-3 pe-sm-4 col-6">
+            <canvas height="100" data-chart='{
+                "type": "line",
+                "data": {
+                    "labels": {{ label|safe }},
+                    "datasets": [{
+                        "label": "",
+                        "data": {{ data|safe }},
+                        "fill": true,
+                        "backgroundColor": "rgba(245, 82, 102, 0.2)",
+                        "borderColor": "#F54927",
+                        "borderWidth": 2,
+                        "tension": 0.3,
+                        "pointRadius": 0
+                    }]
+                },
+                "options": {
+                    "plugins": {
+                        "legend": { "display": false },
+                        "title": { "display": false }
+                    },
+                    "scales": {
+                        "x": { "display": false, "grid": { "color": "#eeeeee" }, "border": { "color": "rgba(133,140,151,.1)" } },
+                        "y": { "beginAtZero": true, "display": false, "grid": { "color": "rgba(133,140,151,.1)" }, "border": { "color": "rgba(133,140,151,.1)" } }
+                    }
+                }
+            }'></canvas>
+        </div>
     </div>
- 
-    <!-- Filter Form + Scan QR Button -->
+
+    <!-- Filter Form -->
     <div class="col-sm-12 mb-3">
         <form class="needs-validation" method="GET" novalidate>
             <div class="row">
                 <div class="col-md-3 p-2 position-relative">
                     <input type="number" value="{{ ticket_no }}" name="ticket_no" class="form-control"
-                        id="validationTooltipt01" placeholder="Ticket number" required>
+                        placeholder="Ticket number" required>
                     <div class="valid-tooltip">Looks good!</div>
                 </div>
-                <div class="col-md-4 p-2  position-relative">
+                <div class="col-md-4 p-2 position-relative">
                     <input type="email" {% if email %} value="{{ email }}" {% endif %} name="email" class="form-control"
-                        id="validationTooltipt02" placeholder="Email" required>
+                        placeholder="Email" required>
                 </div>
-                <div class="col-md-2 p-2  d-flex align-items-center">
+                <div class="col-md-2 p-2 d-flex align-items-center">
                     <button type="submit" class="btn btn-danger btn-sm">
                         <i class="ci-filter"></i> Filter <i class="ci-chevron-right"></i>
                     </button>
-                    <!-- Scan QR Button -->
-
                 </div>
             </div>
         </form>
     </div>
-    <div class="col-md-6 mb-3">
-   
 
-
-    </div>
     <h5>Ticket Booked</h5>
     <div class="table-responsive">
-        <!-- Bookings Table -->
-        <!-- Table with integrated search and sortable columns -->
         <div
-            data-filter-list='{"searchClass": "table-search", "listClass": "table-list", "sortClass": "table-sort", "valueNames": ["ticket-no", "detail", "tickets", "checked", "total-cost", "payment", "attended"]}'>
-
+            data-filter-list='{"searchClass": "table-search", "listClass": "table-list", "sortClass": "table-sort", "valueNames": ["ticket-no", "detail", "tickets", "total-cost", "payment", "attended"]}'>
             <!-- Search field -->
             <div class="position-relative mb-2" style="max-width: 280px">
                 <i class="ci-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
                 <input type="search" class="table-search form-control form-icon-start" placeholder="Search bookings">
             </div>
 
-            <!-- Table with sticky header and sortable columns -->
+            <!-- Table -->
             <div class="table-responsive overflow-auto" style="height: 400px;">
                 <table class="table align-middle fs-sm mb-0 table-striped">
                     <thead class="position-sticky top-0 bg-light">
                         <tr>
-                            <th scope="col">
-                                <button type="button" class="btn fs-base fw-semibold text-dark-emphasis table-sort p-0"
-                                    data-sort="ticket-no">Ticket No.</button>
-                            </th>
-                            <th scope="col">
-                                <button type="button" class="btn fs-base fw-semibold text-dark-emphasis table-sort p-0"
-                                    data-sort="detail">Detail</button>
-                            </th>
-                            <th scope="col">
-                                <button type="button" class="btn fs-base fw-semibold text-dark-emphasis table-sort p-0"
-                                    data-sort="tickets">Tickets</button>
-                            </th>
-                            <!-- <th scope="col">
-            <button type="button" class="btn fs-base fw-semibold text-dark-emphasis table-sort p-0" data-sort="checked">Checked</button>
-          </th> -->
-                            <th scope="col">
-                                <button type="button" class="btn fs-base fw-semibold text-dark-emphasis table-sort p-0"
-                                    data-sort="total-cost">Total Cost</button>
-                            </th>
-                            <th scope="col">
-                                <button type="button" class="btn fs-base fw-semibold text-dark-emphasis table-sort p-0"
-                                    data-sort="payment">Payment</button>
-                            </th>
-                            <th scope="col">
-                                <button type="button" class="btn fs-base fw-semibold text-dark-emphasis table-sort p-0"
-                                    data-sort="attended">Attended</button>
-                            </th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="ticket-no">Ticket No.</button></th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="detail">Detail</button></th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="tickets">Tickets</button></th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="total-cost">Total Cost</button></th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="payment">Payment</button></th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="attended">Attended</button></th>
                         </tr>
                     </thead>
 
@@ -154,42 +106,36 @@
                             <td class="ticket-no">{{ booking.id }}</td>
                             <td class="detail">
                                 {{ booking.full_name }} <br>
-                                {{ booking.phone }}
+                                {{ booking.phone }} <br>
                                 {{ booking.email }}
                             </td>
-                            <td class="tickets">{{ booking.total_tickets }}</td>
-                            <!-- <td class="checked">{{ booking.attended_no }}</td> -->
+                            <td class="tickets">{{ booking.attended_no }}/{{ booking.total_tickets }}</td>
                             <td class="total-cost text-start">$ {{ booking.total_payment }}</td>
                             <td class="payment">
                                 {% if booking.payment_status %}
-                                <i class="ci-check-circle text-success" data-bs-toggle="tooltip"
-                                    title="Payment done"></i>
+                                <i class="ci-check-circle text-success" data-bs-toggle="tooltip" title="Payment done"></i>
                                 {% else %}
-                                <a href="/payment/{{ booking.id }}" target="_blank" class="btn btn-sm btn-primary mb-2"
-                                    data-bs-toggle="tooltip" title="Payment Pending">
+                                <a href="/payment/{{ booking.id }}" target="_blank" class="btn btn-sm btn-primary mb-2" data-bs-toggle="tooltip" title="Payment Pending">
                                     <i class="ci-banned"></i>&nbsp;Pay
                                 </a>
                                 {% endif %}
                             </td>
                             <td class="attended">
-                                {% if booking.attended or booking.attended_no > booking.total_tickets %}
-                                <button type="button" class="mb-2 btn btn-sm btn-success" data-bs-toggle="tooltip"
-                                    title="{{ booking.full_name }} has checked in">
-                                    <i class="ci-check-circle animate-target fs-base me-2 ms-n1"></i> Checked in
+                                {% if booking.attended or booking.attended_no >= booking.total_tickets %}
+                                <button type="button" class="mb-2 btn btn-sm btn-success" data-bs-toggle="tooltip" title="{{ booking.full_name }} has checked in">
+                                    <i class="ci-check-circle fs-base me-2 ms-n1"></i> Checked in
                                 </button>
-                                {% else %}
-                                {% if not booking.payment_status %}
+                                {% elif not booking.payment_status %}
                                 Payment required
                                 {% else %}
                                 <button type="button" class="mb-2 btn btn-sm btn-warning checkInBtn"
                                     data-bs-toggle="modal" data-bs-target="#checkInModal"
-                                    data-booking-id="{{ booking.id }}" data-full-name="{{ booking.full_name }}"
+                                    data-booking-id="{{ booking.id }}"
+                                    data-full-name="{{ booking.full_name }}"
                                     data-total-tickets="{{ booking.total_tickets }}"
-                                    data-total-attended-no="{{ booking.attended_no }}"
-                                    data-check-in="{{ booking.attended }}">
-                                    <i class="ci-check-circle animate-target fs-base me-2 ms-n1"></i> Check In
+                                    data-total-attended-no="{{ booking.attended_no }}">
+                                    <i class="ci-check-circle fs-base me-2 ms-n1"></i> Check In
                                 </button>
-                                {% endif %}
                                 {% endif %}
                             </td>
                         </tr>
@@ -198,7 +144,6 @@
                 </table>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -224,12 +169,9 @@
                     </div>
                     <div class="mb-3">
                         <label for="remarks" class="form-label">Remarks</label>
-                        <textarea class="form-control" name="remarks" id="remarks" rows="3"
-                            placeholder="Enter remarks...">Checked in</textarea>
+                        <textarea class="form-control" name="remarks" id="remarks" rows="3">Checked in</textarea>
                     </div>
                 </div>
-
-                {{ booking.total_tickets}}
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-danger btn-sm">Confirm Check In</button>
@@ -254,160 +196,111 @@
         </div>
     </div>
 </div>
+
 <!-- Floating Scan QR Button -->
 <button type="button" class="btn btn-danger btn-lf d-block d-md-none position-fixed end-0 bottom-0 m-3"
     data-bs-toggle="modal" data-bs-target="#scanQRModal">
-    <i class="ci-camera animate-target"></i>
+    <i class="ci-camera"></i>
 </button>
-
 
 <!-- ===== SCRIPTS ===== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
-
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const checkInModalEl = document.getElementById('checkInModal');
+    const checkInModal = new bootstrap.Modal(checkInModalEl);
+    const scanModalEl = document.getElementById('scanQRModal');
+    const scanModal = new bootstrap.Modal(scanModalEl);
+
+    const bookingIdInput = document.getElementById('modalBookingId');
+    const ticketNumberDisplay = document.getElementById('ticketNumberDisplay');
+    const modalTitle = document.getElementById('checkInModalLabel');
+    const ticketNumberSelect = document.getElementById('ticketNumberSelect');
+    const scanResultEl = document.getElementById('scanResult');
+
+    let qrScanner;
+
+    // Handle Check-In Button
     document.querySelectorAll('.checkInBtn').forEach(button => {
         button.addEventListener('click', function () {
+            const bookingId = this.getAttribute('data-booking-id');
+            const fullName = this.getAttribute('data-full-name');
             const totalTickets = parseInt(this.getAttribute('data-total-tickets'));
             const attended_no = parseInt(this.getAttribute('data-total-attended-no'));
 
-            const select = document.getElementById('ticketNumberSelect');
-            select.innerHTML = ''; // Clear previous options
-            for (let i = (attended_no + 1); i <= totalTickets; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = i;
-                select.appendChild(option);
-            }
-        });
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-
-        // ===== MODAL & ELEMENT REFERENCES =====
-        const checkInModalEl = document.getElementById('checkInModal');
-        const checkInModal = new bootstrap.Modal(checkInModalEl);
-        const scanModalEl = document.getElementById('scanQRModal');
-        const scanModal = new bootstrap.Modal(scanModalEl);
-
-        const bookingIdInput = document.getElementById('modalBookingId');
-        const ticketNumberDisplay = document.getElementById('ticketNumberDisplay');
-        const modalTitle = document.getElementById('checkInModalLabel');
-        const scanResultEl = document.getElementById('scanResult');
-
-        let qrScanner;
-
-        // ===== HANDLE MANUAL CHECK-IN BUTTON CLICK =====
-        document.querySelectorAll('.checkInBtn').forEach(button => {
-            button.addEventListener('click', function () {
-                const bookingId = this.getAttribute('data-booking-id');
-                const fullName = this.getAttribute('data-full-name');
-
-                // Populate modal
-                bookingIdInput.value = bookingId;
-                ticketNumberDisplay.value = bookingId;
-                modalTitle.textContent = "Check In - " + fullName;
-
-                // Set form action (replace 'id' with actual event ID from context)
-                const eventId = "{{ id }}";
-                const type = "{{type}}";
-                if (type == "event")
-                    document.getElementById("checkInForm").action = `/user/booking/tickets/e/${eventId}/`;
-                else {
-                    document.getElementById("checkInForm").action = `/user/booking/tickets/${eventId}/`;
-                }
-            });
-        });
-
-        // ===== INITIALIZE QR SCANNER WHEN MODAL OPENS =====
-        scanModalEl.addEventListener('shown.bs.modal', function () {
-            if (!qrScanner) {
-                qrScanner = new Html5Qrcode("qr-reader");
-            }
-
-            Html5Qrcode.getCameras().then(cameras => {
-                if (cameras && cameras.length) {
-                    const backCamera = cameras.find(cam => cam.label.toLowerCase().includes("back")) || cameras[0];
-                    qrScanner.start(
-                        backCamera.id,
-                        { fps: 10, qrbox: 250 },
-                        onScanSuccess,
-                        onScanError
-                    ).catch(err => {
-                        scanResultEl.innerText = "Camera error. Please retry.";
-                        console.error("Scanner start error:", err);
-                    });
-                } else {
-                    scanResultEl.innerText = "No camera found.";
-                }
-            }).catch(err => {
-                scanResultEl.innerText = "Camera access denied.";
-                console.error("Camera error:", err);
-            });
-        });
-
-        // ===== STOP SCANNER WHEN MODAL CLOSES =====
-        scanModalEl.addEventListener('hidden.bs.modal', function () {
-            if (qrScanner && qrScanner.getState() !== Html5QrcodeScannerState.NOT_STARTED) {
-                qrScanner.stop().then(() => {
-                    console.log("QR Scanner stopped.");
-                }).catch(err => {
-                    console.error("Failed to stop scanner:", err);
-                });
-            }
-        });
-
-        // ===== HANDLE QR SCAN SUCCESS =====
-        function onScanSuccess(decodedText, decodedResult) {
-            const bookingId = decodedText.trim();
-
-            if (!bookingId) {
-                scanResultEl.innerText = "Invalid QR Code";
-                return;
-            }
-
-            // Stop scanner
-            qrScanner.stop().catch(console.error);
-
-            // Close scan modal
-            scanModal.hide();
-
-            // Clear scan result
-            scanResultEl.innerText = "";
-
-            // Lookup booking in DOM to get full name
-            const escapedId = CSS.escape(bookingId);
-            const checkInBtn = document.querySelector(`.checkInBtn[data-booking-id='${escapedId}']`);
-            let fullName = "Unknown Attendee";
-            if (checkInBtn) {
-                fullName = checkInBtn.getAttribute('data-full-name');
-            }
-
-            // Populate check-in modal
             bookingIdInput.value = bookingId;
             ticketNumberDisplay.value = bookingId;
             modalTitle.textContent = "Check In - " + fullName;
 
-            // Set form action
-            const eventId = "{{ id }}";
-            const type = "{{type}}";
-            if (type == "event")
-                document.getElementById("checkInForm").action = `/user/booking/tickets/e/${eventId}/`;
-            else {
-                document.getElementById("checkInForm").action = `/user/booking/tickets/${eventId}/`;
+            ticketNumberSelect.innerHTML = '';
+            for (let i = attended_no + 1; i <= totalTickets; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                ticketNumberSelect.appendChild(option);
             }
 
-            // Show check-in modal after brief delay
-            setTimeout(() => {
-                checkInModal.show();
-            }, 300);
-        }
+            const eventId = "{{ id }}";
+            const type = "{{ type }}";
+            if (type === "event") {
+                document.getElementById("checkInForm").action = `/user/booking/tickets/e/${eventId}/`;
+            } else {
+                document.getElementById("checkInForm").action = `/user/booking/tickets/${eventId}/`;
+            }
+        });
+    });
 
-        // ===== HANDLE QR SCAN ERROR (optional) =====
-        function onScanError(err) {
-            // You can show minor errors or ignore
-            console.warn("QR Scan Error:", err);
+    // QR Scanner
+    scanModalEl.addEventListener('shown.bs.modal', function () {
+        if (!qrScanner) qrScanner = new Html5Qrcode("qr-reader");
+
+        Html5Qrcode.getCameras().then(cameras => {
+            if (cameras && cameras.length) {
+                const cameraId = cameras[0].id;
+                qrScanner.start(cameraId, { fps: 10, qrbox: 250 }, onScanSuccess, onScanError)
+                    .catch(err => scanResultEl.innerText = "Camera error. Retry.");
+            } else {
+                scanResultEl.innerText = "No camera found.";
+            }
+        }).catch(err => scanResultEl.innerText = "Camera access denied.");
+    });
+
+    scanModalEl.addEventListener('hidden.bs.modal', function () {
+        if (qrScanner) {
+            qrScanner.stop().then(() => console.log("QR Scanner stopped")).catch(console.error);
         }
     });
-</script>
 
+    function onScanSuccess(decodedText) {
+        const bookingId = decodedText.trim();
+        if (!bookingId) return scanResultEl.innerText = "Invalid QR Code";
+
+        if (qrScanner) qrScanner.stop().catch(console.error);
+        scanModal.hide();
+        scanResultEl.innerText = "";
+
+        const checkInBtn = document.querySelector(`.checkInBtn[data-booking-id='${CSS.escape(bookingId)}']`);
+        let fullName = "Unknown Attendee";
+        if (checkInBtn) fullName = checkInBtn.getAttribute('data-full-name');
+
+        bookingIdInput.value = bookingId;
+        ticketNumberDisplay.value = bookingId;
+        modalTitle.textContent = "Check In - " + fullName;
+
+        const eventId = "{{ id }}";
+        const type = "{{ type }}";
+        if (type === "event") {
+            document.getElementById("checkInForm").action = `/user/booking/tickets/e/${eventId}/`;
+        } else {
+            document.getElementById("checkInForm").action = `/user/booking/tickets/${eventId}/`;
+        }
+
+        setTimeout(() => checkInModal.show(), 300);
+    }
+
+    function onScanError(err) {
+        console.warn("QR Scan Error:", err);
+    }
+});
+</script>
 {% endblock %}
