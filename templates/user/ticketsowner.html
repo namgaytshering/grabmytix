@@ -282,32 +282,62 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    function onScanSuccess(decodedText) {
-        const bookingId = decodedText.trim();
-        if (!bookingId) return scanResultEl.innerText = "Invalid QR Code";
+    function onScanSuccess(decodedText, decodedResult) {
+    const bookingId = decodedText.trim();
 
-        if (qrScanner) qrScanner.stop().catch(console.error);
-        scanModal.hide();
-        scanResultEl.innerText = "";
-
-        const checkInBtn = document.querySelector(`.checkInBtn[data-booking-id='${CSS.escape(bookingId)}']`);
-        let fullName = "Unknown Attendee";
-        if (checkInBtn) fullName = checkInBtn.getAttribute('data-full-name');
-
-        bookingIdInput.value = bookingId;
-        ticketNumberDisplay.value = bookingId;
-        modalTitle.textContent = "Check In - " + fullName;
-
-        const eventId = "{{ id }}";
-        const type = "{{ type }}";
-        if (type === "event") {
-            document.getElementById("checkInForm").action = `/user/booking/tickets/e/${eventId}/`;
-        } else {
-            document.getElementById("checkInForm").action = `/user/booking/tickets/${eventId}/`;
-        }
-
-        setTimeout(() => checkInModal.show(), 300);
+    if (!bookingId) {
+        scanResultEl.innerText = "Invalid QR Code";
+        return;
     }
+
+    // Stop scanner
+    qrScanner.stop().catch(console.error);
+
+    // Close scan modal
+    scanModal.hide();
+
+    // Lookup booking in DOM using CSS.escape
+    const escapedId = CSS.escape(bookingId);
+    const checkInBtn = document.querySelector(`.checkInBtn[data-booking-id='${escapedId}']`);
+
+    if (!checkInBtn) {
+        scanResultEl.innerText = "Booking not found!";
+        return;
+    }
+
+    // Populate check-in modal
+    const fullName = checkInBtn.getAttribute('data-full-name');
+    const totalTickets = parseInt(checkInBtn.getAttribute('data-total-tickets'), 10);
+    const attendedNo = parseInt(checkInBtn.getAttribute('data-total-attended-no'), 10);
+
+    bookingIdInput.value = bookingId;
+    ticketNumberDisplay.value = bookingId;
+    modalTitle.textContent = "Check In - " + fullName;
+
+    // Populate ticketNumberSelect dropdown
+    const select = document.getElementById('ticketNumberSelect');
+    select.innerHTML = '';
+    for (let i = attendedNo + 1; i <= totalTickets; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        select.appendChild(option);
+    }
+
+    // Set form action
+    const eventId = "{{ id }}";
+    const type = "{{ type }}";
+    if (type == "event")
+        document.getElementById("checkInForm").action = `/user/booking/tickets/e/${eventId}/`;
+    else
+        document.getElementById("checkInForm").action = `/user/booking/tickets/${eventId}/`;
+
+    // Show check-in modal after short delay
+    setTimeout(() => {
+        checkInModal.show();
+    }, 200);
+}
+
 
     function onScanError(err) {
         console.warn("QR Scan Error:", err);
