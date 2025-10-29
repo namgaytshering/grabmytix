@@ -254,15 +254,26 @@ document.addEventListener("DOMContentLoaded", function () {
     scanModalEl.addEventListener('shown.bs.modal', function () {
         if (!qrScanner) qrScanner = new Html5Qrcode("qr-reader");
 
-        Html5Qrcode.getCameras().then(cameras => {
-            if (cameras && cameras.length) {
-                const cameraId = cameras[0].id;
-                qrScanner.start(cameraId, { fps: 10, qrbox: 250 }, onScanSuccess, onScanError)
-                    .catch(err => scanResultEl.innerText = "Camera error. Retry.");
-            } else {
-                scanResultEl.innerText = "No camera found.";
-            }
-        }).catch(err => scanResultEl.innerText = "Camera access denied.");
+       Html5Qrcode.getCameras().then(cameras => {
+    if (cameras && cameras.length) {
+        // Pick the back camera (usually the last in array)
+        const backCamera = cameras[cameras.length - 1];
+        qrScanner.start(
+            backCamera.id,
+            { fps: 10, qrbox: 250 },
+            onScanSuccess,
+            onScanError
+        ).catch(err => {
+            scanResultEl.innerText = "Camera error. Please retry.";
+            console.error("Scanner start error:", err);
+        });
+    } else {
+        scanResultEl.innerText = "No camera found.";
+    }
+}).catch(err => {
+    scanResultEl.innerText = "Camera access denied.";
+    console.error("Camera error:", err);
+});
     });
 
     scanModalEl.addEventListener('hidden.bs.modal', function () {
