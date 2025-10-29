@@ -190,8 +190,15 @@ def tickets_owner_view(request, id,*args, **kwargs):
     ticket_no = ''
     email = ''
     bookings = Booking.objects.filter(filmshow=filmshow).annotate(
-    total_tickets=F('no_adult') + F('no_child')
+     total_tickets=F('no_adult') + F('no_child'),
         )
+    
+    total_booked = bookings.aggregate(total=Sum(F('no_adult') + F('no_child')))['total'] or 0
+
+    total_attended = bookings.aggregate(total=Sum('attended_no'))['total'] or 0
+
+    percentage = round((total_attended / total_booked) * 100, 0) 
+
     if request.method == 'GET':
         ticket_no = request.GET.get('ticket_no', '')  # Default to empty string if 'name' is not present
         email = request.GET.get('email', '')
@@ -239,6 +246,9 @@ def tickets_owner_view(request, id,*args, **kwargs):
                     'data':json.dumps(data),
                     'poster_image':filmshow.film.poster_image,
                     'theater_name':filmshow.theater_name,
+                    'percentage':percentage,
+                    'street':filmshow.street,
+                    'state':filmshow.state,
                     'date':filmshow.show_date,
                     'time':filmshow.show_time}
     
@@ -253,6 +263,12 @@ def event_tickets_owner_view(request, id, *args, **kwargs):
     bookings = Booking.objects.filter(event=event, payment_status=1).annotate(
         total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
     )
+    total_booked = bookings.aggregate(total=Sum(F('economy_quantity') + F('general_quantity') + F('vip_quantity')))['total'] or 0
+
+    total_attended = bookings.aggregate(total=Sum('attended_no'))['total'] or 0
+
+    percentage = round((total_attended / total_booked) * 100, 0) 
+
 
     if ticket_no and email:
         if ticket_no.isdigit():
@@ -301,7 +317,10 @@ def event_tickets_owner_view(request, id, *args, **kwargs):
         'poster_image': event.poster_image,
         'theater_name': event.place,
         'date': event.show_date,
-        'time': event.show_time
+        'time': event.show_time,
+        'street':event.street,
+        'state':event.state,
+        'percentage':percentage
     }
     return render(request, "user/ticketsowner.html", context)
 
