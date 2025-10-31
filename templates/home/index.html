@@ -76,7 +76,7 @@
                             <p>
 
                                 {% for address in movie.filmshow.all %}
-                                <i class="ci-map-pin "></i> {{address.state.state_short|upper}} on {{address.show_date}}
+                                <i class="ci-map-pin "></i> {{address.theater_name}} {{address.state.state_short|upper}} on {{address.show_date}} {{address.show_time}}
                                 <br/>
                                 {%endfor%}
 
