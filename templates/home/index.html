@@ -76,7 +76,7 @@
                             <p>
 
                                 {% for address in movie.filmshow.all %}
-                                <a href="/show/{{ address.slug }}" class="btn btn-md">
+                                <a href="/show/{{ address.slug }}" class="text-decoration-none alert ">
                                 <i class="ci-map-pin "></i> &nbsp;&nbsp;{{address.theater_name}} {{address.state.state_short|upper}} ({{address.show_date}} {{address.show_time}})
                                 </a>
                                 <br/>
