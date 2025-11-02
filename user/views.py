@@ -189,7 +189,7 @@ def tickets_owner_view(request, id,*args, **kwargs):
     filmshow = Filmshow.objects.get(id = id)
     ticket_no = ''
     email = ''
-    bookings = Booking.objects.filter(filmshow=filmshow).annotate(
+    bookings = Booking.objects.filter(filmshow=filmshow, payment_status = 1).annotate(
      total_tickets=F('no_adult') + F('no_child'),
         )
     
@@ -218,7 +218,7 @@ def tickets_owner_view(request, id,*args, **kwargs):
         if booking_id_str.isdigit():
             booking_id = int(booking_id_str)
             try:
-                book =  Booking.objects.filter(id=booking_id,filmshow=filmshow).annotate(total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')).first()
+                book =  Booking.objects.filter(id=booking_id,filmshow=filmshow, payment_status = 1).annotate(total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')).first()
                
                 if book:
                     total_attend =int(request.POST.get("total_ticket_number", 0) )
