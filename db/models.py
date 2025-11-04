@@ -4,6 +4,8 @@ from .utils import unique_slug_generator
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime
 from django.utils.text import slugify
+from ckeditor.fields import RichTextField
+
 class MyUserManager(BaseUserManager):
     def create_user(self, email, password=None):
         if not email:
@@ -95,7 +97,7 @@ class User(AbstractBaseUser):
 class Film(models.Model):
     title = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(  unique=True, blank=True)  # Allow blank so it can be generated
-    description = models.TextField(blank=True, default='')
+    description = RichTextField()
     trailer = models.CharField(max_length=100)
     release_date = models.DateField(null=True, blank=True)
     duration = models.CharField(max_length=200)

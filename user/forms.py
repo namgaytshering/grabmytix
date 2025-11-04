@@ -3,6 +3,7 @@ from django.forms import ModelForm
 from db.models import *
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
+from ckeditor.widgets import CKEditorWidget
 
 GENDER_CHOICES = [
     ('', '--- Select Sex--'),
@@ -19,12 +20,7 @@ class AddMovieForm(ModelForm):
         required=True,
         widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Movie Name"})
     )
-    description = forms.CharField(
-        label="Movie Description",
-        max_length=5000,  # Increased limit for better descriptions
-        required=True,
-        widget=forms.Textarea(attrs={"class": "form-control", "placeholder": "Description", "rows": 4})
-    )
+    description = forms.CharField(widget=CKEditorWidget())
     duration = forms.CharField(
         label="Movie Duration (minutes)",
         required=True,

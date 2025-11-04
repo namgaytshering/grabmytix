@@ -65,7 +65,7 @@
                         <div class="swiper-slide pb-4 pt-0 ">
                             <h1 class="text-pretty">{{movie.title}}</h1>
                             <div class=" d-none d-md-block">
-                                <p>{{movie.description|linebreaks|truncatewords:30}}</p>
+                                <p>{{movie.description|safe|linebreaks|truncatewords:30}}</p>
                                 <!-- <b>Cast</b>
                                 <p>
                                     {{movie.cast}}
