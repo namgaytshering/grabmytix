@@ -101,9 +101,9 @@
           <span> &nbsp;{{ event.street }}, {{ event.state }}, {{ event.country }}</span>
         </div>
         <!-- Description -->
-        <p class="text-muted d-none d-md-block">{{ event.description|safe }}</p>
-
-       
+    <div class="mt-4 mb-5 d-none d-md-block">
+  <p>{{ event.description | safe }}</p>
+</div>
 
         <!-- Type & Price -->
 
@@ -239,22 +239,12 @@
 
 
   <section class="container  ">
-    <!-- Breadcrumb -->
-    <!-- <nav aria-label="breadcrumb" class="pt-3">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item"><a href="/events">Events</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ event.title }}</li>
-            </ol>
-        </nav> -->
-
-
-
-    <div class="mt-4 mb-5 d-lg-none d-flex">
-      <p class="d-lg-none d-flex">{{ event.description }}</p>
+  
+    <div class="mt-4 mb-5 d-lg-none">
+      <p class="d-lg-none  ">{{ event.description | safe}}</p>
     </div>
 
-
+</section>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
