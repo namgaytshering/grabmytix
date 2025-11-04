@@ -81,11 +81,7 @@
       <div class="col-md-7">
         <!-- Title -->
         <h1 class="alert  p-0 alert-white mt-3  mb-3">{{ event.title }}</h1>
-
-        <!-- Description -->
-        <p class="text-muted d-none d-md-block">{{ event.description|safe }}</p>
-
-        <!-- Date & Time -->
+ <!-- Date & Time -->
         <div class="d-flex align-items-center mb-3">
           <i class="ci-calendar me-2  "></i>
           <time datetime="{{ event.show_date }}T{{ event.show_time }}" class="fw-semibold">
@@ -100,10 +96,14 @@
         </div>
 
         <!-- Address -->
-        <div class="d-flex align-items-center mb-4">
+        <div class="d-flex align-items-center">
           <i class="ci-bookmark"></i>
           <span> &nbsp;{{ event.street }}, {{ event.state }}, {{ event.country }}</span>
         </div>
+        <!-- Description -->
+        <p class="text-muted d-none d-md-block">{{ event.description|safe }}</p>
+
+       
 
         <!-- Type & Price -->
 

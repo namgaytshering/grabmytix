@@ -109,7 +109,8 @@
           <small class="mb-1">{{ show.street |capfirst}},{{ show.state.state_short |upper}}</small>
           <br/>
           <small>Date: {{ show.show_date }}, {{ show.show_time|date:'h:i A' }}</small>
-         <br/><br/> <button class="btn btn-sm btn-danger"><i class="ci-ticket"></i> &nbsp; Grab a ticket  <i class="ci-chevron-right"></i></button>
+          <h5>{{show.currency}} &nbsp;{{ show.adult }}</h5>
+           <button class="btn btn-sm btn-danger"><i class="ci-ticket"></i> &nbsp; Grab a ticket  <i class="ci-chevron-right"></i></button>
         </a>
         {% endfor %}
       </div>
