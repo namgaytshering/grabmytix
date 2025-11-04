@@ -123,7 +123,7 @@ class EventForm(ModelForm):
                 "placeholder": "Choose time"
             }),
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Event title'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Event description'}),
+            'description': forms.CharField(widget=CKEditorWidget()),
             'poster_image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'event_type': forms.Select(attrs={'class': 'form-select'}),
             'place': forms.TextInput(attrs={'class': 'form-control'}),

@@ -83,7 +83,7 @@
         <h1 class="alert  p-0 alert-white mt-3  mb-3">{{ event.title }}</h1>
 
         <!-- Description -->
-        <p class="text-muted d-none d-md-block">{{ event.description }}</p>
+        <p class="text-muted d-none d-md-block">{{ event.description|safe }}</p>
 
         <!-- Date & Time -->
         <div class="d-flex align-items-center mb-3">

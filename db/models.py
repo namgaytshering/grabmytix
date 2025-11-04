@@ -146,7 +146,7 @@ class Event(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    description = models.TextField(blank=True, default='')
+    description = RichTextField()
     event_type = models.ForeignKey(EventType, on_delete=models.CASCADE)
     poster_image = models.ImageField(upload_to="events/", blank=True, null=True)
     place = models.CharField(max_length=255)
