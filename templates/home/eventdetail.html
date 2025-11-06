@@ -98,7 +98,7 @@
         <!-- Address -->
         <div class="d-flex align-items-center">
           <i class="ci-bookmark"></i>
-          <span> &nbsp;{{ event.street }}, {{ event.state }}, {{ event.country }}</span>
+          <span> &nbsp;{{ event.street }}, {{ event.state.state_short|upper }}, {{ event.country }}</span>
         </div>
         <!-- Description -->
     <div class="mt-4 mb-5 d-none d-md-block">
@@ -119,6 +119,10 @@
           Free
           {% endif %}
         </h5>
+       <h6> 
+       {{ event.place }}<br/><br/>
+        <i class="ci-map-pin  text-secondary"></i>  {{ event.state }}</h6>
+
         <h6>Primary Person Details</h6>
         <form method="POST">
           {% csrf_token %}
