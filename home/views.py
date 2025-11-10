@@ -474,7 +474,8 @@ class StripeIntentView(View):
                     'slug':slug,
                     'theater_name': booking_details.theater_name,
                     'state':booking_details.state,
-                    'phone':booking_details.phone
+                    'phone':booking_details.phone,
+                    'bookings':booking_details
                 }
             )
 

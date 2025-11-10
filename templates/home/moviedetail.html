@@ -64,7 +64,7 @@
       </p>
       <small><b>Director:</b> {{ movie.director }}</small><br>
       <small><b>Language:</b> {{ movie.language }}</small><br>
-          <small><b>Cast:</b> {{ movie.cast|capfirst }}</small>
+      <small><b>Cast:</b> {{ movie.cast|capfirst }}</small>
     </div>
   </section>
 
@@ -89,7 +89,7 @@
       <!-- Flush list group to render items edge-to-edge in a parent container (e.g., cards) -->
 
 
-    
+
       {% regroup shows by state as state_list %}
       {% for state in state_list %}
 
@@ -101,16 +101,23 @@
       <div class="list-group">
         {% for show in state.list %}
 
-        <a class="list-group-item mb-4 list-group-item-action p-3 fw-normal " href="/show/{{ show.slug }}" aria-current="true">
+        <a class="list-group-item mb-4 list-group-item-action p-3 fw-normal " href="/show/{{ show.slug }}"
+          aria-current="true">
           <div>
             <h6 class="mb-1">{{ show.theater_name |capfirst}}</h6>
 
           </div>
           <small class="mb-1">{{ show.street |capfirst}},{{ show.state.state_short |upper}}</small>
-          <br/>
+          <br />
           <small>Date: {{ show.show_date }}, {{ show.show_time|date:'h:i A' }}</small>
           <h5>{{show.currency}} &nbsp;{{ show.adult }}</h5>
-           <button class="btn btn-sm btn-danger"><i class="ci-ticket"></i> &nbsp; Grab a ticket  <i class="ci-chevron-right"></i></button>
+
+          {%if show.status == 0 %}
+          <span class="text text-warning"> Expired</span>
+          {%else%}
+          <button class="btn btn-sm btn-danger"><i class="ci-ticket"></i> &nbsp; Grab a ticket <i
+              class="ci-chevron-right"></i></button>
+          {%endif%}
         </a>
         {% endfor %}
       </div>

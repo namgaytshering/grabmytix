@@ -79,9 +79,35 @@
         <!-- <p><strong>Tickets:</strong>Adult: {{ no_adult }} </p>
          -->
         <p><strong>Date & time :</strong> {{ show_date }},  {{ show_time }}</p>
-     
-    
-        
+     <div>
+      <ul>
+    {%if booking.type == 'Movie'%}
+            {% if booking.no_adult > 0 %}
+              <li>Adult: {{ booking.no_adult }} × ${{ booking.price_adult }}</li>
+            {% endif %}
+            
+            {% if booking.no_child > 0 %}
+              <li>Child: {{ booking.no_child }} × ${{ booking.price_child }}</li>
+            {% endif %}
+   
+        {%else%}
+          {% if booking.economy_quantity > 0 %}
+            <li>{{ booking.economy_label }}: {{ booking.economy_quantity }} × ${{ booking.economy_price }}</li>
+          {% endif %}
+          {% if booking.general_quantity > 0 %}
+            <li> {% if booking.economy_quantity > 0 and booking.vip_quantity > 0 %} 
+              {{ booking.general_label }}:
+              {%else%}
+              Ticket:
+              {%endif%} {{ booking.general_quantity }} × ${{ booking.general_price }}</li>
+          {% endif %}
+          {% if booking.vip_quantity > 0 %}
+            <li>{{ booking.vip_label }}: {{ booking.vip_quantity }} × ${{ booking.vip_price }}</li>
+          {% endif %}
+      {% endif %}
+        </ul>
+        </div>
+         
       </div>
 
       <a href="https://www.grabmytix.com/ticket/?ticket_number={{ no }}&email={{ email }}" class="btn">Download Your Ticket</a>
