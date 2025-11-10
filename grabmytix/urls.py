@@ -50,7 +50,7 @@ urlpatterns = [
     path('register',register_view,name='register'),
     path('partner',partner_register_view,name='partner_register'),
      #path('api/', include('api.urls')),
-     
+    path('ckeditor5/', include('django_ckeditor_5.urls')),
     path('about/',about_view,name='about'),
     path('ticket/',view_ticket_view,name='view_ticket_view'),
    

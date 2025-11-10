@@ -4,7 +4,7 @@ from .utils import unique_slug_generator
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime
 from django.utils.text import slugify
-from ckeditor.fields import RichTextField
+from django_ckeditor_5.fields import CKEditor5Field
 
 class MyUserManager(BaseUserManager):
     def create_user(self, email, password=None):
@@ -97,7 +97,7 @@ class User(AbstractBaseUser):
 class Film(models.Model):
     title = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(  unique=True, blank=True)  # Allow blank so it can be generated
-    description = RichTextField()
+    description = CKEditor5Field()
     trailer = models.CharField(max_length=100)
     release_date = models.DateField(null=True, blank=True)
     duration = models.CharField(max_length=200)
@@ -148,7 +148,7 @@ class Event(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    description = RichTextField()
+    description = CKEditor5Field()
     event_type = models.ForeignKey(EventType, on_delete=models.CASCADE)
     poster_image = models.ImageField(upload_to="events/", blank=True, null=True)
     place = models.CharField(max_length=255)

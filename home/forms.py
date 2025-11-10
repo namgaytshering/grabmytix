@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from django_recaptcha.fields import ReCaptchaField
 
+
 GENDER_CHOICES = [
     ('', '--- Select Sex--'),
     ('Male', 'Male'),

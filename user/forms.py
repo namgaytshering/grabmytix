@@ -3,7 +3,7 @@ from django.forms import ModelForm
 from db.models import *
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from ckeditor.widgets import CKEditorWidget
+from django_ckeditor_5.fields import CKEditor5Field
 
 GENDER_CHOICES = [
     ('', '--- Select Sex--'),
@@ -20,7 +20,7 @@ class AddMovieForm(ModelForm):
         required=True,
         widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Movie Name"})
     )
-    description = forms.CharField(widget=CKEditorWidget())
+    
     duration = forms.CharField(
         label="Movie Duration (minutes)",
         required=True,
@@ -123,7 +123,7 @@ class EventForm(ModelForm):
                 "placeholder": "Choose time"
             }),
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Event title'}),
-            'description': forms.CharField(widget=CKEditorWidget()),
+            
             'poster_image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'event_type': forms.Select(attrs={'class': 'form-select'}),
             'place': forms.TextInput(attrs={'class': 'form-control'}),
