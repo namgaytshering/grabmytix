@@ -183,21 +183,21 @@
       <div class="row g-4">
 
         <!-- Image Column -->
-        <div class="col-md-4 mb-4 mb-md-0 d-flex justify-content-center">
+        <!-- <div class="col-md-4 mb-4 mb-md-0 d-flex justify-content-center">
 
           <img src="/media/{{booking.poster_image}}" alt="{{ movie.title }} Poster" class="img-fluid rounded shadow-sm"
             style="max-height: 320px; object-fit: contain;">
 
-        </div>
+        </div> -->
 
         <!-- Text/Details Column -->
    <div class="col-md-8">
   <div class="vstack gap-2">
 
-    <p class="mb-1"><strong>Theatre:</strong> {{ booking.theater_name }}</p>
+    <!-- <p class="mb-1"><strong>Theatre:</strong> {{ booking.theater_name }}</p> -->
     <p class="mb-1"><strong>Address:</strong> {{ booking.street }}, {{ booking.state }}, {{ booking.country }}</p>
 
-    <p class="mb-1"><strong>Tickets:</strong></p>
+ 
     <ul class="list-unstyled mb-0">
       {%if booking.type == 'Movie'%}
           {% if booking.no_adult > 0 %}
@@ -215,16 +215,16 @@
           {{ booking.general_label }}:
           {%else%}
           Ticket:
-          {%endif%} {{ booking.general_quantity }} × ${{ booking.general_price }}</li>
+          {%endif%} {{ booking.general_quantity }} × ${{ booking.general_price }} = ${{ booking.total_payment }}</li>
       {% endif %}
       {% if booking.vip_quantity > 0 %}
         <li>{{ booking.vip_label }}: {{ booking.vip_quantity }} × ${{ booking.vip_price }}</li>
       {% endif %}
     </ul>
 
-    <p class="mb-0">
+    <!-- <p class="mb-0">
       <strong>Total Cost:</strong> ${{ booking.total_payment }}
-    </p>
+    </p> -->
 
   </div>
 </div>
