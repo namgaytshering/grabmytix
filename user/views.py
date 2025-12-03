@@ -346,16 +346,16 @@ def export_csv(request,id):
     response['Content-Disposition'] = 'attachment; filename="booking_list_grabmytix.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['Ticket Number', 'Name', 'Email', 'Tickets','Cost'])  # Header
+    writer.writerow(['Ticket Number', 'Name', 'Email','Phone', 'Tickets','Cost'])  # Header
     bookings = Booking.objects.filter(payment_status=1,event__id = id).annotate(
         total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
     )
     if not bookings.exists():
         bookings = Booking.objects.filter(payment_status=1,filmshow__id = id).annotate(
-        total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
+        total_tickets=Sum(F('no_adult') + F('no_child'))
     )
     for booking in bookings:
-        writer.writerow([booking.id, booking.full_name,f"{booking.phone} , {booking.email}", booking.total_tickets,booking.total_payment])
+        writer.writerow([booking.id, booking.full_name,booking.email,booking.phone, booking.total_tickets,booking.total_payment])
 
     return response
   
