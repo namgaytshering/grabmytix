@@ -102,7 +102,7 @@
   
 
     <h5>Ticket Booked</h5>
-   
+   <a href="{% url 'export_csv' id=id %}" class="btn btn-sm btn-success"><i class="ci-file-text"></i> &nbsp;&nbsp;Download CSV </a><br/ ><br/ >
     <div class="table-responsive">
         <div
             data-filter-list='{"searchClass": "table-search", "listClass": "table-list", "sortClass": "table-sort", "valueNames": ["ticket-no", "detail", "tickets", "total-cost", "payment", "attended"]}'>

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import dashboard_view,movies_view,add_movies_view,add_shows_view,booking_owner_view,tickets_owner_view,logout_view,edit_movies_view,event_tickets_owner_view,events_view,add_event_view,edit_events_view,scan_qrcode_view
+from .views import dashboard_view,movies_view,add_movies_view,add_shows_view,booking_owner_view,tickets_owner_view,logout_view,edit_movies_view,event_tickets_owner_view,events_view,add_event_view,edit_events_view,scan_qrcode_view,export_csv
 
 urlpatterns = [
     path('', dashboard_view, name='dashboard'),
@@ -20,5 +20,6 @@ urlpatterns = [
     path('booking/tickets/e/<int:id>', event_tickets_owner_view, name='event_tickets_owner'),
     path('booking/tickets/e/<int:id>/', event_tickets_owner_view, name='event_tickets_owner'),
     # Add other user-related URL patterns here
+    path('export-csv/<int:id>/', export_csv, name='export_csv'),
     path('logout/', logout_view, name='logout'),
 ]
