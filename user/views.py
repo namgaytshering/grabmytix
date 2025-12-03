@@ -260,6 +260,7 @@ def tickets_owner_view(request, id,*args, **kwargs):
                     'poster_image':filmshow.film.poster_image,
                     'theater_name':filmshow.theater_name,
                     'percentage':percentage,
+                    'total_booked':total_booked,
                     'street':filmshow.street,
                     'state':filmshow.state,
                     'date':filmshow.show_date,
@@ -333,7 +334,8 @@ def event_tickets_owner_view(request, id, *args, **kwargs):
         'time': event.show_time,
         'street':event.street,
         'state':event.state,
-        'percentage':percentage
+        'percentage':percentage,
+        'total_booked':total_booked,
     }
     return render(request, "user/ticketsowner.html", context)
 
