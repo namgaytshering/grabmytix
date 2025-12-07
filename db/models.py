@@ -5,6 +5,11 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime
 from django.utils.text import slugify
 from django_ckeditor_5.fields import CKEditor5Field
+from django.core.validators import RegexValidator
+phone_validator = RegexValidator(
+    regex=r'^\+?1?\d{9,15}$',
+    message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed."
+)
 
 class MyUserManager(BaseUserManager):
     def create_user(self, email, password=None):
@@ -209,7 +214,7 @@ class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     email = models.EmailField(verbose_name="email", unique=False)
     full_name = models.CharField(max_length=255)
-    phone = models.IntegerField()
+    phone = models.CharField(validators=[phone_validator], max_length=16)
     type = models.CharField(max_length=100)
 
     #for movies only
