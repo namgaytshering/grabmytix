@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 from home.views import (
     home_view,
     state_moviedetail_view,
@@ -44,6 +45,21 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/',include('user.urls')),
     path('', home_view, name='home'),  # Added a comma at the end
+     path('reset-password/', auth_views.PasswordResetView.as_view(template_name="user/password_reset.html"),
+         name="reset_password"),
+
+    path('reset_password_sent/',
+         auth_views.PasswordResetDoneView.as_view(template_name="user/password_reset_sent.html"),
+         name="password_reset_done"),
+
+    path('reset/<uidb64>/<token>/',
+         auth_views.PasswordResetConfirmView.as_view(template_name="user/password_reset_form.html"),
+         name="password_reset_confirm"),
+
+    path('reset_password_complete/',
+         auth_views.PasswordResetCompleteView.as_view(template_name="user/password_reset_done.html"),
+         name="password_reset_complete"),
+         
     path('login',login_view,name='login' ),
     path('movies',movies_view, name='movies_view' ),
     path('events',events_view, name='events_view' ),
@@ -70,6 +86,8 @@ urlpatterns = [
     path('show/<slug:slug_text>', state_moviedetail_view, name='state_moviedetail_view'), 
     path('event/<slug:slug_text>/', eventdetail_view, name='eventdetail'),
    
+
+  
 
 ]
 
