@@ -260,8 +260,10 @@ class Booking(models.Model):
     attended_no =  models.IntegerField(default=0) #number of people attended
     attend_remarks = models.TextField(blank=True, null=True)
     attended_at = models.DateTimeField(null=True, blank=True)
-
-    
+   
+    #record where user order the tickets
+    booking_country = models.CharField(max_length=100,null=True, blank=True)
+    booking_city = models.CharField(max_length=100,null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
