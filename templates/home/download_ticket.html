@@ -48,7 +48,7 @@
     <div class="col-md-12">
       <h2  >{{ booking.title }}</h2>
       <h4  >Ticket No: #{{ booking.id }}</h4>
-         <button class="btn btn-danger btn-sm" id="downloadTicket">Download Ticket</button>
+         <!-- <button class="btn btn-danger btn-sm" id="downloadTicket">Download Ticket</button> -->
        <div class="col-sm-4 p-0">
     {% if qr_code_base64 %}
         <img src="data:image/png;base64,{{ qr_code_base64 }}" 
