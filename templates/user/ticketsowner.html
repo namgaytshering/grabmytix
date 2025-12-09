@@ -286,7 +286,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const backCamera = cameras[cameras.length - 1];
         qrScanner.start(
             backCamera.id,
-            { fps: 10, qrbox: 250 },
+            { fps: 10, qrbox: 300 },
             onScanSuccess,
             onScanError
         ).catch(err => {
