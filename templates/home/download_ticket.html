@@ -39,23 +39,22 @@
     <button class="btn btn-outline-danger btn-sm" id="downloadTicket">Download Ticket</button>
   </div>
 
-  <div class="row g-2">
+  <div  >
     <!-- Poster -->
-    <div class="col-6 col-md-4">
+    <div class="col-sm-12">
       {% if booking.poster_image %}
         <img class="poster img-fluid rounded" src="/media/{{ booking.poster_image }}" alt="{{ booking.title }} poster" />
-      {% else %}
-        <div class="poster d-flex align-items-center justify-content-center bg-light text-muted rounded" style="height:150px;">No Poster</div>
+       
       {% endif %}
     </div>
 
     <!-- Details -->
-    <div class="col-6 col-md-8">
-      <h5 class="title text-dark mb-1">{{ booking.title }}</h5>
+    <div class="ol-md-12">
+      <h4 class="title text-dark mb-1">{{ booking.title }}</h4>
       <div class="small  mb-2">Ticket number: #{{ booking.id }}</div>
           <div class="small  mb-2">Payment: # {%if booking.payment_status %}<i class="ci-check-circle text-success"></i> Paid{%else%}<i class="ci-close-octagon text-danger"></i> Pending{%endif%}</div>
         {% if qr_code_base64 %}
-              <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="Ticket QR Code" style="width:40%">
+              <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="Ticket QR Code" style="width:60%">
           {% endif %}
         </div>
     </div>
@@ -148,10 +147,8 @@
 
 <style>
 .paper-ticket {
-  background: #fff;
-  border: 2px dashed #ccc;
-  border-radius: 12px;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  background: #ffffff;
+
   max-width: 700px;
   margin: auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
