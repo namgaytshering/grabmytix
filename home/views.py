@@ -81,7 +81,7 @@ def get_movie_datetime_local(flimshow):
 
 def home_view(request):
     now = timezone.now() 
-    movies = Film.objects.annotate(filmshow_count=Count('filmshow')).filter(filmshow_count__gt=0,).order_by('-created_at') # filmshow__show_date__gte=now.date()
+    movies = Film.objects.annotate(filmshow_count=Count('filmshow')).filter(filmshow_count__gt=0,filmshow__status=1).order_by('-created_at') # filmshow__show_date__gte=now.date()
     events = Event.objects.all().order_by('-created_at','-show_date')[:4]
     upcoming = Filmshow.objects.all().select_related('film').order_by('state', 'show_date', 'show_time')
     #filter(show_date__gte=now.date())
