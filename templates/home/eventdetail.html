@@ -139,7 +139,9 @@
             <i class="ci-mail position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
             {{ form.email }}
           </div>
-
+            {{ form.country }}
+            {{ form.city }}
+           
           <!-- Quantity Selector -->
           <!-- <div class="col-md-6 mb-3">
             <span class="fs-6 fw-semibold">Ticket</span><br /><br />
@@ -193,7 +195,7 @@
             <p class="mb-3  fw-semibold">Price: <span class="h5">$ <span id="final-total">{{ event.price }}</span></span></p>
        {%endif%}
        
-
+ 
         
  
 
@@ -319,8 +321,26 @@
 
     updateTotal();
 });
+ 
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("https://ipapi.co/json/")
+    .then(response => response.json())
+    .then(data => {
+      const countryField = document.getElementById("id_country");
+      const cityField = document.getElementById("id_city");
 
-    </script>
+      if (countryField && data.country_name) {
+        countryField.value = data.country_name;
+      }
+
+      if (cityField && data.city) {
+        cityField.value = data.city;
+      }
+    })
+    .catch(error => console.log("GeoIP error:", error));
+});
+ 
+   
 
 
 

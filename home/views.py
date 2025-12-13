@@ -306,9 +306,13 @@ def eventdetail_view(request,slug_text):
                     general_quantity * (event.price or 0) +
                     vip_quantity * (event.vip_price or 0)
                 )
-
+                country = form.cleaned_data.get("country")
+                city = form.cleaned_data.get("city")
                # total_cost = (no_adult * event.price)
                 saveform = form.save(commit=False)
+                saveform.booking_country = country
+                saveform.booking_city = city
+
                 if request.user.is_authenticated:
                     saveform.user = request.user
                 saveform.event = event
@@ -340,6 +344,8 @@ def eventdetail_view(request,slug_text):
                 saveform.state = event.state
                 saveform.street= event.street
                 saveform.theater_name = event.place
+
+
                 if event.price == 0:
                     saveform.payment_status = 1
                 saveform.save()

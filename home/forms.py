@@ -148,7 +148,16 @@ class TicketEventCheckoutForm(ModelForm):
         required=False,
         widget=forms.NumberInput(attrs={'class': 'form-control form-icon-start'})
     )
+    # 🔒 Hidden fields
+    country = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput()
+    )
 
+    city = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput()
+    )
     class Meta:
         model = Booking
         fields = (
