@@ -306,8 +306,8 @@ def eventdetail_view(request,slug_text):
                     general_quantity * (event.price or 0) +
                     vip_quantity * (event.vip_price or 0)
                 )
-                country = form.cleaned_data.get("country")
-                city = form.cleaned_data.get("city")
+                country = form.cleaned_data.get("country") or "Unknown"
+                city = form.cleaned_data.get("city") or "Unknown"
                # total_cost = (no_adult * event.price)
                 saveform = form.save(commit=False)
                 saveform.booking_country = country
