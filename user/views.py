@@ -276,7 +276,7 @@ def event_tickets_owner_view(request, id, *args, **kwargs):
 
     bookings = Booking.objects.filter(event=event, payment_status=1).annotate(
         total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
-    )
+    ).order_by('-id')
     total_booked = bookings.aggregate(total=Sum(F('economy_quantity') + F('general_quantity') + F('vip_quantity')))['total'] or 0
 
     total_attended = bookings.aggregate(total=Sum('attended_no'))['total'] or 0
