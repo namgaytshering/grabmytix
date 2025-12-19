@@ -15,6 +15,7 @@ from django.http import HttpResponse
 from django.db.models import Avg, Count, Min, Sum,ExpressionWrapper,F,FloatField
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.forms import PasswordChangeForm
+from .forms import UpdateinfoForm
 from django.contrib.auth import update_session_auth_hash  
 from .forms import AddMovieForm,FilmShowForm,EventForm
 import json
@@ -23,6 +24,9 @@ import csv
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 #from db.models import Film,Event,
 #from .forms import FilmShowForm
 
@@ -360,7 +364,33 @@ def export_csv(request,id):
         writer.writerow([booking.id, booking.full_name,booking.email,booking.phone, booking.total_tickets,booking.total_payment])
 
     return response
-  
+@login_required
+def updateinfo_view(request):
+    form = UpdateinfoForm(request.POST or None, request.FILES or None, instance=request.user)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            messages.success(request,  "Successfully updated your information!")
+            return redirect('updateinfo_view')
+    return render(request, "user/updateinfo.html",{'form': form})
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Keeps user logged in after password change
+            update_session_auth_hash(request, user)
+
+            messages.success(request, 'Your password has been changed successfully.')
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'user/change_password.html', {'form': form})
 def logout_view(request, *args, **kwargs):
     logout(request)
     return redirect('home')

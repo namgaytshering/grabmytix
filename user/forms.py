@@ -142,4 +142,18 @@ class EventForm(ModelForm):
             'economy_price': forms.NumberInput(attrs={'class': 'form-control'}),
             'economy_quantity': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+class  UpdateinfoForm(ModelForm):
+     
+    gender = forms.CharField(label='Gender', widget=forms.Select(choices=GENDER_CHOICES,attrs={'class': 'form-control form-icon-start'}))
+ 
+    class Meta:
+        model = User
+        fields = ( 'name', 'phone', 'gender','profile')
+        widgets = {
+            'profile': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control  form-icon-start', 'placeholder': 'Name'}), 
+            'phone': forms.NumberInput(attrs={'class': 'form-control  form-icon-start', 'placeholder': 'Phone'}), 
+          
+        }
  

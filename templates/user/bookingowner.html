@@ -2,7 +2,13 @@
 {% block content %}
 <div class="container">
     <!-- Success Alert -->
-   
+     {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mt-2">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
       <h4 class="mb-2">Ticket Booking</h4>
       <p class="mb-4 text-muted">
         View the complete list of tickets booked, organized by movies and show locations.
