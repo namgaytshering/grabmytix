@@ -2,13 +2,8 @@
 {% block content %}
 <!-- Page content -->
 <div class="container ">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item active"><a href="/user/events/">Events/</a></li>
-        </ol>
-    </nav>
-    <div
-        data-filter-list='{"searchClass": "product-search", "listClass": "product-list", "sortClass": "product-sort", "valueNames": ["product", "date", "tendered", "earning"]}'>
+   
+    <div>
            {% if messages %}
         {% for message in messages %}
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -19,7 +14,7 @@
         {% endif %}
         <!-- Header -->
         <div class="d-md-flex align-items-center justify-content-between gap-3 pb-2 pb-sm-3 mb-md-2">
-            <h6 class="mb-md-0">Events</h6>
+         <h1 class="alert-heading mb-2"><i class="ci-gift"></i> &nbsp;Your event lists</h1>
             <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
                 <div class="position-relative" style="min-width: 190px">
                     <a href="/user/events/add">
@@ -32,65 +27,87 @@
             </div>
         </div>
 
-        <!-- Event Cards -->
-        {% for event in events %}
-        <div class="card overflow-hidden mb-3">
-            <div class="row g-0">
-                <h5 class="card-title p-2">
-                    {{ event.title }}
-                    <a href="/user/events/edit/{{ event.slug }}" class="btn btn-sm btn-danger">
-                        <i class="ci-edit"></i>&nbsp;edit
-                    </a>
-                </h5>
-                <div class="col-sm-4 position-relative" style="min-height: 220px">
-                    <img src="/media/{{ event.poster_image }}"
-                        class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                        alt="{{ event.title }}">
-                </div>
-                <div class="col-sm-8">
-                    <div class="card-body">
-                        <p><i class="ci-map-pin"></i>
+       
+    </div>
+
+    <div class="table-responsive">
+        <div
+            data-filter-list='{"searchClass": "table-search", "listClass": "table-list", "sortClass": "table-sort", "valueNames": ["ticket-no", "detail", "tickets", "total-cost", "payment", "attended"]}'>
+            <!-- Search field -->
+            <div class="position-relative mb-2" style="max-width: 600px">
+                <i class="ci-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                <input type="search" class="table-search form-control form-icon-start" placeholder="Search bookings">
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive overflow-auto" style="height: 500px;">
+                <table class="table align-middle fs-sm mb-0 table-striped">
+                    <thead class="position-sticky top-0 bg-light">
+                        <tr>
+                             <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="attended"></button></th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="ticket-no">Title.</button></th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="detail">Address</button></th>
+                           
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="payment">Price</button></th>
+                                                        <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="status">Status</button></th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="">#</button></th>
+                           
+                        </tr>
+                    </thead>
+
+                    <tbody class="table-list">
+                        {% for event in events %}
+                        <tr>
+                            <td class="ticket-no"> <img src="/media/{{event.poster_image}}" width="70px"></td>
+                            <td class="detail">
+                                    {{ event.title }}
+                             
+                            </td>
+                            <td class="tickets">
+                                 <p><i class="ci-map-pin"></i>
                             {{ event.place }}, {{ event.state }}, {{ event.country }}
                         </p>
                         <p><i class="ci-calendar"></i>
                             {{ event.show_date }} at {{ event.show_time }}
                         </p>
-
-                        <b>Tickets</b>
-                        <ul class="list-group list-group-flush">
-                             <li class="list-group-item">
+                            </td>
+                            
+                            <td class="payment">
+                               <ul class="list-group list-group-flush">
+                             <li  >
                                 <b> {{ event.general_label }}: </b> {{ event.currency }} {{ event.price }} Ticket Qty: {{ event.quantity }}
                                  
                             </li>
                          
                             {% if event.vip_price %}
-                            <li class="list-group-item">
+                            <li  >
                                 <b> {{ event.vip_label }}: </b> {{ event.currency }} {{ event.vip_price }} Ticket Qty: {{ event.vip_quantity }}
                             </li>
                             {% endif %}                          
 
                             {% if event.economy_price %}
-                            <li class="list-group-item">
+                         
                                  <b> {{ event.economy_label }}: </b> {{ event.currency }} {{ event.economy_price }} Ticket Qty: {{ event.economy_quantity }}
-                            </li>
+                          
                             {% endif %}
                         </ul>
 
-                        <a class="btn btn-primary btn-sm mt-3" href="/user/events/view/{{ event.slug }}">
-                            <i class="ci-eye fs-base animate-target me-2 ms-n1"></i> View Details
-                        </a>
-                    </div>
-                </div>
+                            </td>
+                               <td class="status">{%if event.status%}<span class="text-success"> <i class="ci-check-circle "></i> Active</span>{%else%}<span class="text-danger"><i class="ci-close-circle text-red"></i></i>Expired</span>{%endif%}</td>
+                            <td class="attended">
+                                 <a href="/event/{{event.slug}}" class="btn btn-sm btn-success"><i class="ci-eye"></i>&nbsp;View</a>
+<br/><br/>
+                                  <a href="/user/events/edit/{{ event.slug }}" class="btn btn-sm btn-danger">
+                        <i class="ci-edit"></i>&nbsp;edit
+                    </a>
+                              
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-        {% empty %}
-        <div class="alert d-sm-flex alert-warning pb-4 pt-sm-4" role="alert">
-            <i class="ci-check-circle fs-4 mt-1 mb-2 mb-sm-0"></i>
-            <div class="ps-sm-3 pe-sm-4">
-                <h5 class="alert-heading mb-2">No events added</h5>
-            </div>
-        </div>
-        {% endfor %}
     </div>
 </div>
 {% endblock %}

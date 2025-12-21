@@ -2,16 +2,8 @@
 {% block content %}
 <!-- Page content -->
 <div class="container ">
-    <nav aria-label="breadcrumb  ">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item active"><a href="/user/movies/">Movies/</a></li>
-        </ol>
-    </nav>
-    <div
-        data-filter-list='{"searchClass": "product-search", "listClass": "product-list", "sortClass": "product-sort", "valueNames": ["product", "date", "tendered", "earning"]}'>
-        <!-- Header -->
-        <div class="d-md-flex align-items-center justify-content-between gap-3 pb-2 pb-sm-3 mb-md-2">
-            <h6 class="<h5></h5> mb-md-0">Movies</h6>
+     <div class="d-md-flex align-items-center justify-content-between gap-3 pb-2 pb-sm-3 mb-md-2">
+            <h1 class="alert-heading mb-2"><i class="ci-sliders"></i> Your movies list</h1>
             <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
                 <div class="position-relative" style="min-width: 190px">
                     <a href="/user/movies/add">
@@ -23,49 +15,83 @@
                 </div>
             </div>
         </div>
-        <!-- Horizontal card: Image on the left -->
+    <div class="table-responsive">
+        <div
+            data-filter-list='{"searchClass": "table-search", "listClass": "table-list", "sortClass": "table-sort", "valueNames": ["ticket-no", "detail", "tickets", "total-cost", "payment", "attended"]}'>
+            <!-- Search field -->
+            <div class="position-relative mb-2" style="max-width: 600px">
+                <i class="ci-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                <input type="search" class="table-search form-control form-icon-start" placeholder="Search bookings">
+            </div>
 
-        {% for movie in movies%}
-        <div class="card overflow-hidden mb-3">
-            <div class="row g-0">
-                <h5 class="card-title  p-2">{{movie.title}} <a href="/user/movies/edit/{{movie.slug}}" class="btn btn-sm btn-danger"><i class="ci-edit"></i>&nbsp;edit</a></h5>
-                <div class="col-sm-4 position-relative" style="min-height: 220px">
+            <!-- Table -->
+            <div class="table-responsive overflow-auto" style="height: 500px;">
+                <table class="table align-middle fs-sm mb-0 table-striped">
+                    <thead class="position-sticky top-0 bg-light">
+                        <tr>
+                             <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="attended"></button></th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="ticket-no">Movie Name.</button></th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="detail">All Shows</button></th>
+                           
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="total-cost">Edit</button></th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="payment">View detail</button></th>
+                           
+                        </tr>
+                    </thead>
 
-                    <img src="/media/{{movie.poster_image}}"
-                        class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Card image">
-                </div>
-                <div class="col-sm-8">
-                    <div class="card-body">
-                        <b class="list-group-item">Shows</b>
-                        {% if movie.filmshow.all %}
-                        <ul class="list-group list-group-flush">
+                    <tbody class="table-list">
+                         {% for movie in movies%}
+                        <tr>
+                            <td class="ticket-no"> <img src="/media/{{movie.poster_image}}" width="70px"></td>
+                            <td class="detail">
+                                {{movie.title}} 
+                             
+                            </td>
+                            <td class="tickets">
+                                {% if movie.filmshow.all %}
+                           
 
                             {% for address in movie.filmshow.all %}
-                            <li class="list-group-item">
-                                <i class="ci-map-pin"></i>
+                            
+                               <i class="ci-check-circle text-info"></i>
                                 &nbsp; {{address.theater_name}},{{address.state}}, {{address.country}} on
-                                {{address.show_date}}
-                                &nbsp;
-                            </li>
-                            {%endfor%}
+                                {{address.show_date}}  {% now "Y-m-d" as today %}
 
-                        </ul>
+                    {% if address.show_date|date:"Y-m-d" < today %}
+                    <span class="text-danger"><i class="ci-close-circle"></i>&nbsp;Ended</span>
+                    {% else %}
+                    <span class="text-success"><i class="ci-check-circle "></i>&nbsp;Active</span>
+                    {% endif %}
+                                &nbsp;
+                           <br/>  
+                            {%endfor%}
+ 
                         {%else%}
-                        <div class="alert d-sm-flex alert-warning pb-4 pt-sm-4" role="alert">
-                            <i class="ci-check-circle fs-4 mt-1 mb-2 mb-sm-0"></i>
-                            <div class="ps-sm-3 pe-sm-4">
-                                <h5 class="alert-heading mb-2">No shows added</h5>
-                            </div>
-                        </div>
+                         
+                            <i class="ci-check-circle text-warning"></i>
+                           No show available
+                                                  <br/>      
                         {%endif%}
-                        <a class="btn btn-primary btn-sm" href="/user/movies/add/addshow/{{movie.slug}}">
-                            <i class="ci-plus-circle fs-base animate-target me-2 ms-n1"></i> View shows</a>
-                    </div>
-                </div>
+                        <br/> 
+                         <a class="btn btn-outline-info btn-sm" href="/user/movies/add/addshow/{{movie.slug}}">
+                            <i class="ci-plus-circle fs-base animate-target me-2 ms-n1"></i> Add more shows</a>
+                            </td>
+                            
+                            <td class="payment">
+                                <a href="/user/movies/edit/{{movie.slug}}" class="btn btn-sm btn-danger"><i class="ci-edit"></i>&nbsp;edit</a>
+                            </td>
+                            <td class="attended">
+                               <a href="/{{movie.slug}}" class="btn btn-sm btn-success"><i class="ci-eye"></i>&nbsp;View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-        {%endfor%}
     </div>
+    
+   
 </div>
 
 {% endblock %}

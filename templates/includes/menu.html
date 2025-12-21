@@ -19,9 +19,20 @@
                  <li class="nav-item">
                     <a class="nav-link  *:" href="/ticket">Get ticket</a>
                 </li>
+         {% if request.user.is_partner %}
+           <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"   data-bs-auto-close="outside" aria-expanded="false">Dashboard</a>
+          <ul class="dropdown-menu">
+             <li><a class="dropdown-item" href="/user/">Bookings</a></li>
+    <li><a class="dropdown-item" href="/user/movies/">Movies</a></li>
+      <li><a class="dropdown-item" href="/user/events/">Events</a></li>
+          </ul>
+        </li>    
         
       </ul>
-      
+        {%endif%}
+             
+ 
     </nav>
       <div class="d-flex align-items-center py-lg-1">
       <div class="dropdown">
@@ -70,7 +81,11 @@
 
   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
     <li><a class="dropdown-item" href="/user/">Profile</a></li>
-    
+      <li><a class="dropdown-item" href="/user/updateinfo/">Update Info</a></li>
+      <li><a class="dropdown-item" href="/user/password/">Change Password</a></li>
+       {% if request.user.is_partner %}
+         <li><a class="dropdown-item" href="/user/events/">Bank Account</a></li>
+       {%endif%}
     <li><a class="dropdown-item" href="/user/logout">Logout</a></li>
   </ul>
 </div>
