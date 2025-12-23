@@ -312,7 +312,7 @@
 </section>
  
             <!-- Success alert with additional content -->
-<div class="alert d-sm-flex p-0  pb-4 " role="alert">
+<div class="alert d-sm-flex p-0  " role="alert">
  
   <div class="ps-sm-3 pe-sm-4">
     <h1 class="alert-heading mb-2"><span class="ci-smile">&nbsp; Host Free Events & Social Causes</span></h1>
@@ -326,7 +326,150 @@ Bring people together for a greater purpose. Start today on GrabMyTix!
 </div>
          
      
+   <!-- Categories that turns into carousel on screen < 992px (lg breackpoint) -->
+      <section class="mb-3 ">
+         <h1 class="alert-heading mb-4"><span class="ci-maximize">&nbsp;Explore</span></h1>
+        <div class="swiper" data-swiper='{
+          "slidesPerView": 1,
+          "spaceBetween": 24,
+          "pagination": {
+            "el": ".swiper-pagination",
+            "clickable": true
+          },
+          "breakpoints": {
+            "680": {
+              "slidesPerView": 3
+            },
+            "992": {
+              "slidesPerView": 3
+            }
+          }
+        }'>
+          <div class="swiper-wrapper">
 
+            <!-- Category -->
+            <div class="swiper-slide">
+              <div class="hover-effect-opacity position-relative">
+                <div class="d-flex justify-content-between position-relative z-2 ps-2 ps-xl-3">
+                  <div class="d-flex flex-column min-w-0 p-3">
+                    <h2 class="h5 text-nowrap pt-2 pt-xl-3">Best Movies</h2>
+                    <ul class="nav flex-column gap-2 mt-n1">
+                        <li class="d-flex w-100 pt-1">
+                       Romance
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                       Action
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                      Comedy
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        Drama
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                       Horror
+                      </li>
+                    </ul>
+                     
+                      <a class="btn btn-sm btn-danger mt-4" href="/movies">
+                        <span class="animate-target">Explore more</span>
+                        <i class="ci-arrow-up-right fs-base ms-1"></i>
+                      </a>
+                   
+                  </div>
+                  <div class="ratio w-100 align-self-end" style="max-width: 220px; --cz-aspect-ratio: calc(305 / 220 * 100%)">
+                    <img src="/media/movies_grabmytix.svg"  alt="Movies">
+                  </div>
+                </div>
+                <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none-dark" style="background: linear-gradient(124deg, #e2daec -29.7%, #e4eefd 65.5%)"></span>
+                <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none d-block-dark" style="background: linear-gradient(124deg, #37343b -29.7%, #222a36 65.5%)"></span>
+              </div>
+            </div>
+
+            <!-- Category -->
+            <div class="swiper-slide">
+              <div class="hover-effect-opacity position-relative">
+                <div class="d-flex justify-content-between position-relative z-2 ps-2 ps-xl-3">
+                  <div class="d-flex flex-column min-w-0 p-3">
+                    <h2 class="h5 text-nowrap pt-2 pt-xl-3">Inspiring Events</h2>
+                    <ul class="nav flex-column gap-2 mt-n1">
+                      <li class="d-flex w-100 pt-1">
+                        Party
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                       Live show
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                      Gathering
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                      Concert
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                      Sports
+                      </li>
+                    </ul>
+                     
+                      <a class="btn btn-sm btn-danger mt-4" href="/events">
+                        <span class="animate-target">Explore more</span>
+                        <i class="ci-arrow-up-right fs-base ms-1"></i>
+                      </a>
+                    
+                  </div>
+                  <div class="ratio w-100 align-self-end rtl-flip" style="max-width: 220px; --cz-aspect-ratio: calc(305 / 220 * 100%)">
+                    <img src="/media/party_grabmytix.svg" alt="party">
+                  </div>
+                </div>
+                <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none-dark" style="background: linear-gradient(119deg, #e9e0eb 0%, #f8eff1 52.24%)"></span>
+                <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none d-block-dark" style="background: linear-gradient(119deg, #2f2c3a 0%, #372e2f 52.24%)"></span>
+              </div>
+            </div>
+
+               <!-- Category -->
+            <div class="swiper-slide">
+              <div class="hover-effect-opacity position-relative">
+                <div class="d-flex justify-content-between position-relative z-2 ps-2 ps-xl-3">
+                  <div class="d-flex flex-column min-w-0 p-3">
+                    <h2 class="h5 text-nowrap pt-2 pt-xl-3">Free Socail Causes</h2>
+                    <ul class="nav flex-column gap-2 mt-n1">
+                        <li class="d-flex w-100 pt-1">
+                       National celebrations
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        Free Ticket services
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                       Religious
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        Fund raising
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                       Donation
+                      </li>
+                       
+                    </ul>
+                    
+                      <a class="btn btn-sm btn-danger mt-4" href="/events">
+                        <span class="animate-target">Learn more</span>
+                        <i class="ci-arrow-up-right fs-base ms-1"></i>
+                      </a>
+ 
+                  </div>
+                  <div class="ratio w-100 align-self-end rtl-flip" style="max-width: 220px; --cz-aspect-ratio: calc(305 / 220 * 100%)">
+                       <img src="/media/socail_grabmytix.svg"  alt="social">
+                  </div>
+                </div>
+                <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none-dark" style="background: linear-gradient(118deg, #e9e8e8 0%, #e2ecea 51.13%)"></span>
+                <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none d-block-dark" style="background: linear-gradient(118deg, #323232 0%, #252928 51.13%)"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination (Bullets) -->
+          <div class="swiper-pagination position-static mt-3 mt-sm-4"></div>
+        </div>
+      </section>
  </div>
 
     </div>
