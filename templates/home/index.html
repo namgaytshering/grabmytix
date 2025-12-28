@@ -1,25 +1,21 @@
 {% extends "../includes/base.html" %}
 {% block content %}
 <style>
-     .nav-link.active {
-    background-color: #dc3545 !important; /* Bootstrap's danger color */
+  .nav-link.active {
+    background-color: #dc3545 !important;
+    /* Bootstrap's danger color */
     color: #fff !important;
-    border:0px
-} 
+    border: 0px
+  }
 </style>
 <div class="container-fluid">
- 
-    <div >
-        {%if movies %}
-           <h1 class="alert-heading  mb-2 p-3"  >
-            <span class="ci-film  animate-target fs-md"> &nbsp; Movies Near You </span>
-            
-            </h1>
-            {%endif%}
-        <div class="row mt-3 ">
-            <!-- Controlled slider -->
-            <div class="col-md-6 mb-4 mb-md-0 pb-0 pb-md-0">
-                <div class="swiper" id="images" data-swiper='{
+
+  <div>
+
+    <div class="row mt-3 ">
+      <!-- Controlled slider -->
+      <div class="col-md-6 mb-4 mb-md-0 pb-0 pb-md-0">
+        <div class="swiper" id="images" data-swiper='{
                 "allowTouchMove": false,
                 "effect": "flip",
                 "flipEffect": {
@@ -27,48 +23,44 @@
                 },
                 "loop": true
             }'>
-                    <div class="swiper-wrapper  ">
+          <div class="swiper-wrapper  ">
 
-                       
-                         <div class="swiper-slide ">
-                             
-                                <img src="/media/free_grabmytix.svg" alt="Image 1"
-                                    style="width: 100% ;height: 400px;  object-fit: fit;"
-                                    class="img-fluid rounded slider-image " />
-                         
-                             
-                        </div>
-                        <div class="swiper-slide ">
-                             
-                                <img src="/media/grabmytix_world.svg" alt="Image 1"
-                                    style="width: 100% ;height: 400px;  object-fit: fit;"
-                                    class="img-fluid rounded slider-image " />
-                         
-                             
-                        </div>
-                         <div class="swiper-slide ">
-                             
-                                <img src="/media/transparent_grabmytix.svg" alt="Image 1"
-                                    style="width: 100% ;height: 400px;  object-fit: fit;"
-                                    class="img-fluid rounded slider-image " />
-                         
-                             
-                        </div>
-                         <div class="swiper-slide ">
-                             
-                                <img src="/media/watch_movies.svg" alt="Image 1"
-                                    style="width: 100% ;height: 400px;  object-fit: fit;"
-                                    class="img-fluid rounded slider-image " />
-                         
-                             
-                        </div>
-                    </div>
-                </div>
+
+            <div class="swiper-slide ">
+
+              <img src="/media/free_grabmytix.svg" alt="Image 1" style="width: 100% ;height: 400px;  object-fit: fit;"
+                class="img-fluid rounded slider-image " />
+
+
             </div>
+            <div class="swiper-slide ">
 
-            <!-- Master slider -->
-            <div class="col-md-5 ps-xl-5">
-                <div class="swiper" data-swiper='{
+              <img src="/media/grabmytix_world.svg" alt="Image 1" style="width: 100% ;height: 400px;  object-fit: fit;"
+                class="img-fluid rounded slider-image " />
+
+
+            </div>
+            <div class="swiper-slide ">
+
+              <img src="/media/transparent_grabmytix.svg" alt="Image 1"
+                style="width: 100% ;height: 400px;  object-fit: fit;" class="img-fluid rounded slider-image " />
+
+
+            </div>
+            <div class="swiper-slide ">
+
+              <img src="/media/watch_movies.svg" alt="Image 1" style="width: 100% ;height: 400px;  object-fit: fit;"
+                class="img-fluid rounded slider-image " />
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Master slider -->
+      <div class="col-md-5 ps-xl-5">
+        <div class="swiper" data-swiper='{
                     "spaceBetween": 32,
                     "loop": true,
                     "speed": 600,
@@ -78,91 +70,95 @@
                     "nextEl": "#next-btn"
                     }
                 }'>
-                    <div class="swiper-wrapper  text-md-start">
+          <div class="swiper-wrapper  text-md-start">
 
-                       
-                         <div class="swiper-slide pb-4 pt-0 ">
-                            <h1 class="text-pretty">Host Free Events</h1>
-                            <div class="  ">
-                                <p>
-                                    Host free events or social causes on GrabMyTix – our platform services are completely free when tickets are free!
-                                </p>
-                            </div>
 
-                            <a href="/about/" class="btn btn-md btn-danger" a><i class="ci-ticket"></i>
-                                &nbsp;Learn more about us
-                                &nbsp;&nbsp;
-                                <i class="ci-chevron-right"></i>
-                            </a>
-                             
+            <div class="swiper-slide pb-4 pt-0 ">
+              <h1 class="text-pretty">Host Free Events</h1>
+              <div class="  ">
+                <p>
+                  Host free events or social causes on GrabMyTix – our platform services are completely free when
+                  tickets are free!
+                </p>
+              </div>
 
-                        </div>
-                        <div class="swiper-slide pb-4 pt-0 ">
-                            <h1 class="text-pretty">Sell Tickets Worldwide</h1>
-                            <div class="  ">
-                                <p>
-                                   Connecting people everywhere with seamless solutions, available worldwide, empowering dreams, businesses, and journeys without borders.                </p>
-                            </div>
+              <a href="/about/" class="btn btn-md btn-danger" a><i class="ci-ticket"></i>
+                &nbsp;Learn more about us
+                &nbsp;&nbsp;
+                <i class="ci-chevron-right"></i>
+              </a>
 
-                            <a href="/about/" class="btn btn-md btn-danger" a><i class="ci-ticket"></i>
-                                &nbsp;Learn more about us
-                                &nbsp;&nbsp;
-                                <i class="ci-chevron-right"></i>
-                            </a>
-                             
 
-                        </div>
-                         <div class="swiper-slide pb-4 pt-0 ">
-                            <h1 class="text-pretty"> Trust and Transparency</h1>
-                            <div class="  ">
-                                <p>
-                                   At grabMytix, partners enjoy full transparency via real-time dashboard access to bookings, payments, sales, and transactions for informed decisions.
-                                          </p>
-                            </div>
-
-                            <a href="/about/" class="btn btn-md btn-danger" a><i class="ci-ticket"></i>
-                                &nbsp;Learn more about us
-                                &nbsp;&nbsp;
-                                <i class="ci-chevron-right"></i>
-                            </a>
-                             
-
-                        </div>
-
-                <div class="swiper-slide pb-4 pt-0 ">
-                            <h1 class="text-pretty">Great Stories Begin Here </h1>
-                            <div class="  ">
-                                <p>
-                                Discover unforgettable movie magic with GrabMyTix—where inspiration ignites, new stories await, and your cinematic adventure begins.          </p>                     </div>
-
-                            <a href="/about/" class="btn btn-md btn-danger" a><i class="ci-ticket"></i>
-                                &nbsp;Learn more about us
-                                &nbsp;&nbsp;
-                                <i class="ci-chevron-right"></i>
-                            </a>
-                             
-
-                        </div>
-                       
-                    </div>  
-                </div>
-                <div class="d-flex justify-content-center justify-content-md-start ">
-                    <button type="button"
-                        class="btn btn-icon btn-outline-secondary animate-slide-start rounded-circle me-1" id="prev-btn"
-                        aria-label="Prev">
-                        <i class="ci-chevron-left fs-lg animate-target"></i>
-                    </button>
-                    <button type="button" class="btn btn-icon btn-outline-secondary animate-slide-end rounded-circle"
-                        id="next-btn" aria-label="Next">
-                        <i class="ci-chevron-right fs-lg animate-target"></i>
-                    </button>
-                </div>
             </div>
+            <div class="swiper-slide pb-4 pt-0 ">
+              <h1 class="text-pretty">Sell Tickets Worldwide</h1>
+              <div class="  ">
+                <p>
+                  Connecting people everywhere with seamless solutions, available worldwide, empowering dreams,
+                  businesses, and journeys without borders. </p>
+              </div>
+
+              <a href="/about/" class="btn btn-md btn-danger" a><i class="ci-ticket"></i>
+                &nbsp;Learn more about us
+                &nbsp;&nbsp;
+                <i class="ci-chevron-right"></i>
+              </a>
+
+
+            </div>
+            <div class="swiper-slide pb-4 pt-0 ">
+              <h1 class="text-pretty"> Trust and Transparency</h1>
+              <div class="  ">
+                <p>
+                  At grabMytix, partners enjoy full transparency via real-time dashboard access to bookings, payments,
+                  sales, and transactions for informed decisions.
+                </p>
+              </div>
+
+              <a href="/about/" class="btn btn-md btn-danger" a><i class="ci-ticket"></i>
+                &nbsp;Learn more about us
+                &nbsp;&nbsp;
+                <i class="ci-chevron-right"></i>
+              </a>
+
+
+            </div>
+
+            <div class="swiper-slide pb-4 pt-0 ">
+              <h1 class="text-pretty">Great Stories Begin Here </h1>
+              <div class="  ">
+                <p>
+                  Discover unforgettable movie magic with GrabMyTix—where inspiration ignites, new stories await, and
+                  your cinematic adventure begins. </p>
+              </div>
+
+              <a href="/about/" class="btn btn-md btn-danger" a><i class="ci-ticket"></i>
+                &nbsp;Learn more about us
+                &nbsp;&nbsp;
+                <i class="ci-chevron-right"></i>
+              </a>
+
+
+            </div>
+
+          </div>
         </div>
+        <div class="d-flex justify-content-center justify-content-md-start ">
+          <button type="button" class="btn btn-icon btn-outline-secondary animate-slide-start rounded-circle me-1"
+            id="prev-btn" aria-label="Prev">
+            <i class="ci-chevron-left fs-lg animate-target"></i>
+          </button>
+          <button type="button" class="btn btn-icon btn-outline-secondary animate-slide-end rounded-circle"
+            id="next-btn" aria-label="Next">
+            <i class="ci-chevron-right fs-lg animate-target"></i>
+          </button>
+        </div>
+      </div>
     </div>
-    <div class=" mt-4    border-bottom">
-        
-        <!-- <div class="alert   alert-white pt-5 pb-0  " role="alert">
+  </div>
+  <div class=" mt-4    border-bottom">
+
+    <!-- <div class="alert   alert-white pt-5 pb-0  " role="alert">
           <a href="/movies" class="text-decoration-none alert-heading" >  
             <h1 class="alert-heading mb-2"  >
             <i class="ci-map-pin animate-target fs-md "></i>
@@ -171,7 +167,7 @@
                 </a>
         </div> -->
 
-        <!-- {% regroup upcomings by state as state_list %}
+    <!-- {% regroup upcomings by state as state_list %}
  
         
         <ul class="nav nav-pills mb-3" id="stateTab" role="tablist">
@@ -185,211 +181,220 @@
             </li>
             {% endfor %}
         </ul> -->
+
     {%if movies %}
-       <!-- Recipes + Top departments -->
-      <section class=" mt-5 p-0  mb-sm-3 mb-lg-4">
-         <h1 class="alert-heading  mb-4 mt-3 "  >
-            <span class="ci-film  animate-target fs-md"> &nbsp; Movies Near You </span>
-            
-            </h1>
-        
-        <div class="row">
-     {% for movie in movies%}
-          <!-- Recipes list -->
-          <div class="col-md-6  mb-lg-0">
-      
-              <!-- Recipe -->
-              <div class="position-relative d-flex align-items-start align-items-sm-center mb-4">
-                <div class="ratio" style="--cz-aspect-ratio: calc(140 / 196 * 100%); max-width: 300px">
-                  <img src="/media/{{movie.poster_image}}" class="rounded" alt="Image">
-                </div>
-                <div class="col ps-3">
-                        <h4 class="text-pretty">{{movie.title}}</h4>
+    <!-- Recipes + Top departments -->
+    <section class=" mt-5 p-0  mb-sm-3 mb-lg-4">
+      <h1 class="alert-heading  mb-4 mt-3 ">
+        <span class="ci-film  animate-target fs-md"> &nbsp; Movies Near You </span>
 
-                        <div class="d-flex flex-wrap gap-2 mb-2 fs-sm text-body-secondary">
-                            <div class="d-flex align-items-center text-nowrap">
-                                <i class="ci-clock fs-base me-2"></i>
-                                {{ movie.duration }} hr{{ movie.duration|pluralize }}
-                            </div>
-                            <div class="d-flex align-items-center text-nowrap">
-                                <i class="ci-zap fs-base me-2"></i>
-                                {{ movie.genre }}
-                            </div>
-                            <div class="d-flex align-items-center text-nowrap cursor-pointer " 
-                                 data-bs-toggle="modal"
-                                 data-bs-trailer-url="{{ movie.trailer }}" 
-                                 data-bs-target="#trailer">
-                                <i class="ci-play-circle text-success fs-base me-2"></i>Trailer
-                            </div>
-                        </div>
+      </h1>
 
-                        <b>Screenings</b>
-                        <div class="mb-3">
-                            {% for address in movie.filmshow.all %}
-                            <small class="d-block mb-1">
-                                <a href="/show/{{ address.slug }}" class="text-decoration-none text-dark">
-                                    <i class="ci-check"></i> {{ address.state.state_short|upper }} 
-                                    - {{ address.show_date|date:"M d" }}, {{ address.show_time|time:"h:i A" }}
-                                </a>
-                            </small>
-                            {% endfor %}
-                        </div>
-
-                        <a href="/{{movie.slug}}" class="btn btn-sm btn-danger">
-                            <i class="ci-ticket"></i>&nbsp;Grab a Ticket&nbsp;<i class="ci-chevron-right"></i>
-                        </a>
-                    </div>
-
-              </div>
-
-            
-            
+      {% for movie in movies %}
+      <div class="row mb-4">
+        {% if forloop.counter|divisibleby:2 %}
+        <!-- Even: Image on left -->
+        <div class="col-md-5 order-md-1 mb-4 mb-md-0">
+          <div class="position-relative h-100 bg-body-tertiary rounded-5 overflow-hidden">
+            <div class="d-none d-md-block" style="height: 440px"></div>
+            <div class="d-none d-sm-block d-md-none" style="height: 350px"></div>
+            <div class="d-sm-none" style="height: 250px"></div>
+            <img src="/media/{{ movie.poster_image }}"
+              class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Image">
           </div>
-        {%endfor%} 
-         
         </div>
-  
-
-
-
-          </section>    
-       {%endif%}   
-    <div class="alert   alert-white pt-5 p-0" role="alert">
-            <h1 class="alert-heading mb-2"><span class="ci-gift fs-md ">&nbsp;Events</span> </h1>
-        </div>
-       
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-2">
-            {% for event in events%}
-            <div class="col">
-                <div
-                    class="card h-100 animate-underline hover-effect-opacity hover-effect-scale rounded-2 overflow-hidden">
-                    <div class="card-img-top position-relative bg-body-tertiary overflow-hidden">
-                        <a class="ratio d-block hover-effect-target" style="--cz-aspect-ratio: calc(220 / 304 * 100%)"
-                            href="/event/{{event.slug}}">
-                            <img src="/media/{{event.poster_image}}" class="w-100 h-100 object-fit-cover" alt="Image">
-                        </a>
-                         
-                    </div>
-                    <div class="card-body p-3">
-                        <div class="d-flex min-w-0 justify-content-between gap-2 gap-sm-3 mb-2">
-                            <h3 class="nav min-w-0 mb-0">
-                                <a class="nav-link text-truncate p-0" href="/event/{{event.slug}}">
-                                    <span class="text-truncate animate-target">{{event.title}}</span>
-                                </a>
-                            </h3>
-                            <div class="h6 mb-0 text text-success">
-                                 {%if event.status == 0 %}
-                                <span class="text text-warning"> Expired</span>
-                                      {%else%}
-                                {%if event.price == 0%}
-                                Free
-                                {%else%}
-                                ${{event.price}}
-                                {%endif%}
-                                    {%endif%}
-                            </div>
-                        </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="nav align-items-center gap-1 fs-xs">
-
-                                <i class="ci-schedule"></i>
-                                In {{event.place}},{{event.state.state_short|upper}}
-                                <div class="text-body-secondary">on </div>
-                                {{event.show_date}} at {{event.show_time|date:'h:i A'}}
-                            </div>
-                            <small><span class="text text-info"> <i class="ci-ticket"></i> {{event.event_type}}</span></small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {%endfor%}
-
-
-        </div>
-         <!-- WHAT WE OFFER -->
-
- <section class="mt-5 mb-5">
-    <div class="">
-        <h2 class="section-title   alert-heading ">
-            <span class="ci-book-open">&nbsp;What We Offer</span>
-           </h2>
-
-        <div class="row g-4">
-
-            <div class="col-md-3">
-                <div class="card p-4 shadow-sm h-100 text-center" >
-                    <div class="icon-card">⚡</div>
-                    <h5 class="fw-bold mt-3">Fast Booking</h5>
-                    <p>Book tickets in seconds with a clean, simple checkout experience.</p>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card p-4 shadow-sm h-100 text-center" 
-                     >
-                    <div class="icon-card">🔒</div>
-                    <h5 class="fw-bold mt-3">Secure Payments</h5>
-                    <p>We use trusted payment processors to keep all transactions safe.</p>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card p-4 shadow-sm h-100 text-center" 
-                     >
-                    <div class="icon-card">📱</div>
-                    <h5 class="fw-bold mt-3">Mobile-Friendly</h5>
-                    <p>Book your tickets anytime, anywhere, on any device.</p>
-                </div>
-            </div>
-
-            <!-- ⭐ New Transparent System Card -->
-            <div class="col-md-3">
-                <div class="card p-4 shadow-sm h-100 text-center" 
-                      >
-                    <div class="icon-card">👁️</div>
-                    <h5 class="fw-bold mt-3">Transparent System</h5>
-                    <p>Our platform is fully transparent so users can trust every step of the process.</p>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
- 
-   <section class=" mt-5 mb-5 ">
-        <div class="row mb-4">
+        <div class="col-md-7 order-md-2">
+          {% else %}
+          <!-- Odd: Image on right -->
           <div class="col-md-5 order-md-2 mb-4 mb-md-0">
             <div class="position-relative h-100 bg-body-tertiary rounded-5 overflow-hidden">
               <div class="d-none d-md-block" style="height: 440px"></div>
               <div class="d-none d-sm-block d-md-none" style="height: 350px"></div>
               <div class="d-sm-none" style="height: 250px"></div>
-                <img src="/media/free_service_grabmytix.svg"  class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Image">
+              <img src="/media/{{ movie.poster_image }}"
+                class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Image">
             </div>
           </div>
           <div class="col-md-7 order-md-1">
+            {% endif %}
+
             <div class="d-flex align-items-center h-100 bg-body-tertiary rounded-5 p-4 p-xl-5">
               <div class="p-sm-3 p-xxl-2">
-                <h2 class="mb-lg-4"><span class="ci-smile">&nbsp; </span>Host Free Events & Social Causes</h2>
-                <p class="fs-lg pb-sm-2 pb-lg-3">
-                    <b> Our platform services are completely free when tickets are free!</b><br/><br/>
-Whether you're organizing community gatherings, charity fundraisers, awareness campaigns, or cultural celebrations, GrabMyTix waives all fees to support your mission.
-Focus on creating impact—let us handle seamless ticketing, registrations, and attendee management at zero cost.
-Bring people together for a greater purpose. Start today on GrabMyTix!
-                </p>
-                
+                <h1 class="text-pretty">{{ movie.title }}</h1>
+                <div class="d-flex flex-wrap gap-2 mb-2 fs-sm text-body-secondary">
+                  <div class="d-flex align-items-center text-nowrap">
+                    <i class="ci-clock fs-base me-2"></i>
+                    {{ movie.duration }} hr{{ movie.duration|pluralize }}
+                  </div>
+                  <div class="d-flex align-items-center text-nowrap">
+                    <i class="ci-zap fs-base me-2"></i>
+                    {{ movie.genre }}
+                  </div>
+                  <div class="d-flex align-items-center text-nowrap cursor-pointer" data-bs-toggle="modal"
+                    data-bs-trailer-url="{{ movie.trailer }}" data-bs-target="#trailer">
+                    <i class="ci-play-circle text-success fs-base me-2"></i>Trailer
+                  </div>
+                </div>
+                <div class="d-none d-md-block">
+                  <p>{{ movie.description|safe|linebreaks|truncatewords:30 }}</p>
+                </div>
+                <b>Screenings</b><br/><br/>
+                <div class="mb-3">
+                  {% for address in movie.filmshow.all %}
+                  <small class="d-block mb-1">
+                      <i class="ci-check"></i> {{ address.state.state_short|upper }}
+                      - {{ address.show_date|date:"M d" }}, {{ address.show_time|time:"h:i A" }}
+                    
+                  </small>
+                  {% endfor %}
+                </div>
+                <a href="/{{ movie.slug }}" class="btn btn-md btn-danger">
+                  <i class="ci-ticket"></i>&nbsp;Grab a Ticket&nbsp;<i class="ci-chevron-right"></i>
+                </a>
               </div>
             </div>
           </div>
         </div>
-</section>
-            
- 
-         
-     
-   <!-- Categories that turns into carousel on screen < 992px (lg breackpoint) -->
-      <section class="mb-3 ">
-         <h1 class="alert-heading mb-4"><span class="ci-maximize">&nbsp;Explore</span></h1>
-        <div class="swiper" data-swiper='{
+        {% endfor %}
+
+
+    </section>
+    {%endif%}
+    <div class="alert   alert-white pt-5 p-0" role="alert">
+      <h1 class="alert-heading mb-2"><span class="ci-gift fs-md ">&nbsp;Events</span> </h1>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-2">
+      {% for event in events%}
+      <div class="col">
+        <div class="card h-100 animate-underline hover-effect-opacity hover-effect-scale rounded-2 overflow-hidden">
+          <div class="card-img-top position-relative bg-body-tertiary overflow-hidden">
+            <a class="ratio d-block hover-effect-target" style="--cz-aspect-ratio: calc(220 / 304 * 100%)"
+              href="/event/{{event.slug}}">
+              <img src="/media/{{event.poster_image}}" class="w-100 h-100 object-fit-cover" alt="Image">
+            </a>
+
+          </div>
+          <div class="card-body p-3">
+            <div class="d-flex min-w-0 justify-content-between gap-2 gap-sm-3 mb-2">
+              <h3 class="nav min-w-0 mb-0">
+                <a class="nav-link text-truncate p-0" href="/event/{{event.slug}}">
+                  <span class="text-truncate animate-target">{{event.title}}</span>
+                </a>
+              </h3>
+              <div class="h6 mb-0 text text-success">
+                {%if event.status == 0 %}
+                <span class="text text-warning"> Expired</span>
+                {%else%}
+                {%if event.price == 0%}
+                Free
+                {%else%}
+                ${{event.price}}
+                {%endif%}
+                {%endif%}
+              </div>
+            </div>
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+              <div class="nav align-items-center gap-1 fs-xs">
+
+                <i class="ci-schedule"></i>
+                In {{event.place}},{{event.state.state_short|upper}}
+                <div class="text-body-secondary">on </div>
+                {{event.show_date}} at {{event.show_time|date:'h:i A'}}
+              </div>
+              <small><span class="text text-info"> <i class="ci-ticket"></i> {{event.event_type}}</span></small>
+            </div>
+          </div>
+        </div>
+      </div>
+      {%endfor%}
+
+
+    </div>
+    <!-- WHAT WE OFFER -->
+
+    <section class="mt-5 mb-5">
+      <div class="">
+        <h2 class="section-title   alert-heading ">
+          <span class="ci-book-open">&nbsp;What We Offer</span>
+        </h2>
+
+        <div class="row g-4">
+
+          <div class="col-md-3">
+            <div class="card p-4 shadow-sm h-100 text-center">
+              <div class="icon-card">⚡</div>
+              <h5 class="fw-bold mt-3">Fast Booking</h5>
+              <p>Book tickets in seconds with a clean, simple checkout experience.</p>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="card p-4 shadow-sm h-100 text-center">
+              <div class="icon-card">🔒</div>
+              <h5 class="fw-bold mt-3">Secure Payments</h5>
+              <p>We use trusted payment processors to keep all transactions safe.</p>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="card p-4 shadow-sm h-100 text-center">
+              <div class="icon-card">📱</div>
+              <h5 class="fw-bold mt-3">Mobile-Friendly</h5>
+              <p>Book your tickets anytime, anywhere, on any device.</p>
+            </div>
+          </div>
+
+          <!-- ⭐ New Transparent System Card -->
+          <div class="col-md-3">
+            <div class="card p-4 shadow-sm h-100 text-center">
+              <div class="icon-card">👁️</div>
+              <h5 class="fw-bold mt-3">Transparent System</h5>
+              <p>Our platform is fully transparent so users can trust every step of the process.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class=" mt-5 mb-5 ">
+      <div class="row mb-4">
+        <div class="col-md-5 order-md-2 mb-4 mb-md-0">
+          <div class="position-relative h-100 bg-body-tertiary rounded-5 overflow-hidden">
+            <div class="d-none d-md-block" style="height: 440px"></div>
+            <div class="d-none d-sm-block d-md-none" style="height: 350px"></div>
+            <div class="d-sm-none" style="height: 250px"></div>
+            <img src="/media/free_service_grabmytix.svg"
+              class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Image">
+          </div>
+        </div>
+        <div class="col-md-7 order-md-1">
+          <div class="d-flex align-items-center h-100 bg-body-tertiary rounded-5 p-4 p-xl-5">
+            <div class="p-sm-3 p-xxl-2">
+              <h2 class="mb-lg-4"><span class="ci-smile">&nbsp; </span>Host Free Events & Social Causes</h2>
+              <p class="fs-lg pb-sm-2 pb-lg-3">
+                <b> Our platform services are completely free when tickets are free!</b><br /><br />
+                Whether you're organizing community gatherings, charity fundraisers, awareness campaigns, or cultural
+                celebrations, GrabMyTix waives all fees to support your mission.
+                Focus on creating impact—let us handle seamless ticketing, registrations, and attendee management at
+                zero cost.
+                Bring people together for a greater purpose. Start today on GrabMyTix!
+              </p>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <!-- Categories that turns into carousel on screen < 992px (lg breackpoint) -->
+    <section class="mb-3 ">
+      <h1 class="alert-heading mb-4"><span class="ci-maximize">&nbsp;Explore</span></h1>
+      <div class="swiper" data-swiper='{
           "slidesPerView": 1,
           "spaceBetween": 24,
           "pagination": {
@@ -405,209 +410,222 @@ Bring people together for a greater purpose. Start today on GrabMyTix!
             }
           }
         }'>
-          <div class="swiper-wrapper">
+        <div class="swiper-wrapper">
 
-            <!-- Category -->
-            <div class="swiper-slide">
-              <div class="hover-effect-opacity position-relative">
-                <div class="d-flex justify-content-between position-relative z-2 ps-2 ps-xl-3">
-                  <div class="d-flex flex-column min-w-0 p-3">
-                    <h2 class="h5 text-nowrap pt-2 pt-xl-3">Best Movies</h2>
-                    <ul class="nav flex-column gap-2 mt-n1">
-                        <li class="d-flex w-100 pt-1">
-                       Romance
-                      </li>
-                      <li class="d-flex w-100 pt-1">
-                       Action
-                      </li>
-                      <li class="d-flex w-100 pt-1">
+          <!-- Category -->
+          <div class="swiper-slide">
+            <div class="hover-effect-opacity position-relative">
+              <div class="d-flex justify-content-between position-relative z-2 ps-2 ps-xl-3">
+                <div class="d-flex flex-column min-w-0 p-3">
+                  <h2 class="h5 text-nowrap pt-2 pt-xl-3">Best Movies</h2>
+                  <ul class="nav flex-column gap-2 mt-n1">
+                    <li class="d-flex w-100 pt-1">
+                      Romance
+                    </li>
+                    <li class="d-flex w-100 pt-1">
+                      Action
+                    </li>
+                    <li class="d-flex w-100 pt-1">
                       Comedy
-                      </li>
-                      <li class="d-flex w-100 pt-1">
-                        Drama
-                      </li>
-                      <li class="d-flex w-100 pt-1">
-                       Horror
-                      </li>
-                    </ul>
-                     
-                      <a class="btn btn-sm btn-danger mt-4" href="/movies">
-                        <span class="animate-target">Explore</span>
-                        <i class="ci-arrow-up-right fs-base ms-1"></i>
-                      </a>
-                   
-                  </div>
-                  <div class="ratio w-100 align-self-end" style="max-width: 220px; --cz-aspect-ratio: calc(305 / 220 * 100%)">
-                    <img src="/media/movies_grabmytix.svg"  alt="Movies">
-                  </div>
-                </div>
-                <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none-dark" style="background: linear-gradient(124deg, #e2daec -29.7%, #e4eefd 65.5%)"></span>
-                <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none d-block-dark" style="background: linear-gradient(124deg, #37343b -29.7%, #222a36 65.5%)"></span>
-              </div>
-            </div>
+                    </li>
+                    <li class="d-flex w-100 pt-1">
+                      Drama
+                    </li>
+                    <li class="d-flex w-100 pt-1">
+                      Horror
+                    </li>
+                  </ul>
 
-            <!-- Category -->
-            <div class="swiper-slide">
-              <div class="hover-effect-opacity position-relative">
-                <div class="d-flex justify-content-between position-relative z-2 ps-2 ps-xl-3">
-                  <div class="d-flex flex-column min-w-0 p-3">
-                    <h2 class="h5 text-nowrap pt-2 pt-xl-3">Inspiring Events</h2>
-                    <ul class="nav flex-column gap-2 mt-n1">
-                      <li class="d-flex w-100 pt-1">
-                        Party
-                      </li>
-                      <li class="d-flex w-100 pt-1">
-                       Live show
-                      </li>
-                      <li class="d-flex w-100 pt-1">
+                  <a class="btn btn-sm btn-danger mt-4" href="/movies">
+                    <span class="animate-target">Explore</span>
+                    <i class="ci-arrow-up-right fs-base ms-1"></i>
+                  </a>
+
+                </div>
+                <div class="ratio w-100 align-self-end"
+                  style="max-width: 220px; --cz-aspect-ratio: calc(305 / 220 * 100%)">
+                  <img src="/media/movies_grabmytix.svg" alt="Movies">
+                </div>
+              </div>
+              <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none-dark"
+                style="background: linear-gradient(124deg, #e2daec -29.7%, #e4eefd 65.5%)"></span>
+              <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none d-block-dark"
+                style="background: linear-gradient(124deg, #37343b -29.7%, #222a36 65.5%)"></span>
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div class="swiper-slide">
+            <div class="hover-effect-opacity position-relative">
+              <div class="d-flex justify-content-between position-relative z-2 ps-2 ps-xl-3">
+                <div class="d-flex flex-column min-w-0 p-3">
+                  <h2 class="h5 text-nowrap pt-2 pt-xl-3">Inspiring Events</h2>
+                  <ul class="nav flex-column gap-2 mt-n1">
+                    <li class="d-flex w-100 pt-1">
+                      Party
+                    </li>
+                    <li class="d-flex w-100 pt-1">
+                      Live show
+                    </li>
+                    <li class="d-flex w-100 pt-1">
                       Gathering
-                      </li>
-                      <li class="d-flex w-100 pt-1">
+                    </li>
+                    <li class="d-flex w-100 pt-1">
                       Concert
-                      </li>
-                      <li class="d-flex w-100 pt-1">
+                    </li>
+                    <li class="d-flex w-100 pt-1">
                       Sports
-                      </li>
-                    </ul>
-                     
-                      <a class="btn btn-sm btn-danger mt-4" href="/events">
-                        <span class="animate-target">Explore</span>
-                        <i class="ci-arrow-up-right fs-base ms-1"></i>
-                      </a>
-                    
-                  </div>
-                  <div class="ratio w-100 align-self-end rtl-flip" style="max-width: 220px; --cz-aspect-ratio: calc(305 / 220 * 100%)">
-                    <img src="/media/party_grabmytix.svg" alt="party">
-                  </div>
+                    </li>
+                  </ul>
+
+                  <a class="btn btn-sm btn-danger mt-4" href="/events">
+                    <span class="animate-target">Explore</span>
+                    <i class="ci-arrow-up-right fs-base ms-1"></i>
+                  </a>
+
                 </div>
-                <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none-dark" style="background: linear-gradient(119deg, #e9e0eb 0%, #f8eff1 52.24%)"></span>
-                <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none d-block-dark" style="background: linear-gradient(119deg, #2f2c3a 0%, #372e2f 52.24%)"></span>
-              </div>
-            </div>
-
-               <!-- Category -->
-            <div class="swiper-slide">
-              <div class="hover-effect-opacity position-relative">
-                <div class="d-flex justify-content-between position-relative z-2 ps-2 ps-xl-3">
-                  <div class="d-flex flex-column min-w-0 p-3">
-                    <h2 class="h5 text-nowrap pt-2 pt-xl-3">Free Social Causes</h2>
-                    <ul class="nav flex-column gap-2 mt-n1">
-                        <li class="d-flex w-100 pt-1">
-                    Commemoration
-                      </li>
-                      <li class="d-flex w-100 pt-1">
-                        Free Ticket 
-                      </li>
-                      <li class="d-flex w-100 pt-1">
-                       Religious
-                      </li>
-                      <li class="d-flex w-100 pt-1">
-                        Fund raising
-                      </li>
-                      <li class="d-flex w-100 pt-1">
-                       Donation
-                      </li>
-                       
-                    </ul>
-                    
-                      <a class="btn btn-sm btn-danger mt-4" href="/events">
-                        <span class="animate-target">Learn more</span>
-                        <i class="ci-arrow-up-right fs-base ms-1"></i>
-                      </a>
- 
-                  </div>
-                  <div class="ratio w-100 align-self-end rtl-flip" style="max-width: 220px; --cz-aspect-ratio: calc(305 / 220 * 100%)">
-                       <img src="/media/socail_grabmytix.svg"  alt="social">
-                  </div>
+                <div class="ratio w-100 align-self-end rtl-flip"
+                  style="max-width: 220px; --cz-aspect-ratio: calc(305 / 220 * 100%)">
+                  <img src="/media/party_grabmytix.svg" alt="party">
                 </div>
-                <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none-dark" style="background: linear-gradient(118deg, #e9e8e8 0%, #e2ecea 51.13%)"></span>
-                <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none d-block-dark" style="background: linear-gradient(118deg, #323232 0%, #252928 51.13%)"></span>
               </div>
+              <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none-dark"
+                style="background: linear-gradient(119deg, #e9e0eb 0%, #f8eff1 52.24%)"></span>
+              <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none d-block-dark"
+                style="background: linear-gradient(119deg, #2f2c3a 0%, #372e2f 52.24%)"></span>
             </div>
           </div>
 
-          <!-- Pagination (Bullets) -->
-          <div class="swiper-pagination position-static mt-3 mt-sm-4"></div>
-        </div>
-      </section>
+          <!-- Category -->
+          <div class="swiper-slide">
+            <div class="hover-effect-opacity position-relative">
+              <div class="d-flex justify-content-between position-relative z-2 ps-2 ps-xl-3">
+                <div class="d-flex flex-column min-w-0 p-3">
+                  <h2 class="h5 text-nowrap pt-2 pt-xl-3">Free Social Causes</h2>
+                  <ul class="nav flex-column gap-2 mt-n1">
+                    <li class="d-flex w-100 pt-1">
+                      Commemoration
+                    </li>
+                    <li class="d-flex w-100 pt-1">
+                      Free Ticket
+                    </li>
+                    <li class="d-flex w-100 pt-1">
+                      Religious
+                    </li>
+                    <li class="d-flex w-100 pt-1">
+                      Fund raising
+                    </li>
+                    <li class="d-flex w-100 pt-1">
+                      Donation
+                    </li>
 
-       
-   <section class="mt-5 mb-5 ">
-        <div class="row mb-4">
-            <div class="col-md-7 mb-4 order-md-2 order-sm-2 ">
-            <div class="d-flex align-items-center h-100 bg-body-tertiary rounded-5 p-4 p-xl-5">
-              <div class="p-sm-3 p-xxl-2">
-                <h2 class="mb-lg-4"><span  class="ci-globe">&nbsp; </span>Grow Your Ticket Sales Worldwide</h2>
-                <p class="fs-lg pb-sm-2 pb-lg-3">
-                 
-                  One powerful platform connecting owners and customers worldwide through reliable technology, innovative solutions, and trusted experiences. We make ticketing seamless for events, movies, journeys, and businesses, helping everyone reach their audience effortlessly.
-</p><p>
-Empowering growth, expanding reach, and building trust every day—grabMytix brings the world closer, one ticket at a time.
-                </p>
-                
+                  </ul>
+
+                  <a class="btn btn-sm btn-danger mt-4" href="/events">
+                    <span class="animate-target">Learn more</span>
+                    <i class="ci-arrow-up-right fs-base ms-1"></i>
+                  </a>
+
+                </div>
+                <div class="ratio w-100 align-self-end rtl-flip"
+                  style="max-width: 220px; --cz-aspect-ratio: calc(305 / 220 * 100%)">
+                  <img src="/media/socail_grabmytix.svg" alt="social">
+                </div>
               </div>
+              <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none-dark"
+                style="background: linear-gradient(118deg, #e9e8e8 0%, #e2ecea 51.13%)"></span>
+              <span class="position-absolute top-0 start-0 w-100 h-100 rounded-5 d-none d-block-dark"
+                style="background: linear-gradient(118deg, #323232 0%, #252928 51.13%)"></span>
             </div>
           </div>
-          <div class="col-md-5 order-md-1  order-sm-2  mb-4 mb-md-0">
-            <div class="position-relative h-100 bg-body-tertiary rounded-5 overflow-hidden">
-              <div class="d-none d-md-block" style="height: 440px"></div>
-              <div class="d-none d-sm-block d-md-none" style="height: 350px"></div>
-              <div class="d-sm-none" style="height: 250px"></div>
-                <img src="/media/grabmytix_world.svg"  class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Image">
-            </div>
-          </div>
-        
         </div>
-</section>
- </div>
 
+        <!-- Pagination (Bullets) -->
+        <div class="swiper-pagination position-static mt-3 mt-sm-4"></div>
+      </div>
+    </section>
+
+
+    <section class="mt-5 mb-5 ">
+      <div class="row mb-4">
+        <div class="col-md-7 mb-4 order-md-2 order-sm-2 ">
+          <div class="d-flex align-items-center h-100 bg-body-tertiary rounded-5 p-4 p-xl-5">
+            <div class="p-sm-3 p-xxl-2">
+              <h2 class="mb-lg-4"><span class="ci-globe">&nbsp; </span>Grow Your Ticket Sales Worldwide</h2>
+              <p class="fs-lg pb-sm-2 pb-lg-3">
+
+                One powerful platform connecting owners and customers worldwide through reliable technology, innovative
+                solutions, and trusted experiences. We make ticketing seamless for events, movies, journeys, and
+                businesses, helping everyone reach their audience effortlessly.
+              </p>
+              <p>
+                Empowering growth, expanding reach, and building trust every day—grabMytix brings the world closer, one
+                ticket at a time.
+              </p>
+
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5 order-md-1  order-sm-2  mb-4 mb-md-0">
+          <div class="position-relative h-100 bg-body-tertiary rounded-5 overflow-hidden">
+            <div class="d-none d-md-block" style="height: 440px"></div>
+            <div class="d-none d-sm-block d-md-none" style="height: 350px"></div>
+            <div class="d-sm-none" style="height: 250px"></div>
+            <img src="/media/grabmytix_world.svg" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+              alt="Image">
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+</div>
+
+<div class="modal fade" id="trailer" tabindex="-1" aria-labelledby="trailerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header ">
+
+        <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+
+        <iframe id="modalTrailerVideo" playsinline width="100%" height="90%" src="" title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+      </div>
     </div>
+  </div>
+</div>
 
-    <div class="modal fade" id="trailer" tabindex="-1" aria-labelledby="trailerModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-header ">
-
-                    <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-0">
-
-                      <iframe id="modalTrailerVideo" playsinline width="100%" height="90%" 
-                        src=""
-                         title="YouTube video player" frameborder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-document.addEventListener('DOMContentLoaded', function () {
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
     const trailerModal = document.getElementById('trailer');
     const videoIframe = document.getElementById('modalTrailerVideo');
 
     // When the modal is about to show
     trailerModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget; // the clicked button
-        let trailerUrl = button.getAttribute('data-bs-trailer-url');
+      const button = event.relatedTarget; // the clicked button
+      let trailerUrl = button.getAttribute('data-bs-trailer-url');
 
-        // Append autoplay & playsinline
-        if (trailerUrl.includes('?')) {
-            trailerUrl += '&autoplay=1&playsinline=1';
-        } else {
-            trailerUrl += '?autoplay=1&playsinline=1';
-        }
+      // Append autoplay & playsinline
+      if (trailerUrl.includes('?')) {
+        trailerUrl += '&autoplay=1&playsinline=1';
+      } else {
+        trailerUrl += '?autoplay=1&playsinline=1';
+      }
 
-        videoIframe.src = trailerUrl;
+      videoIframe.src = trailerUrl;
     });
 
     // Clear iframe when modal is hidden
     trailerModal.addEventListener('hidden.bs.modal', function () {
-        videoIframe.src = '';
+      videoIframe.src = '';
     });
-});
+  });
 </script>
 
-    {% endblock content %}
+{% endblock content %}
