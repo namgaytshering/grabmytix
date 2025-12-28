@@ -185,14 +185,14 @@
             </li>
             {% endfor %}
         </ul> -->
-
+    {%if movies %}
        <!-- Recipes + Top departments -->
       <section class=" mt-5 p-0  mb-sm-3 mb-lg-4">
          <h1 class="alert-heading  mb-4 mt-3 "  >
             <span class="ci-film  animate-target fs-md"> &nbsp; Movies Near You </span>
             
             </h1>
-            {%if movies %}
+        
         <div class="row">
      {% for movie in movies%}
           <!-- Recipes list -->
@@ -248,23 +248,12 @@
         {%endfor%} 
          
         </div>
- {%else%}
-        <!-- Success alert with additional content -->
-<div class="alert p-0 d-sm-flex  border-0 alert-light pt-sm-4" role="alert">
- 
-  <div class=" ">
-    <p> No movies available at the moment. Stay tuned—we’re bringing exciting new releases and unforgettable experiences to you very soon!
-</p>
-   <p>
-    Want to screen your movie? <br/><br/><a href="/about/" class="btn btn-sm btn-danger">Contact us &nbsp;<i class="ci-chevron-right"></i></a>  
-    </p>
-  </div>
-</div>
- {%endif%}
+  
+
 
 
           </section>    
-         
+       {%endif%}   
     <div class="alert   alert-white pt-5 p-0" role="alert">
             <h1 class="alert-heading mb-2"><span class="ci-gift fs-md ">&nbsp;Events</span> </h1>
         </div>
