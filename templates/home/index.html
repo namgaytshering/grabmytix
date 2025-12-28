@@ -29,25 +29,18 @@
             }'>
                     <div class="swiper-wrapper  ">
 
-                        {% for movie in movies%}
-                        <div class="swiper-slide ">
-                            <a href="/{{movie.slug}}">
-                                <img src="/media/{{movie.poster_image}}" alt="Image 1"
-                                    style="height: 400px; width: 100%; object-fit: cover;"
-                                    class="img-fluid rounded slider-image " />
-                            </a>
-                            <div class=" position-absolute start-0 bottom-0 d-flex align-items-end w-100 h-100 z-2">
-                                <button class="d-none d-md-block btn btn-md btn-success rounded-pill m-md-2" data-bs-toggle="modal"
-                                    data-bs-trailer-url="{{ movie.trailer }}" data-bs-target="#trailer">
-                                    <i class="ci-play fs-lg ms-n1 me-2"></i>
-                                    Watch Traller
-                                    </a>
-                            </div>
-                        </div>
-                        {%endfor%}
+                       
                          <div class="swiper-slide ">
                              
                                 <img src="/media/free_grabmytix.svg" alt="Image 1"
+                                    style="width: 100% ;height: 400px;  object-fit: fit;"
+                                    class="img-fluid rounded slider-image " />
+                         
+                             
+                        </div>
+                        <div class="swiper-slide ">
+                             
+                                <img src="/media/grabmytix_world.svg" alt="Image 1"
                                     style="width: 100% ;height: 400px;  object-fit: fit;"
                                     class="img-fluid rounded slider-image " />
                          
@@ -87,38 +80,9 @@
                 }'>
                     <div class="swiper-wrapper  text-md-start">
 
-                        {% for movie in movies%}
-                        <div class="swiper-slide pb-4 pt-0 ">
-                            <h1 class="text-pretty">{{movie.title}}</h1>
-                            <div class=" d-none d-md-block">
-                                <p>{{movie.description|safe|linebreaks|truncatewords:30}}</p>
-                                <!-- <b>Cast</b>
-                                <p>
-                                    {{movie.cast}}
-                                </p> -->
-                            </div>
-
-                            <b>Screening in</b><br/>
-                            <p>
-
-                                {% for address in movie.filmshow.all %}
-                                <a href="/show/{{ address.slug }}" class="text-decoration-none alert ">
-                                <i class="ci-map-pin "></i> &nbsp;&nbsp;{{address.theater_name}} {{address.state.state_short|upper}} ({{address.show_date}} {{address.show_time}})
-                                </a>
-                                <br/>
-                                {%endfor%}
-
-                            </p>
-                            <a href="/{{movie.slug}}" class="btn btn-md btn-danger" a><i class="ci-ticket"></i>
-                                &nbsp;Grab a Ticket
-                                &nbsp;&nbsp;
-                                <i class="ci-chevron-right"></i>
-                            </a>
-
-                        </div>
-                        {%endfor%}
+                       
                          <div class="swiper-slide pb-4 pt-0 ">
-                            <h1 class="text-pretty">Host Free Events & Social Causes</h1>
+                            <h1 class="text-pretty">Host Free Events</h1>
                             <div class="  ">
                                 <p>
                                     Host free events or social causes on GrabMyTix – our platform services are completely free when tickets are free!
@@ -133,8 +97,23 @@
                              
 
                         </div>
+                        <div class="swiper-slide pb-4 pt-0 ">
+                            <h1 class="text-pretty">Sell Tickets Worldwide</h1>
+                            <div class="  ">
+                                <p>
+                                   Connecting people everywhere with seamless solutions, available worldwide, empowering dreams, businesses, and journeys without borders.                </p>
+                            </div>
+
+                            <a href="/about/" class="btn btn-md btn-danger" a><i class="ci-ticket"></i>
+                                &nbsp;Learn more about us
+                                &nbsp;&nbsp;
+                                <i class="ci-chevron-right"></i>
+                            </a>
+                             
+
+                        </div>
                          <div class="swiper-slide pb-4 pt-0 ">
-                            <h1 class="text-pretty">Transparency at grabMytix</h1>
+                            <h1 class="text-pretty"> Trust and Transparency</h1>
                             <div class="  ">
                                 <p>
                                    At grabMytix, partners enjoy full transparency via real-time dashboard access to bookings, payments, sales, and transactions for informed decisions.
@@ -207,7 +186,83 @@
             {% endfor %}
         </ul> -->
 
-        
+       <!-- Recipes + Top departments -->
+      <section class=" mt-5 p-0  mb-sm-3 mb-lg-4">
+         <h1 class="alert-heading  mb-4 mt-3 "  >
+            <span class="ci-film  animate-target fs-md"> &nbsp; Movies Near You </span>
+            
+            </h1>
+            {%if movies %}
+        <div class="row">
+     {% for movie in movies%}
+          <!-- Recipes list -->
+          <div class="col-md-6   mb-4 mb-lg-0">
+      
+              <!-- Recipe -->
+              <div class="position-relative d-flex align-items-start align-items-sm-center mb-4">
+                <div class="ratio" style="--cz-aspect-ratio: calc(140 / 196 * 100%); max-width: 300px">
+                  <img src="/media/{{movie.poster_image}}" class="rounded" alt="Image">
+                </div>
+                <div class="col ps-3">
+                        <h4 class="text-pretty">{{movie.title}}</h4>
+
+                        <div class="d-flex flex-wrap gap-2 mb-2 fs-sm text-body-secondary">
+                            <div class="d-flex align-items-center text-nowrap">
+                                <i class="ci-clock fs-base me-2"></i>
+                                {{ movie.duration }} hr{{ movie.duration|pluralize }}
+                            </div>
+                            <div class="d-flex align-items-center text-nowrap">
+                                <i class="ci-zap fs-base me-2"></i>
+                                {{ movie.genre }}
+                            </div>
+                            <div class="d-flex align-items-center text-nowrap cursor-pointer " 
+                                 data-bs-toggle="modal"
+                                 data-bs-trailer-url="{{ movie.trailer }}" 
+                                 data-bs-target="#trailer">
+                                <i class="ci-play-circle text-success fs-base me-2"></i>Trailer
+                            </div>
+                        </div>
+
+                        <b>Screenings</b>
+                        <div class="mb-3">
+                            {% for address in movie.filmshow.all %}
+                            <small class="d-block mb-1">
+                                <a href="/show/{{ address.slug }}" class="text-decoration-none text-dark">
+                                    <i class="ci-check"></i> {{ address.state.state_short|upper }} 
+                                    - {{ address.show_date|date:"M d" }}, {{ address.show_time|time:"h:i A" }}
+                                </a>
+                            </small>
+                            {% endfor %}
+                        </div>
+
+                        <a href="/{{movie.slug}}" class="btn btn-sm btn-danger">
+                            <i class="ci-ticket"></i>&nbsp;Grab a Ticket&nbsp;<i class="ci-chevron-right"></i>
+                        </a>
+                    </div>
+
+              </div>
+
+            
+            
+          </div>
+        {%endfor%} 
+         
+        </div>
+        {%else%}
+        <!-- Success alert with additional content -->
+<div class="alert d-sm-flex  border-0 alert-light pb-4 pt-sm-4" role="alert">
+ 
+  <div class="ps-sm-3 pe-sm-4">
+    <p class="mb-3">    No movies available at the moment. Stay tuned—we’re bringing exciting new releases and unforgettable experiences to you very soon!
+</p>
+   <p>
+    Want to screen your movie? <br/><br/><a href="/about/" class="btn btn-sm btn-danger">Contact us </a>  
+    </p>
+  </div>
+</div>
+{%endif%}
+
+          </section>    
          
     <div class="alert   alert-white pt-5 pb-0 pt-sm-4" role="alert">
             <h1 class="alert-heading mb-2"><span class="ci-gift fs-md ">&nbsp;Events</span> </h1>
@@ -485,6 +540,35 @@ Bring people together for a greater purpose. Start today on GrabMyTix!
           <div class="swiper-pagination position-static mt-3 mt-sm-4"></div>
         </div>
       </section>
+
+       
+   <section class="mt-5 mb-5 ">
+        <div class="row mb-4">
+            <div class="col-md-7 mb-4 order-md-2 order-sm-2 ">
+            <div class="d-flex align-items-center h-100 bg-body-tertiary rounded-5 p-4 p-xl-5">
+              <div class="p-sm-3 p-xxl-2">
+                <h2 class="mb-lg-4"><span  class="ci-globe">&nbsp; </span>Grow Your Ticket Sales Worldwide</h2>
+                <p class="fs-lg pb-sm-2 pb-lg-3">
+                 
+                  One powerful platform connecting owners and customers worldwide through reliable technology, innovative solutions, and trusted experiences. We make ticketing seamless for events, movies, journeys, and businesses, helping everyone reach their audience effortlessly.
+</p><p>
+Empowering growth, expanding reach, and building trust every day—grabMytix brings the world closer, one ticket at a time.
+                </p>
+                
+              </div>
+            </div>
+          </div>
+          <div class="col-md-5 order-md-1  order-sm-2  mb-4 mb-md-0">
+            <div class="position-relative h-100 bg-body-tertiary rounded-5 overflow-hidden">
+              <div class="d-none d-md-block" style="height: 440px"></div>
+              <div class="d-none d-sm-block d-md-none" style="height: 350px"></div>
+              <div class="d-sm-none" style="height: 250px"></div>
+                <img src="/media/grabmytix_world.svg"  class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Image">
+            </div>
+          </div>
+        
+        </div>
+</section>
  </div>
 
     </div>
