@@ -1,6 +1,6 @@
 {% extends "../includes/user_base.html" %}
 {% block content %}
-<div class="container">
+<div >
     <nav aria-label="breadcrumb  ">
         <ol class="breadcrumb">
             <li class="breadcrumb-item "><a href="/user/movies/">Movies</a></li>
@@ -16,30 +16,14 @@
     </div>
     {%endfor%}
     {%endif%}
-    <h5 class="card-title">{{film.title}}</h5>
-    <div class="card  overflow-hidden mt-3 mb-3">
+  
+ 
 
-        <div class="row g-0 ">
-            <div class="col-sm-4 position-relative">
-                <img src="/media/{{film.poster_image}}"
-                    class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Card image">
-            </div>
-            <div class="col-sm-8 p-3">
-
-                {{film.description|linebreaks| truncatewords:30}}
-                <br />
-                <small><b>Genre:</b> {{ film.genre }}</small> <br />
-                <small>
-                    <b>Duration:</b> {{ film.duration }} hr{{ film.duration|pluralize }}
-                </small><br />
-                <small><b>Director:</b> {{ film.director }}</small><br>
-                <small><b>Language:</b> {{ film.language }}</small>
-                <br />
-                <a href="/user/movies/edit/{{film.slug}}" class="btn btn-sm btn-danger"><i class="ci-edit"></i>&nbsp;
-                    edit</a>
-            </div>
-        </div>
-    </div>
+       
+         
+   <h5>Adding shows to {{film.title}}</h5>
+              
+  
 
     <div class="d-md-flex align-items-center justify-content-between gap-3 pb-2 pb-sm-3 mb-md-2">
         <h5 class="h5 mb-md-0">Show list</h5>
@@ -65,7 +49,7 @@
                     <button type="button" class="btn fw-normal text-body product-sort p-0" data-sort="date">Ticket
                         cost</button>
                 </th>
-                <th class="d-none d-md-table-cell" scope="col">
+                <th class=" d-md-table-cell" scope="col">
                     <button type="button" class="btn fw-normal text-body product-sort p-0" data-sort="date">Show
                         Date</button>
                 </th>
@@ -91,14 +75,14 @@
 
             <tr>
 
-                <td class="d-none d-md-table-cell py-3">
+                <td class=" d-md-table-cell py-3">
                     {{movie.theater_name}}<br />
-                    {{movie.street}},{{movie.state}}, {{movie.country}}
+                     {{movie.state.state_short}}, {{movie.country}}
                 </td>
                 <td class="d-none d-md-table-cell py-3">
                     Adult: $ {{movie.adult}}, Child: $ {{movie.child}}
                 </td>
-                <td class="d-none d-md-table-cell py-3">
+                <td class="  d-md-table-cell py-3">
                     {{movie.show_date}}- {{movie.show_time|date:'h:i A' }}
                 </td>
                 <td class="d-none d-md-table-cell py-3">
