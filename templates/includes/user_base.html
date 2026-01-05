@@ -61,12 +61,12 @@
 <body>
     {% include "../includes/menu.html" %}
     <main class="content-wrapper">
-        <div class="container py-5 p-0 mt-n2 mt-sm-0">
+        <div class="container py-5 mt-n2 mt-sm-0">
             <div class="row pt-md-2 pt-lg-3 pb-sm-2 pb-md-3 pb-lg-4 pb-xl-5">
                 <!-- Sidebar navigation that turns into offcanvas on screens < 992px wide (lg breakpoint) -->
                 {% include "../includes/user_menu.html" %}
                 <!-- Personal info content -->
-                <div class="col-lg-9 p-2">
+                <div class="col-lg-9">
                     {% block content %}
                     {% endblock %}
                 </div>
