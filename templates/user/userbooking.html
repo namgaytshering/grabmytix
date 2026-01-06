@@ -1,70 +1,7 @@
 {% extends "../includes/user_base.html" %}
 {% block content %}
 <!-- Page content -->
-<div >
-  {% if not bookings and not your_bookings %}
-    <h5>Bookings</h5>
-    <p>No bookings available yet. Start exploring and book your first event!</p>
-    {% endif %}
-
-    {% if your_bookings %}
-    <h5>My Bookings</h5>
-    <p>All the tickets that you have purchased
-        <div class="table-responsive">
-   <div class="table-responsive overflow-auto" style="height: 300px;">
-                <table class="table align-middle fs-sm mb-0 table-striped">
-    <thead class="position-sticky top-0 bg-light">
-        <tr>
-            <th scope="col">Ticket_No</th>
-            <th scope="col">Title</th>
-            <th scope="col">Type</th>
-            <th scope="col">Address</th>
-            <th scope="col">Street</th>
-            <th scope="col">Date</th>
-            <th scope="col">Tickets</th>
-            <th scope="col">Total</th>
-            <th scope="col">Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for booking in your_bookings %}
-        <tr>
-            <td><b>{{ booking.id }}</b></td>
-            <td>{{ booking.title }}</td>
-            <td > 
-                {{ booking.type|capfirst }}
-                 
-            </td>
-            <td>{{ booking.theater_name }}, {{ booking.state.state_short }}, {{ booking.country }}</td>
-            <td>{{ booking.street }}</td>
-            <td>{{ booking.show_date }} {{ booking.show_time }}</td>
-            <td>
-                Adult: {{ booking.no_adult }} × ${{ booking.price_adult }}
-                {% if booking.film %}
-                    <br>Child: {{ booking.no_child }} × ${{ booking.price_child }}
-                {% endif %}
-            </td>
-            <td><b>${{ booking.total_payment }}</b></td>
-            <td>
-                {% if booking.payment_status %}
-                <button type="button" class="btn btn-sm btn-success" 
-                    data-bs-toggle="popover" data-bs-placement="top" 
-                    title="Payment Status" data-bs-content="You have already paid for this ticket.">
-                    <i class="ci-check-circle fs-base me-1"></i> Paid
-                </button>
-                {% else %}
-                <a class="btn btn-sm btn-primary" target="_blank" href="/payment/{{ booking.id }}">
-                    <i class="ci-banned me-1"></i> Pay ${{ booking.total_payment }}
-                </a>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-</div></div>
-{%endif%}
-{% if bookings %}
+ {% if bookings %}
 <h4 class="mb-2 mt-5">Ticket Booking from other</h4>
       <p class="mb-4 text-muted">
         View the complete list of tickets booked, organized by movies and show locations.
@@ -131,4 +68,68 @@
    </div>
 </div>
  {%endif%}
+<div >
+  {% if not bookings and not your_bookings %}
+    <h5>Bookings</h5>
+    <p>No bookings available yet. Start exploring and book your first event!</p>
+    {% endif %}
+
+    {% if your_bookings %}
+    <h5>My Bookings</h5>
+    <p>All the tickets that you have purchased
+        <div class="table-responsive">
+   <div class="table-responsive overflow-auto" style="height: 300px;">
+                <table class="table align-middle fs-sm mb-0 table-striped">
+    <thead class="position-sticky top-0 bg-light">
+        <tr>
+            <th scope="col">Ticket_No</th>
+            <th scope="col">Title</th>
+            <th scope="col">Type</th>
+            <th scope="col">Address</th>
+            <th scope="col">Street</th>
+            <th scope="col">Date</th>
+            <th scope="col">Tickets</th>
+            <th scope="col">Total</th>
+            <th scope="col">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in your_bookings %}
+        <tr>
+            <td><b>{{ booking.id }}</b></td>
+            <td>{{ booking.title }}</td>
+            <td > 
+                {{ booking.type|capfirst }}
+                 
+            </td>
+            <td>{{ booking.theater_name }}, {{ booking.state.state_short }}, {{ booking.country }}</td>
+            <td>{{ booking.street }}</td>
+            <td>{{ booking.show_date }} {{ booking.show_time }}</td>
+            <td>
+                Adult: {{ booking.no_adult }} × ${{ booking.price_adult }}
+                {% if booking.film %}
+                    <br>Child: {{ booking.no_child }} × ${{ booking.price_child }}
+                {% endif %}
+            </td>
+            <td><b>${{ booking.total_payment }}</b></td>
+            <td>
+                {% if booking.payment_status %}
+                <button type="button" class="btn btn-sm btn-success" 
+                    data-bs-toggle="popover" data-bs-placement="top" 
+                    title="Payment Status" data-bs-content="You have already paid for this ticket.">
+                    <i class="ci-check-circle fs-base me-1"></i> Paid
+                </button>
+                {% else %}
+                <a class="btn btn-sm btn-primary" target="_blank" href="/payment/{{ booking.id }}">
+                    <i class="ci-banned me-1"></i> Pay ${{ booking.total_payment }}
+                </a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div></div>
+{%endif%}
+
 {% endblock %}
