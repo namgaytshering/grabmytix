@@ -3,7 +3,7 @@ from db.models import *
 import qrcode
 from io import BytesIO
 import base64
-from .forms import LoginForm,RegistrationForm,TicketCheckoutForm,TicketEventCheckoutForm
+from .forms import LoginForm,RegistrationForm,TicketCheckoutForm,TicketEventCheckoutForm,OwnerRegistrationForm
 from django.contrib.auth import authenticate, login,login, logout
 import string
 from django.utils.text import slugify
@@ -596,7 +596,7 @@ def partner_register_view(request):
         if hasattr(request.user, 'is_user') and request.user.is_user:
             return redirect("/")
 
-    form = RegistrationForm(request.POST or None)
+    form = OwnerRegistrationForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
             try:
@@ -611,6 +611,7 @@ def partner_register_view(request):
                     )
 
                 meme.slug = news_slug
+                meme.is_partner = True
                 meme.username = news_slug  # Set username to the generated slug
                 
                 if hasattr(meme, 'is_owner') and meme.is_owner:

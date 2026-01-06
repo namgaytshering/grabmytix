@@ -2,57 +2,133 @@
 {% block content %}
 <!-- Page content -->
 <div >
-    <h5>Your movie bookings:</h5>
-    {% for booking in bookings%}
-    <div class="card mb-3 overflow-hidden">
-        <div class="row g-0">
-            <div class="col-sm-4 position-relative" style="min-height: 220px">
-                
-                    <img src="/media/{{booking.poster_image}}"
-                    class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Card image">
-          
-               
-            </div>
-            <div class="col-sm-6">
-                <div class="card-body">
-                     
-                    <h5 class="card-title">{{booking.title}}</h5>
-                   
-                    <p class="card-text">
-                        <h5 class="text text-info"> <b>Ticket No:{{booking.id}}</b></h5> 
-                        <b> Location: </b>{{booking.theater_name}},
-                        <br/>
-                         <span class="text text-success"> <i class="ci-ticket"></i> {% if booking.type == "Movie" %} {{booking.type|capfirst}} {%else%}{{booking.event.type|capfirst}} {%endif%}</span>
-                        <br/>
-                        <b> Street: </b>{{booking.street}},{{booking.state}},{{booking.country}}
-                        
-                        <br/>
-                        <b>Date/Time:</b> {{booking.show_date}}
-                        {{booking.show_time}}
+  {% if not bookings and not your_bookings %}
+    <h5>Bookings</h5>
+    <p>No bookings available yet. Start exploring and book your first event!</p>
+    {% endif %}
 
-                        <br />
-                        Ticket: Audult: {{booking.no_adult}} * ${{booking.price_adult}}
-                        {% if booking.film %} Child :{{booking.no_child}} *  ${{booking.price_child}} {%endif%}
-                        <br />Total cost = <b>${{booking.total_payment}}</b>
-                    </p>
-                    {%if booking.payment_status %}
+    {% if your_bookings %}
+    <h5>My Bookings</h5>
+    <p>All the tickets that you have purchased
+        <div class="table-responsive">
+   <div class="table-responsive overflow-auto" style="height: 300px;">
+                <table class="table align-middle fs-sm mb-0 table-striped">
+    <thead class="position-sticky top-0 bg-light">
+        <tr>
+            <th scope="col">Ticket_No</th>
+            <th scope="col">Title</th>
+            <th scope="col">Type</th>
+            <th scope="col">Address</th>
+            <th scope="col">Street</th>
+            <th scope="col">Date</th>
+            <th scope="col">Tickets</th>
+            <th scope="col">Total</th>
+            <th scope="col">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in your_bookings %}
+        <tr>
+            <td><b>{{ booking.id }}</b></td>
+            <td>{{ booking.title }}</td>
+            <td > 
+                {{ booking.type|capfirst }}
+                 
+            </td>
+            <td>{{ booking.theater_name }}, {{ booking.state.state_short }}, {{ booking.country }}</td>
+            <td>{{ booking.street }}</td>
+            <td>{{ booking.show_date }} {{ booking.show_time }}</td>
+            <td>
+                Adult: {{ booking.no_adult }} × ${{ booking.price_adult }}
+                {% if booking.film %}
+                    <br>Child: {{ booking.no_child }} × ${{ booking.price_child }}
+                {% endif %}
+            </td>
+            <td><b>${{ booking.total_payment }}</b></td>
+            <td>
+                {% if booking.payment_status %}
+                <button type="button" class="btn btn-sm btn-success" 
+                    data-bs-toggle="popover" data-bs-placement="top" 
+                    title="Payment Status" data-bs-content="You have already paid for this ticket.">
+                    <i class="ci-check-circle fs-base me-1"></i> Paid
+                </button>
+                {% else %}
+                <a class="btn btn-sm btn-primary" target="_blank" href="/payment/{{ booking.id }}">
+                    <i class="ci-banned me-1"></i> Pay ${{ booking.total_payment }}
+                </a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div></div>
+{%endif%}
+{% if bookings %}
+<h4 class="mb-2 mt-5">Ticket Booking from other</h4>
+      <p class="mb-4 text-muted">
+        View the complete list of tickets booked, organized by movies and show locations.
+      </p>
+    <div class="table-responsive">
+        <div class="table-responsive overflow-auto" style="height: 400px;">
+                <table class="table align-middle fs-sm mb-0 table-striped">
+    <thead class="position-sticky top-0 bg-light">
+            <thead>
+                <tr>
+                    <th scope="col" class="ps-0">Title</th>
+                    <th scope="col" class="ps-0">Type</th>
+                    <th scope="col" class="ps-0">Location</th>
+              
+                    <th scope="col" class="d-none d-md-table-cell">Date & Time</th>
+                    <th scope="col" class="d-none d-md-table-cell">Qty</th>
+                    <th scope="col" class="d-none d-md-table-cell">Total Cost</th>
+                    <th scope="col" class="d-none d-md-table-cell">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+             
+                {% for booking in bookings %}
+                <tr>
+                    <td class="py-3 ps-0">
+                        <div class="d-flex align-items-center hover-effect-scale">
+                            <div class="ps-2 ms-1">
+                                {{ booking.title }}
+                            </div>
+                        </div>
+                    </td>
+                      <td class="d-none d-md-table-cell py-3">{{booking.type}}</td>
+                    <td class="d-none d-md-table-cell py-3">{{booking.theater_name}}, <br/>{{ booking.state__state_short|upper}}</td>
                     
-                    <button type="button" class="mb-2 btn btn-sm btn-success" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" title="Pyament Status" data-bs-content="You have already paid for this ticket.">
-                        <i class="ci-check-circle animate-target fs-base me-2 ms-n1"></i>
-                        Payment done
-                      </button>
+                    <td class="d-none d-md-table-cell py-3">{{ booking.show_date }} {{ booking.show_time|date:'h:i A' }}</td>
+                    <td class="py-3 pe-0">
+                        <span class="d-block">{{ booking.total_tickets }} tickets </span>
+                    </td>
+                          <td class="py-3 pe-0">
+                        <span class="d-block fw-bold">Total: ${{ booking.total_payment }}</span>
+                    </td>
+                    <td class="py-3 pe-0">
+                    
+                        {%if booking.type == "Event" %}
+                        <a href="/user/booking/tickets/e/{{ booking.event__id }}"
+                           class="btn btn-sm btn-danger"
+                           aria-label="View tickets for {{ booking.event__id }}">
+                            View tickets  
+                        </a>
+                        {%else%}
+                          <a href="/user/booking/tickets/{{ booking.filmshow__id }}"
+                           class="btn btn-sm btn-danger"
+                           aria-label="View tickets for {{ booking.filmshow__id }}">
+                            View tickets
+                        </a>
+                        {%endif%}
 
-                    <a class="btn btn-sm btn-warning mb-2" href="#"> <i class="ci-code"></i> &nbsp; Generate QR code</a>
-                    {%else%}
-                    <a class="btn btn-sm btn-primary mb-2" target="_blank" href="/payment/{{booking.id}}"><i class="ci-banned"></i> &nbsp; 
-                        Payment
-                        needed ${{booking.total_payment}}</a>
-                    {%endif%}
-                </div>
-            </div>
-        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    {%endfor%}
-
+   </div>
 </div>
+ {%endif%}
 {% endblock %}

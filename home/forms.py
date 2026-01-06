@@ -11,6 +11,7 @@ GENDER_CHOICES = [
     ('', '--- Select Sex--'),
     ('Male', 'Male'),
     ('Female', 'Female'),
+     ('NA', 'NA'),
 ]
 
 User = get_user_model()
@@ -52,6 +53,25 @@ class RegistrationForm(UserCreationForm):
 
         }
 
+class OwnerRegistrationForm(UserCreationForm):
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control  form-icon-start', 'placeholder': 'Password'}))
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control  form-icon-start', 'placeholder': 'Confirm Password'}))
+  
+    
+    captcha = ReCaptchaField()
+    class Meta:
+        model = User
+        fields = ('email', 'name', 'phone', 'password1', 'password2','captcha')
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'form-control  form-icon-start', 'placeholder': 'Enter valid email id'}),
+            'name': forms.TextInput(attrs={'class': 'form-control  form-icon-start', 'placeholder': 'Business Name'}), 
+            'phone': forms.NumberInput(attrs={'class': 'form-control  form-icon-start', 'placeholder': 'Business Phone'}), 
+            'password1': forms.TextInput(attrs={'class': 'form-control  form-icon-start'}),
+            'password2': forms.TextInput(attrs={'class': 'form-control  form-icon-start'}),
+
+        }
 
 class TicketCheckoutForm(ModelForm):
 

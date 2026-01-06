@@ -9,6 +9,7 @@ GENDER_CHOICES = [
     ('', '--- Select Sex--'),
     ('Male', 'Male'),
     ('Female', 'Female'),
+     ('NA', 'NA'),
 ]
 
 User = get_user_model()

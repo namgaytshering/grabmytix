@@ -34,11 +34,46 @@ from django.contrib.auth import update_session_auth_hash
 @user_passes_test(lambda u: u.is_user, login_url="/login")
 def dashboard_view(request, *args, **kwargs):
  
-    if request.user.is_partner:
-        return redirect('booking_owner_view')
-    else:
-        bookings =Booking.objects.filter(user = request.user).order_by('-id')
-        return render(request, "user/userbooking.html",{'bookings':bookings})
+    accessible_event_ids = EventAccess.objects.filter(
+        user=request.user,
+        can_view=True
+    ).values_list('event_id', flat=True)
+    accessible_movies_ids = FilmShowAccess.objects.filter(
+        user=request.user,
+        can_view=True
+    ).values_list('film_show_id', flat=True)
+
+    bookings = (Booking.objects.filter( Q(payment_status=1), ( (
+                Q(filmshow__status=1) & Q(film__owner=request.user) ) |
+            ( Q(event__status=1) & Q(event__owner=request.user)
+            ) | Q(event_id__in=accessible_event_ids, event__status=1) |
+            Q(filmshow_id__in=accessible_movies_ids, filmshow__status=1)
+        )
+    ).values(
+        'title',
+        'theater_name',
+        'show_date',
+        'show_time',
+        'state__state_short',
+        'type',
+        'event__id',
+        'filmshow__id'
+    )
+    .annotate(
+        total_adult=Sum('no_adult'),
+        total_child=Sum('no_child'),
+        total_tickets=Sum(F('no_adult') + F('no_child')),
+        total_payment=Sum(
+            ExpressionWrapper(
+                F('no_adult') * F('price_adult') + F('no_child') * F('price_child'),
+                output_field=FloatField()
+            )
+        )
+    )
+    .order_by('-show_date', '-show_time')
+    )
+    your_bookings =Booking.objects.filter(user = request.user).order_by('-id')
+    return render(request, "user/userbooking.html",{'bookings':bookings,'your_bookings':your_bookings})
 
 
 @login_required(login_url='/login')

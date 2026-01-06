@@ -64,7 +64,9 @@ urlpatterns = [
     path('movies',movies_view, name='movies_view' ),
     path('events',events_view, name='events_view' ),
     path('register',register_view,name='register'),
-    path('partner',partner_register_view,name='partner_register'),
+   
+    path('organizer/',partner_register_view,name='partner_register'),
+    path('organiser/',partner_register_view,name='partner_register'),
      #path('api/', include('api.urls')),
     path('ckeditor5/', include('django_ckeditor_5.urls')),
     path('about/',about_view,name='about'),

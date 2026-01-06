@@ -7,6 +7,8 @@
     <div class="d-flex flex-column   w-100 py-4" style="max-width: 900px;">
 
       <h1 class="alert-heading">Become a Business Partner</h1>
+      <p>Join us as a business partner and unlock new opportunities for growth and success. Together, we can create impactful experiences, reach more audiences, and take your business to the next level. Let’s build a future full of possibilities—because when you grow, we all succeed.
+        </p>
       {% if form.errors %}
       <div class="alert alert-danger alert-dismissible col-12 mx-1" role="alert">
           <div id="form_errors">
@@ -56,14 +58,14 @@
       </div>
     </div>
 
-    <div class="col-md-6">
+    <!-- <div class="col-md-6">
       <div class="position-relative mb-4">
         <i class="ci-user position-absolute top-50 start-0 translate-middle-y ms-3"></i>
         {{ form.gender }}
         <div class="invalid-tooltip bg-transparent py-0">Name</div>
       </div>
-    </div>
-    <div class="col-md-6">
+    </div> -->
+    <div class="col-md-7">
       <div class="position-relative mb-4">
         <i class="ci-mail position-absolute top-50 start-0 translate-middle-y ms-3"></i>
         {{ form.email }}
@@ -95,7 +97,7 @@
     </div>
 
     <div class="col-12">
-      <div class="mb-4">
+      <div class="mb-2">
         <div class="form-check">
           <input type="checkbox" class="form-check-input" id="validationText06" required>
           <label for="validationText06" class="form-check-label">
@@ -109,7 +111,9 @@
         </div>
       </div>
     </div>
-
+  <div class="col-sm-10 p-2">
+                                    {{form.captcha}}
+                                </div>
     <div class="col-12">
       <button type="submit" class="btn btn-sm btn-danger animate-shake mt-3 mt-lg-0" href="#">
         <i class="ci-user-plus animate-target ms-n1 me-2"></i>
@@ -117,9 +121,7 @@
       </button>
     </div>
   </div>
-  <div class="col-sm-10 p-2">
-                                    {{form.captcha}}
-                                </div>
+
 </form>
 
       <div class="nav fs-sm mt-2">
