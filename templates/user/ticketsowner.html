@@ -2,9 +2,10 @@
 
 {% block content %}
 <div >
+    
     <!-- Messages -->
     {% if messages %}
-    <div class="mt-2">
+    <div class="">
         {% for message in messages %}
         <div class="alert 
             {% if message.tags == 'success' %}alert-success
@@ -42,68 +43,35 @@
     <div class=" ">
         
             <h5 class="alert-heading mb-2">{{ title }}</h5>
-            {{ theater_name }}, {{ state }}<br/>{{ street }}<br />
-            <b>Date/Time:</b> {{ date }} @ {{ time }}
-        <br/><br/>
-           <h6 class="btn btn-md btn-outline-success">Total Tickets: {{total_booked}} tickets booked</h6>
-    </div>
+        <!-- Nav tabs -->
+<ul class="nav nav-tabs mb-3" role="tablist" style="max-width: 450px">
+  <li class="nav-item" role="presentation">
+    <button type="button" class="nav-link active btn-sm" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" role="tab" aria-controls="home-tab-pane" aria-selected="true">
+      Tickets
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button type="button" class="nav-link btn-sm" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+      Report
+    </button>
+  </li>
+  
+  
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab">
+
+    <h5>Ticket Booked</h5>
      <div class="col-sm-6 mt-3">
  <h6>Check-In Progress</h6>
     <div class="progress mb-3" role="progressbar" aria-label="Primary (default) example" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100">
-    <div class="progress-bar fw-medium bg-success rounded-pill" style="width: {{percentage}}%">{{percentage}}%</div>
+    <div class="progress-bar fw-medium bg-info rounded-pill" style="width: {{percentage}}%">{{percentage}}%</div>
     </div>
     </div>
-<div class="accordion" id="accordionExample">
 
-  <!-- Item (expanded) -->
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingOne">
-      <button type="button" class="accordion-button animate-underline" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-        <i class="ci-info fs-lg text-success me-2"></i>
-        <span class="animate-target me-2">Show booking progress</span>
-      </button>
-    </h3>
-    
-    <div class="accordion-collapse collapse " id="collapseOne" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-    <div class="col-sm-6 p-3">
-           <canvas height="80" data-chart='{
-                "type": "line",
-                "data": {
-                    "labels": {{ label|safe }},
-                    "datasets": [{
-                        "label": "",
-                        "data": {{ data|safe }},
-                        "fill": true,
-                        "backgroundColor": "rgba(245, 82, 102, 0.2)",
-                        "borderColor": "#F54927",
-                        "borderWidth": 2,
-                        "tension": 0.3,
-                        "pointRadius": 0
-                    }]
-                },
-                "options": {
-                    "plugins": {
-                        "legend": { "display": false },
-                        "title": { "display": false }
-                    },
-                    "scales": {
-                        "x": { "display": false, "grid": { "color": "#eeeeee" }, "border": { "color": "rgba(133,140,151,.1)" } },
-                        "y": { "beginAtZero": true, "display": false, "grid": { "color": "rgba(133,140,151,.1)" }, "border": { "color": "rgba(133,140,151,.1)" } }
-                    }
-                }
-            }'></canvas>    
-    </div>
    
-</div>
-    </div>
-  </div>
-  </div>
-  
-
-    <h5>Ticket Booked</h5>
-   <a href="{% url 'export_csv' id=id %}" class="btn btn-sm btn-success"><i class="ci-file-text"></i> &nbsp;&nbsp;Download CSV </a><br/ ><br/ >
-    <div class="table-responsive">
         <div
             data-filter-list='{"searchClass": "table-search", "listClass": "table-list", "sortClass": "table-sort", "valueNames": ["ticket-no", "detail", "tickets", "total-cost", "payment", "attended"]}'>
             <!-- Search field -->
@@ -171,6 +139,74 @@
             </div>
         </div>
     </div>
+  </div>
+  <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab">
+         {{ theater_name }}, {{ state }}<br/>{{ street }}<br />
+            <b>Date/Time:</b> {{ date }} @ {{ time }}
+        <br/><br/>
+           <h6 class="btn btn-md btn-outline-success">Total Tickets: {{total_booked}} tickets booked</h6>
+  <br/><br/>
+           <a href="{% url 'export_csv' id=id %}" class="btn btn-sm btn-success"><i class="ci-file-text"></i> &nbsp;&nbsp;Download CSV </a><br/ ><br/ >
+   
+     <div class="col-sm-6 mt-3">
+ <h6>Check-In Progress</h6>
+    <div class="progress mb-3" role="progressbar" aria-label="Primary (default) example" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100">
+    <div class="progress-bar fw-medium bg-success rounded-pill" style="width: {{percentage}}%">{{percentage}}%</div>
+    </div>
+    </div>
+<div class="accordion" id="accordionExample">
+
+  <!-- Item (expanded) -->
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingOne">
+      <button type="button" class="accordion-button animate-underline" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        <i class="ci-info fs-lg text-success me-2"></i>
+        <span class="animate-target me-2">Show booking progress</span>
+      </button>
+    </h3>
+    
+    <div class="accordion-collapse collapse show  " id="collapseOne" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body ">
+    <div class="col-sm-6 p-3">
+           <canvas height="80" data-chart='{
+                "type": "line",
+                "data": {
+                    "labels": {{ label|safe }},
+                    "datasets": [{
+                        "label": "",
+                        "data": {{ data|safe }},
+                        "fill": true,
+                        "backgroundColor": "rgba(245, 82, 102, 0.2)",
+                        "borderColor": "#F54927",
+                        "borderWidth": 2,
+                        "tension": 0.3,
+                        "pointRadius": 0
+                    }]
+                },
+                "options": {
+                    "plugins": {
+                        "legend": { "display": false },
+                        "title": { "display": false }
+                    },
+                    "scales": {
+                        "x": { "display": false, "grid": { "color": "#eeeeee" }, "border": { "color": "rgba(133,140,151,.1)" } },
+                        "y": { "beginAtZero": true, "display": false, "grid": { "color": "rgba(133,140,151,.1)" }, "border": { "color": "rgba(133,140,151,.1)" } }
+                    }
+                }
+            }'></canvas>    
+    </div>
+   
+</div>
+    </div>
+  </div>
+  </div>
+  </div>
+    
+</div>
+
+       
+  
+
 </div>
 
 <!-- ===== CHECK-IN MODAL ===== -->

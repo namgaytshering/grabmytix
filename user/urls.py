@@ -4,8 +4,9 @@ from .views import *
 urlpatterns = [
     path('', dashboard_view, name='dashboard'),
     path('movies/', movies_view, name='movies'),
-  
-    
+    path('bank/account/', bank_view, name='bank_view'),
+      
+    path("stripe/create-account/", create_connected_account),
     path('movies/add', add_movies_view, name='add_movies'),
     path('movies/edit/<slug:slug_text>', edit_movies_view, name='edit_shows'),
     path('movies/add/addshow/<slug:slug_text>', add_shows_view, name='add_shows'),

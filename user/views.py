@@ -29,6 +29,10 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 #from db.models import Film,Event,
 #from .forms import FilmShowForm
+from django.conf import settings
+import stripe
+from django.views.decorators.csrf import csrf_exempt
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")
@@ -426,6 +430,60 @@ def change_password(request):
         form = PasswordChangeForm(request.user)
 
     return render(request, 'user/change_password.html', {'form': form})
+
+#for create stripe connect account
+@csrf_exempt
+def create_connected_account(request, seller_id):
+    seller = User.object.get(id=seller_id)
+
+    if not seller.stripe_account_id:
+        account = stripe.Account.create(
+            type="express",
+            country="AU",
+            capabilities={
+                "card_payments": {"requested": True},
+                "transfers": {"requested": True},
+            },
+            business_type="individual"
+        )
+        seller.stripe_account_id = account.id
+        seller.save()
+
+    return redirect(f"/seller/embedded-onboarding/?seller_id={seller.id}")
+ 
+# Step 2c: Handle return URL (after onboarding)
+def seller_dashboard(request):
+   # seller_id = request.GET.get("seller_id")
+    seller = User.object.get(id=7)
+
+    # Update onboarded status (optional: verify via Stripe API)
+    seller.is_onboarded = True
+    seller.save()
+
+    return render(request, "dashboard.html", {"seller": seller})
+
+def bank_view(request, *args, **kwargs):
+    seller = User.object.get(id=7)
+
+    account = stripe.Account.create(
+    type="express",
+    country="AU",
+    email="seller_test@example.com",
+    capabilities={
+        "card_payments": {"requested": True},
+        "transfers": {"requested": True},
+    },
+    business_type="individual"
+        )
+      
+    context = {
+         "account_link_url": account,
+        "stripe_publishable_key": settings.STRIPE_PUBLIC_KEY,
+        "seller_id": seller.id,
+    }
+    return render(request, 'user/bank.html',context)
+
+#log out
 def logout_view(request, *args, **kwargs):
     logout(request)
     return redirect('home')

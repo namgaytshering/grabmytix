@@ -1,0 +1,28 @@
+{% extends "../includes/user_base.html" %}
+{% block content %}
+<div  >
+     <script src="https://js.stripe.com/v3/"></script>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mt-2">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+ 
+    <h4 class="alert-heading ">
+        Add/Update you bank account</h4>
+   
+    <div class="container">
+   
+        <p>Fill your bank and identity info below. This is securely handled by Stripe.</p>
+
+        <!-- Embedded iframe -->
+        <iframe src="{{ account_link_url }}"></iframe>
+
+        <p style="margin-top:20px; font-size:12px; color: gray;">
+            Test Mode: use fake bank info (BSB: 000-000, Account: 000123456)
+        </p>
+    </div>
+</div>
+{% endblock %}
