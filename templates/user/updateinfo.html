@@ -8,16 +8,87 @@
     </div>
     {% endfor %}
     {% endif %}
-    <h4 class="alert-heading ">
-        Update your Information
-    </h4>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{form}}
-        <div class="mt-3">
-        <button type="submit" class="btn btn-md btn-danger"><i class="ci-edit"></i> &nbsp;Update info &nbsp;<i class="ci-chevron-right"></i></button>
-        </div>
-    </form>
+      <div class="col-lg-9">
+            <div class="ps-lg-3 ps-xl-0">
+
+              <!-- Page title -->
+              <h1 class="h2 mb-3 mb-sm-2">Personal info</h1>  
+             
+       <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modalId">
+Update info &nbsp;<i class="ci-edit"></i>
+</button>    <br/>      
+<div class="hover-effect-scale rounded overflow-hidden mt-3 mb-3" style="max-width: 156px;">
+  <img src="/media/{{request.user.profile}}" class="hover-effect-target" alt="Image">
+</div>
+   
+              <!-- Basic info -->
+              <div class="border-bottom py-4">
+                <div class="nav flex-nowrap align-items-center justify-content-between pb-1 mb-3">
+                  <h2 class="h6 mb-0">Basic info</h2>
+                
+                </div>
+                <div class="collapse basic-info show" id="basicInfoPreview">
+                  <ul class="list-unstyled fs-sm m-0">
+                    <li>{{request.user.name}}</li>
+                    <li>{{request.user.gender}}</li>
+                    
+                  </ul>
+                </div>
+     
+              </div>
+
+              <!-- Contact -->
+              <div class="border-bottom py-4">
+                <div class="nav flex-nowrap align-items-center justify-content-between pb-1 mb-3">
+                  <div class="d-flex align-items-center gap-3 me-4">
+                    <h2 class="h6 mb-0">Contact</h2>
+                  </div>
+                   </div>
+                <div class="collapse contact-info show" id="contactInfoPreview">
+                  <ul class="list-unstyled fs-sm m-0">
+                    <li class="mb-1">{{request.user.email}}</li>
+                    <li class="mb-1">{{request.user.phone}}</li>
+                  </ul>
+                </div>
+              
+              </div>
+
+
+             
+            </div>
+          </div>
+   
 
 </div>
+<div class="modal fade" id="modalId" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Update Information</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form }}
+
+          <div class="mt-4 d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-danger">
+              <i class="ci-edit"></i>&nbsp; Update Info &nbsp;<i class="ci-chevron-right"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 {% endblock %}
