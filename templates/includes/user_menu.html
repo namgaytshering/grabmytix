@@ -61,10 +61,12 @@
             <i class="ci-user fs-base opacity-75 me-2"></i>
         Personal info
             </a>
+              {% if request.user.is_partner %}
             <a class="list-group-item list-group-item-action d-flex align-items-center" href="/user/bank/account/">
          <i class="ci-layers fs-base opacity-75 me-2"></i>
              Bank Account
             </a>
+             {%endif%}
             <a class="list-group-item list-group-item-action d-flex align-items-center" href="/user/password/">
             <i class="ci-id-card fs-base opacity-75   me-2"></i>
             Change Password
