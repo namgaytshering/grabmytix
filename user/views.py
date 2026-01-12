@@ -463,25 +463,25 @@ def seller_dashboard(request):
     return render(request, "dashboard.html", {"seller": seller})
 
 def bank_view(request, *args, **kwargs):
-    seller = User.object.get(id=7)
+    # seller = User.object.get(id=7)
 
-    account = stripe.Account.create(
-    type="express",
-    country="AU",
-    email="seller_test@example.com",
-    capabilities={
-        "card_payments": {"requested": True},
-        "transfers": {"requested": True},
-    },
-    business_type="individual"
-        )
+    # account = stripe.Account.create(
+    # type="express",
+    # country="AU",
+    # email="seller_test@example.com",
+    # capabilities={
+    #     "card_payments": {"requested": True},
+    #     "transfers": {"requested": True},
+    # },
+    # business_type="individual"
+    #     )
       
-    context = {
-         "account_link_url": account,
-        "stripe_publishable_key": settings.STRIPE_PUBLIC_KEY,
-        "seller_id": seller.id,
-    }
-    return render(request, 'user/bank.html',context)
+    # context = {
+    #      "account_link_url": account,
+    #     "stripe_publishable_key": settings.STRIPE_PUBLIC_KEY,
+    #     "seller_id": seller.id,
+    # }
+    return render(request, 'user/bank.html')
 
 #log out
 def logout_view(request, *args, **kwargs):
