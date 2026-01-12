@@ -144,7 +144,9 @@
         <strong class="text-muted">
         <i class="ci-user fs-base opacity-75 me-2"></i>&nbsp;Manage account</strong></li>
       <li><a class="nav-link ps-2" href="/user/updateinfo/">  <i class="ci-edit animate-target ms-n1 me-2"></i> Personal info</a></li>
+         {% if request.user.is_partner %}
        <li><a class="nav-link ps-2" href="/user/bank/account/"><i class="ci-layers animate-target ms-n1 me-2"></i>&nbsp;Bank Account</a></li>
+         {% endif %}
         <li><a class="nav-link ps-2" href="/user/logout"> <i class="ci-id-card animate-target ms-n1 me-2"></i>&nbsp;Change Password</a></li>
          <li><a class="nav-link ps-2" href="/user/logout"> <i class="ci-log-in animate-target ms-n1 me-2"></i>&nbsp;Logout</a></li>
       {% else %}
