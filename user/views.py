@@ -79,8 +79,8 @@ def dashboard_view(request, *args, **kwargs):
      
     current_your_bookings =Booking.objects.filter(
         Q(user=request.user),
-        Q(filmshow__status=1 )| Q(event__status=1),
-        Q(payment_status =1),
+        Q(filmshow__status=1 )| Q(event__status=1)
+      
     ).order_by('-id')
     context ={
         'bookings':current_bookings,'your_bookings':current_your_bookings,
