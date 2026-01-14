@@ -77,6 +77,30 @@ def dashboard_view(request, *args, **kwargs):
     .order_by('-show_date', '-show_time')
     )
 
+     
+    current_your_bookings =Booking.objects.filter(user = request.user).order_by('-id')
+
+    context ={
+        'bookings':current_bookings,'your_bookings':current_your_bookings,
+       
+        }
+
+    return render(request, "user/userbooking.html",context)
+
+@login_required(login_url='/login')
+@user_passes_test(lambda u: u.is_user, login_url="/login")
+def past_booking_view(request, *args, **kwargs):
+ 
+    accessible_event_ids = EventAccess.objects.filter(
+        user=request.user,
+        can_view=True
+    ).values_list('event_id', flat=True)
+    accessible_movies_ids = FilmShowAccess.objects.filter(
+        user=request.user,
+        can_view=True
+    ).values_list('film_show_id', flat=True)
+
+    
     past_bookings = (Booking.objects.filter( Q(payment_status=1), ( (
                 Q(filmshow__status=0) & Q(film__owner=request.user) ) |
             ( Q(event__status=0) & Q(event__owner=request.user)
@@ -106,8 +130,7 @@ def dashboard_view(request, *args, **kwargs):
     )
     .order_by('-show_date', '-show_time')
     )
-    current_your_bookings =Booking.objects.filter(user = request.user).order_by('-id')
-
+    
     past_your_bookings =Booking.objects.filter(
         Q(user=request.user),
         Q(filmshow__status=0 )| Q(event__status=0),
@@ -115,12 +138,11 @@ def dashboard_view(request, *args, **kwargs):
     ).order_by('-id')
 
     context ={
-        'bookings':current_bookings,'your_bookings':current_your_bookings,
+        
         'past_bookings':past_bookings,'past_your_bookings':past_your_bookings
         }
 
-    return render(request, "user/userbooking.html",context)
-
+    return render(request, "user/pastbooking.html",context)
 
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")

@@ -1,6 +1,7 @@
-{% extends "../includes/user_base.html" %}
+  {% extends "../includes/user_base.html" %}
 {% block content %}
-    <h4 class="mb-2">Ticket Booking from other</h4>
+ 
+  <h4 class="mb-2">Previous Ticket Booking from other</h4>
      {% if bookings %}
       <p class="mb-4 text-muted">
         View the complete list of tickets booked, organized by movies and show locations.
@@ -23,7 +24,7 @@
             </thead>
             <tbody>
              
-                {% for booking in bookings %}
+                {% for booking in past_bookings %}
                 <tr>
                     <td class="py-3 ps-0">
                         <div class="d-flex align-items-center hover-effect-scale">
@@ -67,13 +68,13 @@
    </div>
    {%endif%}
     <div class="mt-5">
-  {% if not bookings and not your_bookings %}
+  {% if not past_bookings and not past_your_bookings %}
     <h5>Bookings</h5>
-    <p>No bookings available yet. Start exploring and book your first event!</p>
+    <p>No bookings record available.</p>
     {% endif %}
 
-    {% if your_bookings %}
-    <h5>My Bookings</h5>
+    {% if past_your_bookings %}
+    <h5>My Previous Bookings</h5>
     <p>All the tickets that you have purchased
         <div class="table-responsive">
    <div class="table-responsive overflow-auto" style="height: 300px;">
@@ -92,7 +93,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for booking in your_bookings %}
+        {% for booking in past_your_bookings %}
         <tr>
             <td><b>{{ booking.id }}</b></td>
             <td>{{ booking.title }}</td>
@@ -129,13 +130,12 @@
 </table>
 </div></div>
 {%endif%}
+</div>
   </div>
-  <br/>  <br/>
-    <a href="/user/pastbooking/" class="btn btn-sm btn-light">View tickets from past bookings</a>
-
-  
+   
   </div>
-  
+  </div>
+  </div>
 
 
 
