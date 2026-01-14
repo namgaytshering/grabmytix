@@ -1,5 +1,17 @@
 {% extends "../includes/user_base.html" %}
 {% block content %}
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
     <h4 class="mb-2">Ticket Booking from other</h4>
      {% if bookings %}
       <p class="mb-4 text-muted">
@@ -85,7 +97,7 @@
             <th scope="col">Type</th>
             <th scope="col">Address</th>
             <th scope="col">Street</th>
-            <th scope="col">Date</th>
+            <th scope="col">Show Date</th>
             <th scope="col">Tickets</th>
             <th scope="col">Total</th>
             <th scope="col">Status</th>
@@ -118,9 +130,18 @@
                     <i class="ci-check-circle fs-base me-1"></i> Paid
                 </button>
                 {% else %}
-                <a class="btn btn-sm btn-primary" target="_blank" href="/payment/{{ booking.id }}">
+                <a class="btn btn-sm btn-info" target="_blank" href="/payment/{{ booking.id }}">
                     <i class="ci-banned me-1"></i> Pay ${{ booking.total_payment }}
                 </a>
+                  <br/> <br/>
+                  <div class="dropdown">
+  <button type="button" class="btn btn-sm btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Delete</button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="/user/deletebooking/{{ booking.id }}"> <i class="ci-trash me-1"></i> Delete this booking</a></li>
+   
+  </ul>
+</div>
+ 
                 {% endif %}
             </td>
         </tr>

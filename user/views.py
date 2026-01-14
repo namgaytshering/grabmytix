@@ -476,6 +476,16 @@ def updateinfo_view(request):
             messages.success(request,  "Successfully updated your information!")
             return redirect('updateinfo_view')
     return render(request, "user/updateinfo.html",{'form': form})
+@login_required
+def deletebooking_view(request,id):
+    booking = get_object_or_404(Booking, id=id, user=request.user)
+    try:
+        booking.delete()
+        messages.success(request, f"Order {id} booking deleted successfully.")
+    except Exception:
+        messages.error(request, "Unable to delete the booking. Please try again.")
+    return redirect('dashboard')
+
 
 @login_required
 def change_password(request):
