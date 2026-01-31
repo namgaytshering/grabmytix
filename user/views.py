@@ -17,7 +17,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.forms import PasswordChangeForm
 from .forms import UpdateinfoForm
 from django.contrib.auth import update_session_auth_hash  
-from .forms import AddMovieForm,FilmShowForm,EventForm
+from .forms import AddMovieForm,FilmShowForm,EventForm,EventAccessForm
 import json
 import csv
 
@@ -240,6 +240,43 @@ def add_event_view(request):
 
         
     return render(request, 'user/add_event.html', {'form': form})
+@login_required(login_url='/login')
+@user_passes_test(lambda u: u.is_user, login_url="/login")
+def eventview_view(request,slug_text, *args, **kwargs):
+    
+    event = get_object_or_404(Event, owner=request.user, slug=slug_text)
+    form = EventAccessForm(request.POST)
+    if request.method == "POST":
+        form = EventAccessForm(request.POST)
+
+        if form.is_valid():
+            email = form.cleaned_data['email']
+
+            try:
+                check_access = EventAccess.objects.filter(user__email=email, event=event).exists()
+                if not check_access:
+                    user = User.object.filter(email=email).first()
+                    if user:
+                    # Create access (avoid duplicate)
+                        EventAccess.objects.get_or_create(
+                            user=user,
+                            event=event
+                        )
+
+                        messages.success(request, f"{email} User successfully added and given the  event access.")
+                    else:
+                        messages.warning(request, f"{email} User is not registered with us. Please register with us to give them access")
+                else:
+                    messages.info(request, f"{email} already have a acess.")
+                return redirect('eventview_view',  slug_text=event.slug)
+
+            except User.DoesNotExist:
+                form.add_error('email', 'No user found with this email.')
+                return redirect('eventview_view', slug_text=event.slug)
+
+    event_access = EventAccess.objects.filter(event__slug=slug_text,event__owner = request.user)
+    context ={'event':event,'event_access':event_access,'form':form}
+    return render(request, 'user/event_view.html',context)
 
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")
@@ -258,6 +295,28 @@ def edit_events_view(request,slug_text, *args, **kwargs):
             messages.success(request, "Something happened, please try again"+str(e)) 
     context = {'form': form}
     return render(request, "user/add_event.html",context)
+
+@login_required(login_url='/login')
+@user_passes_test(lambda u: u.is_user, login_url="/login")
+def eventdelete_view(request, id, *args, **kwargs):
+    event_access = EventAccess.objects.filter(id=id).first()
+
+    # If not exists
+    if not event_access:
+        messages.warning(request, "Record does not exist.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    # Store slug before delete
+    event_slug = event_access.event.slug
+
+    # Delete the matched record
+    event_access.delete()
+
+    # Success message
+    messages.success(request, "Event access deleted successfully.")
+
+    # Redirect to event view
+    return redirect('eventview_view', slug_text=event_slug)
 
 
 @login_required(login_url='/login')
@@ -537,6 +596,7 @@ def seller_dashboard(request):
     seller.save()
 
     return render(request, "dashboard.html", {"seller": seller})
+
 
 def bank_view(request, *args, **kwargs):
     # seller = User.object.get(id=7)

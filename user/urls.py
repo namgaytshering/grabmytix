@@ -16,10 +16,15 @@ urlpatterns = [
     path('password/', change_password, name='change_password'),
 
     path('events/', events_view, name='events'),
+
+    
     path('events/add', add_event_view, name='add_event'),
+    path('event/view/<slug:slug_text>/', eventview_view, name='eventview_view'),
+    path('event/delete/<int:id>/', eventdelete_view, name='eventdelete_view'),
+ 
     path('scan_qrcode/', scan_qrcode_view, name='scan_qrcode'),
     path('updateinfo/', updateinfo_view, name='updateinfo_view'),
-    path('events/edit/<slug:slug_text>',edit_events_view, name='edit_events'),
+    path('events/edit/<slug:slug_text>/',edit_events_view, name='edit_events'),
     path('booking/', booking_owner_view, name='booking_owner_view'),
     path('booking/tickets/<int:id>', tickets_owner_view, name='tickets_owner'),
     path('booking/tickets/<int:id>/', tickets_owner_view, name='tickets_owner'),

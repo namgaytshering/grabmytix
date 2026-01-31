@@ -158,3 +158,11 @@ class  UpdateinfoForm(ModelForm):
           
         }
  
+
+class EventAccessForm(forms.Form):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control form-icon-start',
+            'placeholder': 'Enter email id'
+        })
+    )
