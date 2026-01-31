@@ -192,7 +192,7 @@
 
       {% for movie in movies %}
       <div class="row mb-4">
-        {% if forloop.counter|divisibleby:2 %}
+        {% if not forloop.counter|divisibleby:2 %}
         <!-- Even: Image on left -->
         <div class="col-md-5 order-md-1 mb-4 mb-md-0">
           <div class="position-relative h-100 bg-body-tertiary rounded-5 overflow-hidden">
