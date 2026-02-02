@@ -1,0 +1,103 @@
+{% extends "../includes/user_base.html" %}
+{% block content %}
+<div> 
+ 
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mt-2">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <h4  >{{ show}}</h4>
+
+    <h5 class="mt-4"> People who can see booking for this event</h5>
+<!-- Inline form built with rows and columns -->
+    
+<!-- Launch modal button -->
+ {% if show.status == True %}
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalId">
+<i class="ci-user-plus"></i>&nbsp; Give access to users  <i class="ci-chevron-right"></i>
+</button>
+{%endif%}
+ 
+    <div class="table-responsive">
+        <div class="table-responsive overflow-auto" style="max-height: 200px;">
+            <table class="table align-middle fs-sm mb-0 table-striped">
+
+                <thead class="position-sticky top-0 bg-light">
+                    <tr>
+                        <th scope="col" class="ps-0">Name</th>
+                        <th scope="col" class="ps-0">Email</th>
+                        <th scope="col" class="ps-0">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%if show_access%}
+                    {% for access in show_access %}
+                    <tr>
+                        <td class="py-3 ps-0">
+                            <div class="d-flex align-items-center hover-effect-scale">
+                                <div class="ps-2 ms-1">
+                                    {{ access.user.name }}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3 ps-0">{{access.user.email}}</td>
+
+                        <td class="py-3 pe-0">
+                            <a href="/user/access/delete/{{ access.id }}" class="btn btn-sm btn-danger"
+                                aria-label="View tickets for {{ booking.filmshow__id }}">
+                                Remove
+                            </a>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+                    {%else%}
+                    <tr>
+                    <td colspan="3">
+                    No Access granted
+                    </td>
+                    </tr>
+                    {%endif%}
+                </tbody>
+            </table>
+        </div>
+     </div>
+      
+
+ 
+<!-- Vertically centered modal -->
+<div class="modal fade" id="modalId" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+   <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Give Access</h5>
+        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+       
+   <form class=" align-items-center" method="POST">
+    {% csrf_token %}   
+ 
+ 
+    <label for="inline-form-input" class="visually-hidden">Email ID</label>
+     {{form.email}}
+            <div class="alert alert-warning mt-4" role="alert">
+                        User will get access to bookings of tickets of  {{event}}
+            </div>
+
+      </div>
+      <div class="modal-footer flex-column flex-sm-row align-items-stretch">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Give Access</button>
+      </div>
+    </div>
+   </form>
+    
+  </div>
+</div>
+ 
+    {% endblock %}

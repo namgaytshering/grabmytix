@@ -190,7 +190,58 @@ def edit_movies_view(request,slug_text, *args, **kwargs):
     context = {'form': form}
     return render(request, "user/addmovies.html",context)
 
+#access to film show
+@login_required(login_url='/login')
+def show_movies_access_view(request,id):
+    show  = Filmshow.objects.filter(id =id).first()
+    show_access = FilmShowAccess.objects.filter(film_show=show,film_show__film__owner = request.user)
+    form = EventAccessForm(request.POST)
+    if request.method == "POST":
+        form = EventAccessForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            try:
+                check_access = FilmShowAccess.objects.filter(user__email=email, film_show=show).exists()
+                if not check_access:
+                    user = User.object.filter(email=email).first()
+                    if user:
+                    # Create access (avoid duplicate)
+                        FilmShowAccess.objects.get_or_create(
+                            user=user,
+                            film_show=show
+                        )
+                        messages.success(request, f"{email} User successfully added and given the  event access.")
+                    else:
+                        messages.warning(request, f"{email} User is not registered with us. Please register with us to give them access")
+                else:
+                    messages.info(request, f"{email} already have a acess.")
+                return redirect('show_movies_access_view', id=id)
+            except User.DoesNotExist:
+                form.add_error('email', 'No user found with this email.')
+                return redirect('show_movies_access_view', id=id)        
+    context={'show_access':show_access,'show':show,'form':form}
+    return render(request, "user/showaccess.html",context)
 
+@login_required(login_url='/login')
+def delete_movies_access_view(request,id):
+    show_access = FilmShowAccess.objects.filter(id=id).first()
+
+    # If not exists
+    if not show_access:
+        messages.warning(request, "Record does not exist.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    # Store slug before delete
+    show_id = show_access.film_show.id
+
+    # Delete the matched record
+    show_access.delete()
+
+    # Success message
+    messages.success(request, "Event access deleted successfully.")
+
+    # Redirect to event view
+    return redirect('show_movies_access_view', id=show_id)
 
 
 @login_required(login_url='/login')
@@ -240,6 +291,7 @@ def add_event_view(request):
 
         
     return render(request, 'user/add_event.html', {'form': form})
+
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")
 def eventview_view(request,slug_text, *args, **kwargs):
