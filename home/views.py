@@ -264,7 +264,7 @@ def state_moviedetail_view(request,slug_text):
                 return redirect('payment_view', id=saveform.id)
 
         except Exception as e:
-                messages.error(request, "Something happened, please try again" +str(e))
+                messages.error(request, "Something happened, please again" +str(e))
     is_expired = get_movie_datetime_local(filmshow)
     return render(request, 'home/booking.html',{'movie':movie,'form':form,'filmshow':filmshow,'is_expired':is_expired})
 
