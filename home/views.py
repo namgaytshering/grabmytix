@@ -375,7 +375,7 @@ def eventdetail_view(request,slug_text):
 
 def movies_view(request):
     now = timezone.now() 
-    upcoming = Filmshow.objects.all().select_related('film').order_by('state', 'show_date', 'show_time')
+    upcoming = Filmshow.objects.filter(status = 1).select_related('film').order_by('state', 'show_date', 'show_time')
     
     context = {'upcomings':upcoming}
     return render(request, 'home/movies.html',context)
