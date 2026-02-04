@@ -124,8 +124,8 @@ class Filmshow(models.Model):
     show_date = models.DateField()
     show_time = models.TimeField()
 
-    adult = models.DecimalField(max_digits=6, decimal_places=1)
-    child = models.DecimalField(max_digits=6, decimal_places=1)
+    adult = models.DecimalField(max_digits=6, decimal_places=2)
+    child = models.DecimalField(max_digits=6, decimal_places=2)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     state = models.ForeignKey(State, on_delete=models.CASCADE)

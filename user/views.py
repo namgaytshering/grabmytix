@@ -268,6 +268,25 @@ def add_shows_view(request, slug_text, *args, **kwargs):
     return render(request, "user/addshows.html", context)
 
 
+@login_required(login_url='/login')
+@user_passes_test(lambda u: hasattr(u, 'is_user') and u.is_user, login_url="/login")
+def edit_shows_view(request, id):
+    show = get_object_or_404(Filmshow, id=id)
+    form = FilmShowForm(request.POST or None, request.FILES or None, instance=show)
+
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Show successfully updated!")
+            return redirect("add_shows", slug_text=show.film.slug)
+        else:
+            print(form.errors) 
+            messages.error(request, "Please correct the errors below.")
+
+    context = {'form': form}
+    return render(request, "user/editshow.html", context)
+
+
 #events
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")

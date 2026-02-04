@@ -13,6 +13,11 @@ urlpatterns = [
     path('movies/add', add_movies_view, name='add_movies'),
     path('movies/edit/<slug:slug_text>', edit_movies_view, name='edit_shows'),
     path('movies/add/addshow/<slug:slug_text>', add_shows_view, name='add_shows'),
+
+
+    path('movies/edit/show/<int:id>/', edit_shows_view, name='edit_shows'),
+
+    
     path('movies/access/<int:id>/', show_movies_access_view, name='show_movies_access_view'),
     path('access/delete/<int:id>/', delete_movies_access_view, name='delete_movies_access_view'),
 

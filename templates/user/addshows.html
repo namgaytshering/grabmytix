@@ -101,7 +101,7 @@
                 </td>
                 <td class="earning text-start py-3 pe-0">
                     {% if movie.show_date|date:"Y-m-d" > today %}
-                    <a href="" class="btn btn-sm btn-danger"><i class="ci-edit"></i>&nbsp;edit</a>
+                    <a href="/user/movies/edit/show/{{movie.id}}" class="btn btn-sm btn-danger"><i class="ci-edit"></i>&nbsp;edit</a>
                         {% endif %}
                 </td>
             </tr>
