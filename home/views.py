@@ -190,7 +190,7 @@ def moviedetail_view(request,slug_text):
     
     movie = get_object_or_404(Film, slug=slug_text)
     
-    shows = Filmshow.objects.filter(film = movie).order_by('show_date','show_time')
+    shows = Filmshow.objects.filter(film=movie).select_related('state').order_by('state__state_short', 'show_date', 'show_time')
     # if request.user.is_authenticated:
     #     name = request.user.name
     

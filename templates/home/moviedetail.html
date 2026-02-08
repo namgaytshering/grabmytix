@@ -5,27 +5,20 @@
 {% endblock title %}
 
 {% block meta %}
-<!-- Movie-Specific Meta Tags -->
-<meta name="description" content="{% if shows %}
-    Shows:
-    {% for show in shows %}
-      {{ show.state.state_short|upper }} - {{ show.show_date }}{% if not forloop.last %}, {% endif %}
-    {% endfor %}
-  {% endif %}">
-<meta property="og:title" content="{{ movie.title }} - GrabMyTix" />
-<meta property="og:description" content="{% if shows %}
-    Shows:
-    {% for show in shows %}
-      {{ show.state.state_short|upper }} - {{ show.show_date }}  {% if not forloop.last %}, {% endif %}
-    {% endfor %}
-  {% endif %}" />
-<meta property="og:image" content="https://www.grabmytix.com/media/{{ movie.poster_image }}" />
-<meta property="og:image:alt" content="{{ movie.title }} Poster" />
-<meta property="og:url" content="https://www.grabmytix.com/{{ movie.slug }}/" />
-<meta property="og:type" content="movies" />
-<meta name="keywords" content="{{ movie.title }}, movie tickets, {{ movie.genre }}, book online">
+
+<meta name="description" content="{% if shows %}Book tickets for {{ movie.title }}. Upcoming shows in {% for show in shows %}{{ show.state.state_short|upper }} on {{ show.show_date|date:'M d, Y' }}{% if not forloop.last %}, {% endif %}{% endfor %}.{% else %}Book tickets for {{ movie.title }} online with GrabMyTix. Secure and easy movie ticket booking.{% endif %}">
+
+<meta name="keywords" content="{{ movie.title }}, {{ movie.genre }}, movie tickets, book movie tickets online, GrabMyTix">
 <meta name="author" content="GrabMyTix">
+
+<meta property="og:title" content="{{ movie.title }} | GrabMyTix">
+<meta property="og:description" content="{% if shows %}Now showing: {{ movie.title }}. Available in {% for show in shows %}{{ show.state.state_short|upper }} on {{ show.show_date|date:'M d, Y' }}{% if not forloop.last %}, {% endif %}{% endfor %}.{% else %}Book {{ movie.title }} tickets online with GrabMyTix.{% endif %}">
+<meta property="og:image" content="https://www.grabmytix.com/media/{{ movie.poster_image }}">
+<meta property="og:image:alt" content="{{ movie.title }} movie poster">
+<meta property="og:url" content="https://www.grabmytix.com/{{ movie.slug }}/">
+<meta property="og:type" content="website">
 {% endblock meta %}
+
 
 {% block content %}
 <main class="content-wrapper">
@@ -87,54 +80,150 @@
         <p class="text-muted">Browse available shows by state and choose your preferred theater and time.</p>
       </div>
       <!-- Flush list group to render items edge-to-edge in a parent container (e.g., cards) -->
+{% if shows %}
+{% regroup shows by state.state_short as state_list %}
+
+{% if state_list %}
+<ul class="nav nav-tabs mb-4" id="showTabs" role="tablist">
+
+  {% if state_list|length > 1 %}
+    <!-- All Tab -->
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button">
+        <i class="ci-filter"></i> &nbsp;  All&nbsp;<i class="ci-chevron-right"></i> &nbsp;
+      </button>
+    </li>
+
+    <!-- State Tabs -->
+    {% for state in state_list %}
+   <li class="nav-item" role="">
+  <button class="nav-link text" id="tab-{{ state.grouper|slugify }}" data-bs-toggle="tab"
+          data-bs-target="#state-{{ state.grouper|slugify }}" type="button">
+   <i class="ci-filter"></i> &nbsp; {{ state.grouper|upper }} &nbsp;<i class="ci-chevron-right"></i>  <!-- Full state name -->
+  </button>
+</li>
+    {% endfor %}
+
+  {% else %}
+    <!-- Only one state → show a single active tab -->
+   <li class="nav-item text-start ">
+  <button class="nav-link text-start active" id="tab-{{ state_list.0.grouper|slugify }}" data-bs-toggle="tab"
+          data-bs-target="#state-{{ state_list.0.grouper|slugify }}" type="button">
+   Showing in  {{ state_list.0.list.0.state.name|capfirst }}
+  </button>
+</li>
+  {% endif %}
+
+</ul>
+{% endif %}
 
 
 
-      {% regroup shows by state as state_list %}
-      {% for state in state_list %}
+  
+</ul>
 
-      <!-- State Header -->
+<div class="tab-content" id="showTabsContent">
 
-      <h5 class="alert-heading mb-2"> <i class="bi bi-geo-alt-fill me-2"></i> {{ state.grouper }}</h5>
+  <!-- ALL SHOWS -->
+  <div class="tab-pane fade show active" id="all">
+   
+    <div class="row g-3">
+      {% for show in shows %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body d-flex flex-column">
 
-      <!-- Shows under each state -->
-      <div class="list-group">
-        {% for show in state.list %}
+            <h5 class="card-title">{{ show.theater_name|capfirst }}</h5>
+            <p class="text-muted small mb-1">
+              <i class="bi bi-geo-alt"></i>
+                {{ show.state.name|capfirst }}
+            </p>
 
-        <a class="list-group-item mb-4 list-group-item-action p-3 fw-normal " href="/show/{{ show.slug }}"
-          aria-current="true">
-          <div>
-            <h6 class="mb-1">{{ show.theater_name |capfirst}}</h6>
+            <p class="mb-2">
+              <i class="bi bi-calendar-event"></i> {{ show.show_date }}
+              <i class="bi bi-clock ms-2"></i> {{ show.show_time|date:'h:i A' }}
+            </p>
+
+            <div class="mt-auto d-flex justify-content-between align-items-center">
+              <span class="fw-bold text-danger fs-5">
+                {{ show.currency }} {{ show.adult }}
+              </span>
+
+              {% if show.status == 0 %}
+                <span class="badge bg-secondary">Expired</span>
+              {% else %}
+                <a href="/show/{{ show.slug }}" class="btn btn-sm btn-danger">
+          <i class="ci-ticket"></i> &nbsp; Grab a ticket <i
+              class="ci-chevron-right"></i>
+                </a>
+              {% endif %}
+            </div>
 
           </div>
-          <small class="mb-1">{{ show.street |capfirst}},{{ show.state.state_short |upper}}</small>
-          <br />
-          <small>Date: {{ show.show_date }}, {{ show.show_time|date:'h:i A' }}</small>
-          <h5>{{show.currency}} &nbsp;{{ show.adult }}</h5>
-
-          {%if show.status == 0 %}
-          <span class="text text-warning"> Expired</span>
-          {%else%}
-          <button class="btn btn-sm btn-danger"><i class="ci-ticket"></i> &nbsp; Grab a ticket <i
-              class="ci-chevron-right"></i></button>
-          {%endif%}
-        </a>
-        {% endfor %}
+        </div>
       </div>
-      {% empty %}
-      <p class="fst-italic text-center">No shows available at the moment. Please check back later.</p>
       {% endfor %}
+    </div>
+  </div>
 
-      </ul>
+  <!-- STATE TABS -->
+  {% for state in state_list %}
+  <div class="tab-pane fade" id="state-{{ state.grouper }}">
+ 
+    <div class="row g-3">
+      {% for show in state.list %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body d-flex flex-column">
 
+            <h5 class="card-title">{{ show.theater_name|capfirst }}</h5>
+            <p class="text-muted small mb-1">
+              <i class="bi bi-geo-alt"></i>
+              {{ show.street|capfirst }}, {{ show.state.state_short|upper }}
+            </p>
+
+            <p class="mb-2">
+              <i class="bi bi-calendar-event"></i> {{ show.show_date }}
+              <i class="bi bi-clock ms-2"></i> {{ show.show_time|date:'h:i A' }}
+            </p>
+
+            <div class="mt-auto d-flex justify-content-between align-items-center">
+              <span class="fw-bold text-danger fs-5">
+                {{ show.currency }} {{ show.adult }}
+              </span>
+
+              {% if show.status == 0 %}
+                <span class="badge bg-secondary">Expired</span>
+              {% else %}
+                <a href="/show/{{ show.slug }}" class="btn btn-sm btn-danger">
+               <i class="ci-ticket"></i> &nbsp; Grab a ticket <i class="ci-chevron-right"></i>
+                </a>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+
+</div>
+
+{% else %}
+<p class="fst-italic text-center">No shows available at the moment.</p>
+{% endif %}
+
+    
     </section>
 
 
 
     <div>
       <!-- Summary -->
-      <section class="mt-md-2 mb-lg-4">
-        <h1 class="alert-heading mb-2">Summary</h1>
+      <section class="mt-md-2   mb-lg-4">
+        <h1 class="alert-heading mb-2 mt-4">Summary</h1>
         <p class="mb-0  " style="line-height: 1.6;">
           {{ movie.description|safe }}
         </p>

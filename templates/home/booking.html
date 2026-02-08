@@ -3,9 +3,19 @@
 {% block title %}{{ movie.title }}  - GrabMyTix  {% endblock title %}
 
 {% block meta %}
-<meta name="description" content=" Showing: {{ filmshow.state.state_short|upper }} - {{filmshow.show_date}},{{filmshow.show_time|date:'h:i A' }} ">
+<meta name="description" content="{% if filmshow %}Book tickets for {{ movie.title }}. Now showing in {{ filmshow.state.state_short|upper }} on {{ filmshow.show_date|date:'M d, Y' }}. Secure online booking with GrabMyTix.{% else %}Book tickets for {{ movie.title }} online with GrabMyTix. Fast, secure, and easy movie ticket booking.{% endif %}">
+
+<meta name="keywords" content="{{ movie.title }}, {{ movie.genre }}, movie tickets, book movie tickets online, GrabMyTix">
+<meta name="author" content="GrabMyTix">
+
+<meta property="og:title" content="{{ movie.title }} | GrabMyTix">
+<meta property="og:description" content="{% if filmshow %}Now showing: {{ movie.title }} in {{ filmshow.state.state_short|upper }} on {{ filmshow.show_date|date:'M d, Y' }}. Book your tickets with GrabMyTix.{% else %}Book {{ movie.title }} tickets online with GrabMyTix. Fast and secure booking.{% endif %}">
+
+<meta property="og:image" content="https://www.grabmytix.com/media/{{ movie.poster_image }}">
+<meta property="og:image:alt" content="{{ movie.title }} movie poster">
+<meta property="og:url" content="https://www.grabmytix.com/{{ movie.slug }}/">
+<meta property="og:type" content="website">
 {% endblock meta %}
-:<q></q>
 {% block content %}
 <main class="content-wrapper">
     <!-- Hero Section -->
