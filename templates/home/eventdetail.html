@@ -3,16 +3,16 @@
 {% block title %}{{ event.title }} | GrabMyTix{% endblock title %}
 {% load tz %}  {# to ensure timezone-aware date comparisons #}
 {% block meta %}
-<meta name="description"
-  content="Show: {{ event.place }},{{ event.state.state_short|upper }} - {{ event.show_date }} , {{ event.show_time |date:'h:i A' }}">
+<meta name="description" content="Show: {{ event.place }}, {{ event.state.state_short|upper }} - {{ event.show_date }}, {{ event.show_time|date:'h:i A' }}">
+
 <meta property="og:title" content="{{ event.title }} - GrabMyTix" />
-<meta property="og:description"
-  content="Show: {{ event.place }}, {{ event.state.state_short|upper }} - {{ event.show_date }} , {{ event.show_time |date:'h:i A' }}" />
-<meta property="og:image" content="https://www.grabmytix.com/media/{{event.poster_image}}" />
+<meta property="og:description" content="Show: {{ event.place }}, {{ event.state.state_short|upper }} - {{ event.show_date }}, {{ event.show_time|date:'h:i A' }}" />
+<meta property="og:image" content="https://www.grabmytix.com{{ event.poster_image.url }}" />
 <meta property="og:image:alt" content="{{ event.title }} Poster" />
 <meta property="og:url" content="https://www.grabmytix.com/event/{{ event.slug }}/" />
 <meta property="og:type" content="article" />
-<meta name="keywords" content="{{ event.title }}, movie tickets, {{ event.genre }}, book online" />
+
+<meta name="keywords" content="{{ event.title }}, event tickets, {{ event.genre }}, book online" />
 <meta name="author" content="GrabMyTix">
 {% endblock meta %}
 
