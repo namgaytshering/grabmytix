@@ -90,7 +90,7 @@
     <!-- All Tab -->
     <li class="nav-item" role="presentation">
       <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button">
-        <i class="ci-filter"></i> &nbsp;  All&nbsp;<i class="ci-chevron-right"></i> &nbsp;
+        All&nbsp;<i class="ci-chevron-right"></i> &nbsp;
       </button>
     </li>
 
@@ -99,7 +99,7 @@
    <li class="nav-item" role="">
   <button class="nav-link text" id="tab-{{ state.grouper|slugify }}" data-bs-toggle="tab"
           data-bs-target="#state-{{ state.grouper|slugify }}" type="button">
-   <i class="ci-filter"></i> &nbsp; {{ state.grouper|upper }} &nbsp;<i class="ci-chevron-right"></i>  <!-- Full state name -->
+    {{ state.grouper|upper }} &nbsp;<i class="ci-chevron-right"></i>  <!-- Full state name -->
   </button>
 </li>
     {% endfor %}
