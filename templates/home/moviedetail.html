@@ -168,7 +168,7 @@
 
   <!-- STATE TABS -->
   {% for state in state_list %}
-  <div class="tab-pane fade" id="state-{{ state.grouper }}">
+  <div class="tab-pane fade" id="state-{{ state.grouper|slugify }}">
  
     <div class="row g-3">
       {% for show in state.list %}
