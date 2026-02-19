@@ -657,6 +657,6 @@ def test_email_view(request):
         'home.tasks.send_payment_success_email',
         booking, 
         group='Payment Success Email',
-        task_name='send_payment_success_email',# ← put a real booking ID from your database
+        task_name=f'{booking.name} - {booking.email}',# ← put a real booking ID from your database
     )
     return HttpResponse("✅ Email ssss task sent to queue! Check qcluster terminal.")
