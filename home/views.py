@@ -28,7 +28,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
 from zoneinfo import ZoneInfo
-
+from django_q.tasks import async_task
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 #compare local time with event time
@@ -649,3 +649,12 @@ def get_adultchildprice(request,id):
      
     # product_id = request.GET.get('product_id')
     return JsonResponse(context, safe=False)
+
+#for setting
+def test_email_view(request):
+    async_task(
+        'home.tasks.send_payment_success_email',
+        'namgay2340@gmail.com',
+        1,  # ← put a real booking ID from your database
+    )
+    return HttpResponse("✅ Email ssss task sent to queue! Check qcluster terminal.")
