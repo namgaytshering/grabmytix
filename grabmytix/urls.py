@@ -45,7 +45,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/',include('user.urls')),
     path('', home_view, name='home'),  # Added a comma at the end
-     path('reset-password/', auth_views.PasswordResetView.as_view(template_name="user/password_reset.html"),
+    path('reset-password/', auth_views.PasswordResetView.as_view(template_name="user/password_reset.html"),
          name="reset_password"),
 
     path('reset_password_sent/',
