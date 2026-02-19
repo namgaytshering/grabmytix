@@ -12,7 +12,7 @@ def send_payment_success_email(booking):
     # )
     subject = 'Thank You – Your booking confirmation - '+booking.title
     from_email = None
-    recipient_list = ['namgay2340@gmail.com']
+    recipient_list = [booking.email]
     # qr_data = f"{booking.id}"   # You can encode URL or JSON too
     # qr = qrcode.make(qr_data)
 
@@ -25,7 +25,7 @@ def send_payment_success_email(booking):
         'no': booking.id,
         'no_adult':booking.no_adult,
          
-        'email':['namgay2340@gmail.com'],
+        'email':booking.email,
         'title': booking.title,
          
         'show_date':booking.show_date,
