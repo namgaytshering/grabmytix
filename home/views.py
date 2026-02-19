@@ -652,10 +652,10 @@ def get_adultchildprice(request,id):
 
 #for setting
 def test_email_view(request):
+    booking = Booking.objects.filter(id=1021).first()
     async_task(
         'home.tasks.send_payment_success_email',
-        'namgay2340@gmail.com',
-        1,  
+        booking, 
         group='Payment Success Email',
         task_name='send_payment_success_email',# ← put a real booking ID from your database
     )
