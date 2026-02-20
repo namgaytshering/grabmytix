@@ -83,9 +83,9 @@
         <p><strong>Date & time :</strong> {{ show_date }},  {{ show_time }}</p>
      <div>
       <ul>
-    {%if booking.type == 'Movie'%}
+        {%if booking.type == 'Movie'%}
             {% if booking.no_adult > 0 %}
-              <li>Adult: {{ booking.no_adult }} × ${{ booking.price_adult }}</li>
+              <li>Ticket Qty: {{ booking.no_adult }} × ${{ booking.price_adult }}</li>
             {% endif %}
             
             {% if booking.no_child > 0 %}
@@ -100,7 +100,7 @@
             <li> {% if booking.economy_quantity > 0 and booking.vip_quantity > 0 %} 
               {{ booking.general_label }}:
               {%else%}
-              Ticket:
+              Ticket Qty:
               {%endif%} {{ booking.general_quantity }} × ${{ booking.general_price }}</li>
           {% endif %}
           {% if booking.vip_quantity > 0 %}

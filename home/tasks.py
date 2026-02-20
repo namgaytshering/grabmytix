@@ -2,6 +2,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+import qrcode
+from io import BytesIO
+import base64
 def send_payment_success_email(booking):
     # send_mail(
     #     subject='Payment Successful! ',
@@ -13,13 +16,13 @@ def send_payment_success_email(booking):
     subject = 'Thank You – Your booking confirmation - '+booking.title
     from_email = None
     recipient_list = [booking.email]
-    # qr_data = f"{booking.id}"   # You can encode URL or JSON too
-    # qr = qrcode.make(qr_data)
+    qr_data = f"{booking.id}"   # You can encode URL or JSON too
+    qr = qrcode.make(qr_data)
 
     # # Save QR code to bytes
-    # qr_io = BytesIO()
-    # qr.save(qr_io, format='PNG')
-    # qr_content = qr_io.getvalue()
+    qr_io = BytesIO()
+    qr.save(qr_io, format='PNG')
+    qr_content = qr_io.getvalue()
     # Render HTML template with dynamic context
     context = {
         'full_name': booking.full_name,
@@ -32,6 +35,7 @@ def send_payment_success_email(booking):
         'show_date':booking.show_date,
         'show_time':booking.show_time,
         'theater_name':booking.theater_name,
+        'booking':booking,
     }
     
     html_message = render_to_string("home/ticket_email.html", context)
@@ -58,7 +62,7 @@ def send_payment_success_email(booking):
     email.attach_alternative(html_message, "text/html")
 
     # --- Attach QR image ---
-    #email.attach('ticket_qrcode.png', qr_content, 'image/png')
+    email.attach('ticket_qrcode.png', qr_content, 'image/png')
 
     # --- Send email ---
     email.send(fail_silently=False)
