@@ -572,8 +572,14 @@ def stripe_webhook(request):
 
             booking.payment_date = timezone.now()
             booking.save()
+            async_task(
+            'home.tasks.send_payment_success_email',
+            booking,
+            group= booking.title,
+                task_name=f'{booking.id} - {booking.email}',# ← put a real booking ID from your database
+            )
                   
-            send_payment_success_email(booking)
+            #send_payment_success_email(booking)
         except Booking.DoesNotExist:
             return HttpResponse(status=404)
     return HttpResponse(status=200)
@@ -657,6 +663,6 @@ def test_email_view(request):
         'home.tasks.send_payment_success_email',
         booking,
         group= booking.title,
-        task_name=f'{booking.user} - {booking.email}',# ← put a real booking ID from your database
+        task_name=f'{booking.id} - {booking.email}',# ← put a real booking ID from your database
     )
     return HttpResponse("✅ Email task sent to queue! Check qcluster terminal.")
