@@ -464,8 +464,9 @@ def tickets_owner_view(request, id,*args, **kwargs):
     .order_by('date')) 
     
     # labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
-    labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
-    data = [int(b['total']) for b in time_series] 
+    dates = [localtime(b['date']) for b in time_series]
+    labels = [d.strftime('%Y-%m-%d') for d in dates]
+    data = [int(b['total']) for b in time_series]
     
     if request.method == 'POST':
         booking_id_str = request.POST.get("booking_id", "")
