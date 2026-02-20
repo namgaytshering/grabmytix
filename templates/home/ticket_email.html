@@ -81,37 +81,34 @@
         <!-- <p><strong>Tickets:</strong>Adult: {{ no_adult }} </p>
          -->
         <p><strong>Date & time :</strong> {{ show_date }},  {{ show_time }}</p>
-     <div>
-      <ul>
+   
+ 
         {%if booking.type == 'Movie'%}
             {% if booking.no_adult > 0 %}
-              <li>Ticket Qty: {{ booking.no_adult }} × ${{ booking.price_adult }}</li>
+              <p><strong>Ticket Qty: </strong>{{ booking.no_adult }} × ${{ booking.price_adult }}</p>
             {% endif %}
             
             {% if booking.no_child > 0 %}
-              <li>Child: {{ booking.no_child }} × ${{ booking.price_child }}</li>
+              <p><strong>Child:</strong> {{ booking.no_child }} × ${{ booking.price_child }}</p>
             {% endif %}
    
         {%else%}
           {% if booking.economy_quantity > 0 %}
-            <li>{{ booking.economy_label }}: {{ booking.economy_quantity }} × ${{ booking.economy_price }}</li>
+            <p><strong>{{ booking.economy_label }}: </strong>{{ booking.economy_quantity }} × ${{ booking.economy_price }}</p>
           {% endif %}
           {% if booking.general_quantity > 0 %}
-            <li> {% if booking.economy_quantity > 0 and booking.vip_quantity > 0 %} 
-              {{ booking.general_label }}:
+           {% if booking.economy_quantity > 0 and booking.vip_quantity > 0 %} 
+             <p><strong>   {{ booking.general_label }}:</strong>
               {%else%}
-              Ticket Qty:
-              {%endif%} {{ booking.general_quantity }} × ${{ booking.general_price }}</li>
+             <p><strong>   Ticket Qty:</strong>
+              {%endif%} {{ booking.general_quantity }} × ${{ booking.general_price }}</p>
           {% endif %}
           {% if booking.vip_quantity > 0 %}
-            <li>{{ booking.vip_label }}: {{ booking.vip_quantity }} × ${{ booking.vip_price }}</li>
+             <p><strong> {{ booking.vip_label }}: </strong>{{ booking.vip_quantity }} × ${{ booking.vip_price }}</p>
           {% endif %}
       {% endif %}
-        </ul>
-        </div>
-         
+       
       </div>
-
       <a href="https://www.grabmytix.com/ticket/?ticket_number={{ no }}&email={{ email }}" class="btn">Download Your Ticket</a>
     </div>
 
