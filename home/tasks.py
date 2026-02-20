@@ -22,6 +22,7 @@ def send_payment_success_email(booking):
     # qr_content = qr_io.getvalue()
     # Render HTML template with dynamic context
     context = {
+        'full_name': booking.full_name,
         'no': booking.id,
         'no_adult':booking.no_adult,
          
