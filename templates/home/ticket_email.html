@@ -72,11 +72,11 @@
     <!-- Body -->
     <div class="body">
       <p>Dear {{ full_name | title }},</p>
-      <p style="color: #060606;">Your booking has been successfully confirmed.<p>
-       <p><b>Booking Details:</b>
+      <p style="color: #060606;">Your booking has been successfully confirmed for 
+        <b>{{title|title}}</b></p>
+       <p><b>Booking Details:</b></p>
       <div class="details">
         <p><strong>Ticket Number:</strong> {{ no }}</p>
-        <p><strong>Event:</strong> {{ title }}</p>
         <p><strong>Venue:</strong> {{ theater_name }}</p>
         <!-- <p><strong>Tickets:</strong>Adult: {{ no_adult }} </p>
          -->
