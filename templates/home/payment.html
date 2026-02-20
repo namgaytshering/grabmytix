@@ -246,7 +246,7 @@
           <hr class="text-success opacity-25 my-3">
           <p> An order confirmation has been sent to your email.</p>
           Ticket Number: {{booking.id}}<br />
-          Paid on Date: {{booking.payment_date}}<br />
+          Paid on Date: {{ booking.payment_date|date:"d M Y" }}<br />
         </div>
       </div>
 
