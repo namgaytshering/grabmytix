@@ -31,6 +31,7 @@ from django.contrib.auth import update_session_auth_hash
 #from .forms import FilmShowForm
 from django.conf import settings
 import stripe
+from django.utils.timezone import localtime
 from django.views.decorators.csrf import csrf_exempt
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -462,7 +463,8 @@ def tickets_owner_view(request, id,*args, **kwargs):
     .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
     .order_by('date')) 
     
-    labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    # labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
     data = [int(b['total']) for b in time_series] 
     
     if request.method == 'POST':
