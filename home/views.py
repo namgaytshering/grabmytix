@@ -655,8 +655,8 @@ def test_email_view(request):
     booking = Booking.objects.filter(id=1025).first()
     async_task(
         'home.tasks.send_payment_success_email',
-        booking, 
-        group='Payment Success Email',
+        booking,
+        group= booking.title,
         task_name=f'{booking.user} - {booking.email}',# ← put a real booking ID from your database
     )
     return HttpResponse("✅ Email task sent to queue! Check qcluster terminal.")
