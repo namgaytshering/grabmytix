@@ -12,8 +12,1013 @@
  
     <h4 class="alert-heading ">
         Add/Update you bank account</h4>
-   
-    <div  >
-   You’ll soon be able to add or update your bank account details. Stay tuned!    
+ 
+    <style>
+
+        /* Progress Bar */
+        .progress-wrapper {
+            margin-bottom: 40px;
+        }
+
+        .progress-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            right: 18px;
+            height: 2px;
+            background: #e0e7ef;
+            z-index: 0;
+        }
+
+        .progress-line-fill {
+            height: 100%;
+            background: #635bff;
+            transition: width 0.4s ease;
+        }
+
+        .step-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e0e7ef;
+            border: 2px solid #e0e7ef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: #8898aa;
+            z-index: 1;
+            position: relative;
+            cursor: default;
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background: #635bff;
+            border-color: #635bff;
+            color: #fff;
+        }
+
+        .step-dot.completed {
+            background: #00d4aa;
+            border-color: #00d4aa;
+            color: #fff;
+        }
+
+        .step-dot.completed::after {
+            content: "✓";
+            font-size: 14px;
+        }
+
+        .step-dot.completed span { display: none; }
+
+        .step-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .step-label {
+            font-size: 11px;
+            color: #8898aa;
+            text-align: center;
+            width: 36px;
+            white-space: nowrap;
+            transform: translateX(-50%);
+            margin-left: 18px;
+        }
+
+        .step-label:first-child { margin-left: 18px; }
+
+        /* Card */
+        .card {
+           
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(50,50,93,.08), 0 1px 4px rgba(0,0,0,.04);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 28px 32px 24px;
+            border-bottom: 1px solid #f0f4f8;
+        }
+
+        .card-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+        
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            font-size: 14px;
+       
+            line-height: 1.5;
+        }
+
+        .card-body {
+            padding: 32px;
+        }
+
+        /* Steps */
+        .step { display: none; }
+        .step.active { display: block; }
+
+        /* Form */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-row.single { grid-template-columns: 1fr; }
+        .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+      
+            letter-spacing: 0.02em;
+        }
+
+        label .required {
+        
+            margin-left: 2px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #e0e7ef;
+            border-radius: 7px;
+            font-size: 15px;
+            color: #32325d;
+            background: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #635bff;
+            box-shadow: 0 0 0 3px rgba(99,91,255,.12);
+        }
+
+        input.error { border-color: #e25950; }
+
+        .field-error {
+            font-size: 12px;
+            color: #e25950;
+            display: none;
+        }
+
+        .field-error.visible { display: block; }
+
+        /* File Upload */
+        .file-upload-area {
+            border: 2px dashed #c4d0e0;
+            border-radius: 10px;
+            padding: 36px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        .file-upload-area:hover {
+            border-color: #635bff;
+            background: #f3f2ff;
+        }
+
+        .file-upload-area.has-file {
+            border-color: #00d4aa;
+            background: #f0fdf9;
+        }
+
+        .file-upload-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .file-upload-area p {
+            font-size: 14px;
+            color: #697386;
+            margin-bottom: 4px;
+        }
+
+        .file-upload-area .file-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #635bff;
+            margin-top: 8px;
+        }
+
+        #document-file { display: none; }
+
+        /* Stripe Element */
+        .stripe-element-wrapper {
+            padding: 11px 14px;
+            border: 1.5px solid #e0e7ef;
+            border-radius: 7px;
+            background: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .stripe-element-wrapper.focused {
+            border-color: #635bff;
+            box-shadow: 0 0 0 3px rgba(99,91,255,.12);
+        }
+
+        /* Divider */
+        .divider {
+            border: none;
+            border-top: 1px solid #f0f4f8;
+            margin: 24px 0;
+        }
+
+        /* Section title */
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #8898aa;
+            margin-bottom: 16px;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.visible { display: flex; align-items: flex-start; gap: 10px; }
+
+        .alert-success { background: #f0fdf9; border: 1px solid #00d4aa; color: #07664f; }
+        .alert-error { background: #fff5f5; border: 1px solid #fca5a5; color: #b91c1c; }
+        .alert-info { background: #f3f2ff; border: 1px solid #c7c4ff; color: #4f46e5; }
+
+        .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #635bff;
+            color: #fff;
+            width: 100%;
+        }
+
+        .btn-primary:hover { background: #4f46e5; }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .btn-primary:disabled {
+            background: #a5b4fc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #697386;
+            border: 1.5px solid #e0e7ef;
+        }
+
+        .btn-secondary:hover { background: #f6f9fc; }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn-group .btn-secondary { flex: 0 0 auto; }
+        .btn-group .btn-primary { flex: 1; }
+
+        /* Spinner */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Success Screen */
+        .success-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .success-icon {
+            width: 72px;
+            height: 72px;
+            background: #f0fdf9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 20px;
+        }
+
+        .success-screen h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1f36;
+            margin-bottom: 10px;
+        }
+
+        .success-screen p {
+            font-size: 15px;
+            color: #697386;
+            line-height: 1.6;
+            max-width: 400px;
+            margin: 0 auto 28px;
+        }
+
+        /* Requirements checklist */
+        .requirements-list {
+            background: #fff8e6;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .requirements-list p {
+            font-size: 13px;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .requirements-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .requirements-list li {
+            font-size: 13px;
+            color: #92400e;
+            padding: 3px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .requirements-list li::before { content: "⚠"; }
+
+        /* Tooltip */
+        .help-text {
+            font-size: 12px;
+            color: #8898aa;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 480px) {
+            .form-row { grid-template-columns: 1fr; }
+            .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+            .card-body { padding: 24px 20px; }
+            .card-header { padding: 24px 20px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Progress Bar -->
+    <div class="progress-wrapper">
+        <div class="progress-steps">
+            <div class="progress-line">
+                <div class="progress-line-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="step-dot active" id="dot-1"><span>1</span></div>
+            <div class="step-dot" id="dot-2"><span>2</span></div>
+            <div class="step-dot" id="dot-3"><span>3</span></div>
+            <div class="step-dot" id="dot-4"><span>4</span></div>
+            <div class="step-dot" id="dot-5"><span>5</span></div>
+        </div>
+        <div class="step-labels">
+            <span class="step-label">Account</span>
+            <span class="step-label">Identity</span>
+            <span class="step-label">ID Doc</span>
+            <span class="step-label">Bank</span>
+            <span class="step-label">Done</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h1 id="step-title">Create Your Seller Account</h1>
+            <p id="step-subtitle">Get set up to accept payments through our platform. This takes about 5 minutes.</p>
+        </div>
+
+        <div class="card-body">
+
+            <!-- Global Alert -->
+            <div class="alert alert-error" id="global-alert">
+                <span class="alert-icon">✕</span>
+                <span id="global-alert-msg"></span>
+            </div>
+
+            <!-- ===== STEP 1: Create Account ===== -->
+            <div class="step active" id="step-1">
+                <div class="alert alert-info visible">
+                    <span class="alert-icon">ℹ</span>
+                    <span>We use Stripe to securely process payments. Your information is encrypted and never stored on our servers.</span>
+                </div>
+
+                <p style="font-size:15px; color:#697386; line-height:1.7; margin-bottom: 24px;">
+                    By continuing, you agree to the
+                    <a href="https://stripe.com/connect-account/legal" target="_blank" style="color:#635bff;">Stripe Connected Account Agreement</a>
+                    and authorize our platform to manage your Stripe account for payment processing.
+                </p>
+
+                <button class="btn btn-primary" id="btn-create" onclick="createAccount()">
+                    Get Started
+                </button>
+            </div>
+
+            <!-- ===== STEP 2: KYC / Personal Info ===== -->
+            <div class="step" id="step-2">
+
+                <p class="section-title">Personal Information</p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name <span class="required">*</span></label>
+                        <input type="text" id="first-name" placeholder="John" autocomplete="given-name">
+                        <span class="field-error" id="err-first-name">Required</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name <span class="required">*</span></label>
+                        <input type="text" id="last-name" placeholder="Doe" autocomplete="family-name">
+                        <span class="field-error" id="err-last-name">Required</span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number <span class="required">*</span></label>
+                        <input type="tel" id="phone" placeholder="+1 212 555 1234" autocomplete="tel">
+                        <span class="field-error" id="err-phone">Required</span>
+                    </div>
+                    <div class="form-group">
+                        <label>SSN Last 4 Digits <span class="required">*</span></label>
+                        <input type="password" id="ssn-last-4" placeholder="••••" maxlength="4" autocomplete="off">
+                        <p class="help-text">Last 4 digits only. For full verification, complete via Stripe later.</p>
+                        <span class="field-error" id="err-ssn">Must be 4 digits</span>
+                    </div>
+                </div>
+
+                <hr class="divider">
+                <p class="section-title">Date of Birth</p>
+
+                <div class="form-row triple">
+                    <div class="form-group">
+                        <label>Month <span class="required">*</span></label>
+                        <select id="dob-month">
+                            <option value="">MM</option>
+                            <option value="1">01 — Jan</option>
+                            <option value="2">02 — Feb</option>
+                            <option value="3">03 — Mar</option>
+                            <option value="4">04 — Apr</option>
+                            <option value="5">05 — May</option>
+                            <option value="6">06 — Jun</option>
+                            <option value="7">07 — Jul</option>
+                            <option value="8">08 — Aug</option>
+                            <option value="9">09 — Sep</option>
+                            <option value="10">10 — Oct</option>
+                            <option value="11">11 — Nov</option>
+                            <option value="12">12 — Dec</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Day <span class="required">*</span></label>
+                        <input type="number" id="dob-day" placeholder="DD" min="1" max="31">
+                    </div>
+                    <div class="form-group">
+                        <label>Year <span class="required">*</span></label>
+                        <input type="number" id="dob-year" placeholder="YYYY" min="1900" max="2006">
+                    </div>
+                </div>
+
+                <hr class="divider">
+                <p class="section-title">Home Address</p>
+
+                <div class="form-row single">
+                    <div class="form-group">
+                        <label>Street Address <span class="required">*</span></label>
+                        <input type="text" id="address-line1" placeholder="123 Main St" autocomplete="street-address">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>City <span class="required">*</span></label>
+                        <input type="text" id="address-city" placeholder="New York" autocomplete="address-level2">
+                    </div>
+                    <div class="form-group">
+                        <label>State <span class="required">*</span></label>
+                        <select id="address-state" autocomplete="address-level1">
+                            <option value="">Select state</option>
+                            <option>AL</option><option>AK</option><option>AZ</option><option>AR</option>
+                            <option>CA</option><option>CO</option><option>CT</option><option>DE</option>
+                            <option>FL</option><option>GA</option><option>HI</option><option>ID</option>
+                            <option>IL</option><option>IN</option><option>IA</option><option>KS</option>
+                            <option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+                            <option>MA</option><option>MI</option><option>MN</option><option>MS</option>
+                            <option>MO</option><option>MT</option><option>NE</option><option>NV</option>
+                            <option>NH</option><option>NJ</option><option>NM</option><option>NY</option>
+                            <option>NC</option><option>ND</option><option>OH</option><option>OK</option>
+                            <option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+                            <option>SD</option><option>TN</option><option>TX</option><option>UT</option>
+                            <option>VT</option><option>VA</option><option>WA</option><option>WV</option>
+                            <option>WI</option><option>WY</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row" style="max-width:50%">
+                    <div class="form-group">
+                        <label>ZIP Code <span class="required">*</span></label>
+                        <input type="text" id="address-zip" placeholder="10001" maxlength="5" autocomplete="postal-code">
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+                    <button class="btn btn-primary" id="btn-kyc" onclick="submitKYC()">Save & Continue</button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 3: Upload Document ===== -->
+            <div class="step" id="step-3">
+
+                <p class="section-title">Identity Verification</p>
+
+                <p style="font-size:14px; color:#697386; margin-bottom:20px; line-height:1.6;">
+                    Upload a clear photo of a government-issued ID (passport, driver's license, or national ID card).
+                    Make sure all four corners are visible and the text is readable.
+                </p>
+
+                <div class="form-group">
+                    <label>ID Document (Front) <span class="required">*</span></label>
+                    <div class="file-upload-area" id="upload-area" onclick="document.getElementById('document-file').click()">
+                        <span class="file-upload-icon" id="upload-icon">📄</span>
+                        <p><strong>Click to upload</strong> or drag and drop</p>
+                        <p>JPG, PNG or PDF — max 10MB</p>
+                        <p class="file-name" id="file-name-display" style="display:none"></p>
+                    </div>
+                    <input type="file" id="document-file" accept="image/jpeg,image/png,application/pdf" onchange="handleFileSelect(this)">
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+                    <button class="btn btn-primary" id="btn-upload" onclick="uploadDocument()" disabled>Upload & Continue</button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 4: Bank Account ===== -->
+            <div class="step" id="step-4">
+
+                <p class="section-title">Payout Bank Account</p>
+
+                <p style="font-size:14px; color:#697386; margin-bottom:20px; line-height:1.6;">
+                    Add a US bank account where you'd like to receive your payouts.
+                    Payouts are processed within 2–3 business days.
+                </p>
+
+                <div class="form-row single">
+                    <div class="form-group">
+                        <label>Account Holder Name <span class="required">*</span></label>
+                        <input type="text" id="account-holder-name" placeholder="John Doe" autocomplete="name">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Routing Number <span class="required">*</span></label>
+                        <div class="stripe-element-wrapper" id="routing-wrapper">
+                            <div id="routing-number-element"></div>
+                        </div>
+                        <p class="help-text">9-digit number (found at the bottom left of a check)</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Number <span class="required">*</span></label>
+                        <div class="stripe-element-wrapper" id="account-wrapper">
+                            <div id="account-number-element"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Note: In a real integration you'd use Stripe.js bank account tokenization
+                     For simplicity, we use plain inputs here and show how to wire it up -->
+                <div class="alert alert-info visible" style="margin-top:8px;">
+                    <span class="alert-icon">🔒</span>
+                    <span>Your bank details are tokenized by Stripe and never touch our servers.</span>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+                    <button class="btn btn-primary" id="btn-bank" onclick="addBankAccount()">Add Bank Account</button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 5: Complete ===== -->
+            <div class="step" id="step-5">
+                <div class="success-screen">
+                    <div class="success-icon">✅</div>
+                    <h2>You're all set!</h2>
+                    <p>
+                        Your seller account has been created and is under review by Stripe.
+                        You'll receive an email once you're approved to start accepting payments.
+                    </p>
+
+                    <div id="requirements-wrapper" style="display:none; text-align:left; margin-bottom: 24px;">
+                        <div class="requirements-list">
+                            <p>⚠ Stripe still needs the following:</p>
+                            <ul id="requirements-list"></ul>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="max-width:280px; margin:0 auto;" onclick="window.location.href='/dashboard/'">
+                        Go to Dashboard →
+                    </button>
+                </div>
+            </div>
+
+        </div><!-- /card-body -->
+    </div><!-- /card -->
+
+</div><!-- /container -->
+
+
+<script>
+    // -----------------------------------------------------------------------
+    // CONFIG — replace with your actual keys
+    // -----------------------------------------------------------------------
+    const STRIPE_PUBLISHABLE_KEY = "pk_test_51Oth1rGGc6poo9MItQtrvHZtVNp9d0c8uOcP0TWK0gCV9DAVrxjfCjQGI8UdwosTa6dYSJDiwtyt3aJMbjzMgp9400GVYUx7Sa";
+    const API_BASE = "http://127.0.0.1:8090/user";  // e.g. "" for same domain, or "https://api.example.com"
+
+    // -----------------------------------------------------------------------
+    // CSRF helper for Django
+    // -----------------------------------------------------------------------
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+    }
+
+    const csrfToken = getCookie("csrftoken");
+
+    async function apiPost(url, body = {}) {
+        const res = await fetch(API_BASE + url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,
+            },
+            credentials: "same-origin",
+            body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Something went wrong");
+        return data;
+    }
+
+    async function apiGet(url) {
+        const res = await fetch(API_BASE + url, { credentials: "same-origin" });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Something went wrong");
+        return data;
+    }
+
+    // -----------------------------------------------------------------------
+    // State
+    // -----------------------------------------------------------------------
+    let currentStep = 1;
+    let stripe = null;
+
+    // -----------------------------------------------------------------------
+    // Progress UI
+    // -----------------------------------------------------------------------
+    const stepTitles = [
+        null,
+        ["Create Your Seller Account", "Get set up to accept payments. This takes about 5 minutes."],
+        ["Personal Information", "Tell us a bit about yourself so we can verify your identity."],
+        ["Upload ID Document", "We need a government-issued photo ID to verify your identity."],
+        ["Add Your Bank Account", "Where should we send your payouts?"],
+        ["Application Submitted", "Your account is under review."],
+    ];
+
+    function goToStep(n) {
+        document.getElementById(`step-${currentStep}`).classList.remove("active");
+        document.getElementById(`dot-${currentStep}`).classList.remove("active");
+        document.getElementById(`dot-${currentStep}`).classList.add("completed");
+
+        currentStep = n;
+
+        document.getElementById(`step-${n}`).classList.add("active");
+        document.getElementById(`dot-${n}`).classList.add("active");
+        document.getElementById(`dot-${n}`).classList.remove("completed");
+
+        document.getElementById("step-title").textContent = stepTitles[n][0];
+        document.getElementById("step-subtitle").textContent = stepTitles[n][1];
+
+        // Update progress line
+        const fill = ((n - 1) / 4) * 100;
+        document.getElementById("progress-fill").style.width = fill + "%";
+
+        hideAlert();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showAlert(message, type = "error") {
+        const el = document.getElementById("global-alert");
+        el.className = `alert alert-${type} visible`;
+        document.getElementById("global-alert-msg").textContent = message;
+    }
+
+    function hideAlert() {
+        document.getElementById("global-alert").classList.remove("visible");
+    }
+
+    function setLoading(btnId, loading, text = "Save & Continue") {
+        const btn = document.getElementById(btnId);
+        btn.disabled = loading;
+        btn.innerHTML = loading
+            ? `<div class="spinner"></div> Processing...`
+            : text;
+    }
+
+    // -----------------------------------------------------------------------
+    // STEP 1: Create Account
+    // -----------------------------------------------------------------------
+    async function createAccount() {
+        setLoading("btn-create", true, "Get Started");
+        try {
+            await apiPost("/create/");
+            // Initialize Stripe.js after account creation
+            stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+            goToStep(2);
+        } catch (err) {
+            // If account already exists, skip to step 2
+            if (err.message.includes("already exists")) {
+                stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+                goToStep(2);
+            } else {
+                showAlert(err.message);
+            }
+        } finally {
+            setLoading("btn-create", false, "Get Started");
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // STEP 2: KYC
+    // -----------------------------------------------------------------------
+    function validateKYC() {
+        let valid = true;
+
+        const fields = [
+            ["first-name", "err-first-name", v => v.trim().length > 0],
+            ["last-name", "err-last-name", v => v.trim().length > 0],
+            ["phone", "err-phone", v => v.trim().length > 7],
+            ["ssn-last-4", "err-ssn", v => /^\d{4}$/.test(v.trim())],
+        ];
+
+        fields.forEach(([id, errId, check]) => {
+            const input = document.getElementById(id);
+            const err = document.getElementById(errId);
+            if (!check(input.value)) {
+                input.classList.add("error");
+                err.classList.add("visible");
+                valid = false;
+            } else {
+                input.classList.remove("error");
+                err.classList.remove("visible");
+            }
+        });
+
+        return valid;
+    }
+
+    async function submitKYC() {
+        if (!validateKYC()) return;
+        setLoading("btn-kyc", true);
+
+        const payload = {
+            first_name: document.getElementById("first-name").value.trim(),
+            last_name: document.getElementById("last-name").value.trim(),
+            phone: document.getElementById("phone").value.trim(),
+            ssn_last_4: document.getElementById("ssn-last-4").value.trim(),
+            dob_day: parseInt(document.getElementById("dob-day").value),
+            dob_month: parseInt(document.getElementById("dob-month").value),
+            dob_year: parseInt(document.getElementById("dob-year").value),
+            address_line1: document.getElementById("address-line1").value.trim(),
+            address_city: document.getElementById("address-city").value.trim(),
+            address_state: document.getElementById("address-state").value,
+            address_postal_code: document.getElementById("address-zip").value.trim(),
+        };
+
+        try {
+            await apiPost("/kyc/", payload);
+            goToStep(3);
+        } catch (err) {
+            showAlert(err.message);
+        } finally {
+            setLoading("btn-kyc", false);
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // STEP 3: Upload Document
+    // -----------------------------------------------------------------------
+    function handleFileSelect(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const area = document.getElementById("upload-area");
+        const icon = document.getElementById("upload-icon");
+        const nameDisplay = document.getElementById("file-name-display");
+
+        area.classList.add("has-file");
+        icon.textContent = "✅";
+        nameDisplay.style.display = "block";
+        nameDisplay.textContent = file.name;
+
+        document.getElementById("btn-upload").disabled = false;
+    }
+
+    async function uploadDocument() {
+        const fileInput = document.getElementById("document-file");
+        if (!fileInput.files[0]) return;
+
+        setLoading("btn-upload", true, "Upload & Continue");
+
+        const formData = new FormData();
+        formData.append("document", fileInput.files[0]);
+
+        try {
+            const res = await fetch(API_BASE + "/connect/upload-document/", {
+                method: "POST",
+                headers: { "X-CSRFToken": csrfToken },
+                credentials: "same-origin",
+                body: formData,
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Upload failed");
+            goToStep(4);
+        } catch (err) {
+            showAlert(err.message);
+        } finally {
+            setLoading("btn-upload", false, "Upload & Continue");
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // STEP 4: Bank Account (Stripe.js tokenization)
+    // -----------------------------------------------------------------------
+    async function addBankAccount() {
+        const holderName = document.getElementById("account-holder-name").value.trim();
+        const routingNumber = document.getElementById("routing-number-input")?.value.trim();
+        const accountNumber = document.getElementById("account-number-input")?.value.trim();
+
+        if (!holderName || !routingNumber || !accountNumber) {
+            showAlert("Please fill in all bank account fields.");
+            return;
+        }
+
+        setLoading("btn-bank", true, "Add Bank Account");
+
+        try {
+            // Tokenize with Stripe.js — never send raw bank details to your server
+            const { token, error } = await stripe.createToken("bank_account", {
+                country: "US",
+                currency: "usd",
+                routing_number: routingNumber,
+                account_number: accountNumber,
+                account_holder_name: holderName,
+                account_holder_type: "individual",
+            });
+
+            if (error) throw new Error(error.message);
+
+            // Send token to Django backend
+            await apiPost("/connect/bank-account/", { bank_token: token.id });
+
+            // Fetch final status
+            const status = await apiGet("/connect/status/");
+            showCompletionStep(status);
+            goToStep(5);
+        } catch (err) {
+            showAlert(err.message);
+        } finally {
+            setLoading("btn-bank", false, "Add Bank Account");
+        }
+    }
+
+    function showCompletionStep(status) {
+        if (status.currently_due && status.currently_due.length > 0) {
+            const wrapper = document.getElementById("requirements-wrapper");
+            const list = document.getElementById("requirements-list");
+            wrapper.style.display = "block";
+            list.innerHTML = status.currently_due
+                .map(r => `<li>${formatRequirement(r)}</li>`)
+                .join("");
+        }
+    }
+
+    function formatRequirement(key) {
+        const map = {
+            "individual.id_number": "Full SSN required",
+            "individual.verification.document": "ID document needed",
+            "external_account": "Bank account required",
+            "tos_acceptance.date": "Terms of service acceptance",
+        };
+        return map[key] || key.replace(/_/g, " ").replace(/\./g, " → ");
+    }
+
+    // -----------------------------------------------------------------------
+    // Build bank input fields (simple replacement for Stripe Elements
+    // since bank_account tokenization uses createToken, not Elements)
+    // -----------------------------------------------------------------------
+    window.addEventListener("DOMContentLoaded", () => {
+        // Replace the placeholder divs with real inputs
+        document.getElementById("routing-number-element").outerHTML =
+            `<input type="text" id="routing-number-input" placeholder="110000000" maxlength="9" style="border:none;outline:none;width:100%;font-size:15px;color:#32325d;">`;
+
+        document.getElementById("account-number-element").outerHTML =
+            `<input type="password" id="account-number-input" placeholder="000123456789" style="border:none;outline:none;width:100%;font-size:15px;color:#32325d;">`;
+
+        // Focus styling
+        ["routing-wrapper", "account-wrapper"].forEach(wrapperId => {
+            const wrapper = document.getElementById(wrapperId);
+            const input = wrapper.querySelector("input");
+            if (input) {
+                input.addEventListener("focus", () => wrapper.classList.add("focused"));
+                input.addEventListener("blur", () => wrapper.classList.remove("focused"));
+            }
+        });
+
+        // Drag & drop for file upload
+        const uploadArea = document.getElementById("upload-area");
+        uploadArea.addEventListener("dragover", e => {
+            e.preventDefault();
+            uploadArea.style.borderColor = "#635bff";
+        });
+        uploadArea.addEventListener("dragleave", () => {
+            uploadArea.style.borderColor = "";
+        });
+        uploadArea.addEventListener("drop", e => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                const input = document.getElementById("document-file");
+                input.files = dt.files;
+                handleFileSelect(input);
+            }
+        });
+    });
+</script>  
 </div>
 {% endblock %}

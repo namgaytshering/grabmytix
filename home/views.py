@@ -22,11 +22,11 @@ from django.http import HttpResponse
 from datetime import datetime
 from itertools import chain
 from django.utils import timezone
-from datetime import datetime, time,date
+from datetime import datetime, time,date,timedelta
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from django.utils import timezone
+ 
 from zoneinfo import ZoneInfo
 from django_q.tasks import async_task
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -47,7 +47,7 @@ def get_event_datetime_local(event):
 
     # Current time in that tz
     now_local = datetime.now(tz)
-
+    now_local = now_local - timedelta(minutes=45)
     return event_time_local <= now_local
 
 #compare time with movies
@@ -71,11 +71,13 @@ def get_movie_datetime_local(flimshow):
 
     # Current time in that timezone
     now_local = datetime.now(tz)
+     # Current time in that timezone + 45 minutes buffer
+    now_local = now_local - timedelta(minutes=45)
     print(tz)
     print(flimshow_time_local)
     print(now_local)
     # Compare
-    is_expired = flimshow_time_local <= now_local
+    is_expired = flimshow_time_local < now_local
 
     return is_expired
 
@@ -576,7 +578,7 @@ def stripe_webhook(request):
             'home.tasks.send_payment_success_email',
             booking,
             group= booking.title,
-                task_name=f'{booking.id} - {booking.email}',# ← put a real booking ID from your database
+                task_name=f'{booking.id} - {booking.email}', 
             )
                   
             #send_payment_success_email(booking)

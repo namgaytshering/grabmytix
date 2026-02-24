@@ -27,12 +27,20 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
+
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
 #from db.models import Film,Event,
 #from .forms import FilmShowForm
 from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST, require_GET
 import stripe
 from django.utils.timezone import localtime
 from django.views.decorators.csrf import csrf_exempt
+from .services import StripeConnectService
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @login_required(login_url='/login')
@@ -692,6 +700,347 @@ def bank_view(request, *args, **kwargs):
     #     "seller_id": seller.id,
     # }
     return render(request, 'user/bank.html')
+
+
+# For stripe connect accoutn
+
+# ---------------------------------------------------------------------------
+# Step 1: Create Connect Account
+# ---------------------------------------------------------------------------
+@login_required
+@require_POST
+def create_connect_account(request):
+    """
+    POST /connect/create/
+    Creates a Stripe Custom Connect account for the logged-in user.
+    """
+    user = request.user
+
+    # Don't create a second account
+    if hasattr(user, "connect_account"):
+        return JsonResponse(
+            {"error": "Connect account already exists",
+             "stripe_account_id": user.connect_account.stripe_account_id},
+            status=400,
+        )
+
+    # Get the real IP (handle proxies)
+    ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", ""))
+    if "," in ip:
+        ip = ip.split(",")[0].strip()
+
+    try:
+        account = StripeConnectService.create_account(user, ip_address=ip)
+
+        ConnectAccount.objects.create(
+            user=user,
+            stripe_account_id=account.id,
+            charges_enabled=account.charges_enabled,
+            payouts_enabled=account.payouts_enabled,
+            details_submitted=account.details_submitted,
+        )
+
+        return JsonResponse({
+            "stripe_account_id": account.id,
+            "message": "Connect account created. Proceed to onboarding.",
+        })
+
+    except stripe.error.StripeError as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+# ---------------------------------------------------------------------------
+# Step 2: Submit KYC Information
+# ---------------------------------------------------------------------------
+@login_required
+@require_POST
+def submit_kyc(request):
+    """
+    POST /connect/kyc/
+    Submits personal information for identity verification.
+
+    Expected JSON body:
+    {
+        "first_name": "John",
+        "last_name": "Doe",
+        "dob_day": 15,
+        "dob_month": 6,
+        "dob_year": 1990,
+        "address_line1": "123 Main St",
+        "address_city": "New York",
+        "address_state": "NY",
+        "address_postal_code": "10001",
+        "ssn_last_4": "1234",
+        "phone": "+12125551234"
+    }
+    """
+    try:
+        connect_account = request.user.connect_account
+    except ConnectAccount.DoesNotExist:
+        return JsonResponse({"error": "No connect account found. Create one first."}, status=404)
+
+    data = json.loads(request.body)
+
+    try:
+        account = StripeConnectService.update_account_individual(
+            connect_account.stripe_account_id, data
+        )
+
+        connect_account.requirements_currently_due = account.requirements.currently_due or []
+        connect_account.requirements_eventually_due = account.requirements.eventually_due or []
+        connect_account.requirements_past_due = account.requirements.past_due or []
+        connect_account.charges_enabled = account.charges_enabled
+        connect_account.payouts_enabled = account.payouts_enabled
+        connect_account.details_submitted = account.details_submitted
+        connect_account.save()
+
+        return JsonResponse({
+            "message": "KYC information submitted.",
+            "requirements": {
+                "currently_due": account.requirements.currently_due,
+                "eventually_due": account.requirements.eventually_due,
+            },
+            "charges_enabled": account.charges_enabled,
+            "payouts_enabled": account.payouts_enabled,
+        })
+
+    except stripe.error.StripeError as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+# ---------------------------------------------------------------------------
+# Step 3: Upload Identity Document
+# ---------------------------------------------------------------------------
+@login_required
+@require_POST
+def upload_document(request):
+    """
+    POST /connect/upload-document/
+    Upload a front-of-ID photo for identity verification.
+    Expects multipart form data with a 'document' file field.
+    """
+    try:
+        connect_account = request.user.connect_account
+    except ConnectAccount.DoesNotExist:
+        return JsonResponse({"error": "No connect account found."}, status=404)
+
+    if "document" not in request.FILES:
+        return JsonResponse({"error": "No file uploaded. Use field name 'document'."}, status=400)
+
+    try:
+        file_id = StripeConnectService.upload_identity_document(
+            connect_account.stripe_account_id, request.FILES["document"]
+        )
+        return JsonResponse({"message": "Document uploaded.", "stripe_file_id": file_id})
+
+    except stripe.error.StripeError as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+# ---------------------------------------------------------------------------
+# Step 4: Add Bank Account
+# ---------------------------------------------------------------------------
+@login_required
+@require_POST
+def add_bank_account(request):
+    """
+    POST /connect/bank-account/
+    Adds a bank account to the connected account.
+
+    Frontend tokenizes with Stripe.js first, then sends:
+    { "bank_token": "btok_..." }
+    """
+    try:
+        connect_account = request.user.connect_account
+    except ConnectAccount.DoesNotExist:
+        return JsonResponse({"error": "No connect account found."}, status=404)
+
+    data = json.loads(request.body)
+    bank_token = data.get("bank_token")
+
+    if not bank_token:
+        return JsonResponse({"error": "bank_token is required."}, status=400)
+
+    try:
+        bank_account = StripeConnectService.add_bank_account(
+            connect_account.stripe_account_id, bank_token
+        )
+        return JsonResponse({
+            "message": "Bank account added.",
+            "bank_account_id": bank_account.id,
+            "last4": bank_account.last4,
+            "bank_name": bank_account.bank_name,
+        })
+
+    except stripe.error.StripeError as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+# ---------------------------------------------------------------------------
+# Step 5: Check Account Status
+# ---------------------------------------------------------------------------
+@login_required
+@require_GET
+def account_status(request):
+    """
+    GET /connect/status/
+    Returns the current onboarding status and what Stripe still needs.
+    """
+    try:
+        connect_account = request.user.connect_account
+    except ConnectAccount.DoesNotExist:
+        return JsonResponse({"error": "No connect account found."}, status=404)
+
+    try:
+        requirements = StripeConnectService.get_requirements(
+            connect_account.stripe_account_id
+        )
+
+        connect_account.requirements_currently_due = requirements["currently_due"] or []
+        connect_account.requirements_eventually_due = requirements["eventually_due"] or []
+        connect_account.charges_enabled = requirements["charges_enabled"]
+        connect_account.payouts_enabled = requirements["payouts_enabled"]
+
+        if requirements["charges_enabled"] and requirements["payouts_enabled"]:
+            connect_account.status = "active"
+        elif requirements["disabled_reason"]:
+            connect_account.status = "restricted"
+
+        connect_account.save()
+
+        return JsonResponse({
+            "status": connect_account.status,
+            **requirements,
+        })
+
+    except stripe.error.StripeError as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+# ---------------------------------------------------------------------------
+# Step 6: Create a Payment
+# ---------------------------------------------------------------------------
+@login_required
+@require_POST
+def create_payment(request):
+    """
+    POST /connect/charge/
+    Creates a PaymentIntent where funds go to a connected account.
+
+    JSON body:
+    {
+        "seller_user_id": 42,
+        "amount": 10000,        // cents ($100.00)
+        "currency": "usd",
+        "application_fee": 500  // platform keeps $5.00
+    }
+    """
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+
+    data = json.loads(request.body)
+
+    try:
+        seller = User.objects.get(id=data["seller_user_id"])
+        connect_account = seller.connect_account
+    except (User.DoesNotExist, ConnectAccount.DoesNotExist):
+        return JsonResponse({"error": "Seller not found or has no connect account."}, status=404)
+
+    if not connect_account.charges_enabled:
+        return JsonResponse({"error": "Seller account is not yet able to accept payments."}, status=400)
+
+    try:
+        payment_intent = StripeConnectService.create_payment_intent(
+            amount=data["amount"],
+            currency=data.get("currency", "usd"),
+            stripe_account_id=connect_account.stripe_account_id,
+            application_fee_amount=data.get("application_fee", 0),
+        )
+
+        return JsonResponse({
+            "client_secret": payment_intent.client_secret,
+            "payment_intent_id": payment_intent.id,
+        })
+
+    except stripe.error.StripeError as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+# ---------------------------------------------------------------------------
+# Webhook: Listen for Stripe Events
+# ---------------------------------------------------------------------------
+@csrf_exempt
+@require_POST
+def stripe_webhook(request):
+    """
+    POST /connect/webhook/
+    Listens to Stripe webhook events to keep your DB in sync.
+
+    Key events:
+    - account.updated          → sync requirements & capabilities
+    - payment_intent.succeeded → mark order as paid
+    - payout.paid              → notify seller of payout
+    """
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except (ValueError, stripe.error.SignatureVerificationError) as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+    event_type = event["type"]
+    obj = event["data"]["object"]
+
+    if event_type == "account.updated":
+        _sync_account(obj)
+
+    elif event_type == "payment_intent.succeeded":
+        _on_payment_succeeded(obj)
+
+    elif event_type == "payout.paid":
+        _on_payout_paid(obj)
+
+    return JsonResponse({"status": "ok"})
+
+
+# ---------------------------------------------------------------------------
+# Webhook helpers (private functions)
+# ---------------------------------------------------------------------------
+def _sync_account(account):
+    """Sync account status when Stripe notifies us of changes."""
+    try:
+        ca = ConnectAccount.objects.get(stripe_account_id=account["id"])
+        ca.charges_enabled = account.get("charges_enabled", False)
+        ca.payouts_enabled = account.get("payouts_enabled", False)
+        ca.details_submitted = account.get("details_submitted", False)
+
+        reqs = account.get("requirements", {})
+        ca.requirements_currently_due = reqs.get("currently_due", [])
+        ca.requirements_eventually_due = reqs.get("eventually_due", [])
+        ca.requirements_past_due = reqs.get("past_due", [])
+
+        if ca.charges_enabled and ca.payouts_enabled:
+            ca.status = "active"
+
+        ca.save()
+    except ConnectAccount.DoesNotExist:
+        pass
+
+
+def _on_payment_succeeded(payment_intent):
+    """Update your Order model when payment succeeds."""
+    # payment_intent["id"] → look up your Order and mark as paid
+    pass
+
+
+def _on_payout_paid(payout):
+    """Notify the seller when their payout hits their bank."""
+    # payout["destination"] → bank account ID
+    pass
+
 
 #log out
 def logout_view(request, *args, **kwargs):

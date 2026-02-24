@@ -41,5 +41,22 @@ urlpatterns = [
     path('booking/tickets/e/<int:id>/', event_tickets_owner_view, name='event_tickets_owner'),
     # Add other user-related URL patterns here
     path('export-csv/<int:id>/', export_csv, name='export_csv'),
+
+    #for stripe
+    path("create/",  create_connect_account, name="connect-create"),
+    path("kyc/",  submit_kyc, name="connect-kyc"),
+    path("upload-document/",  upload_document, name="connect-upload-doc"),
+    path("bank-account/",  add_bank_account, name="connect-bank"),
+
+    # Status check
+    path("status/",  account_status, name="connect-status"),
+
+    # Payments
+    path("charge/",  create_payment, name="connect-charge"),
+
+    # Stripe webhooks (no auth required, verified by signature)
+    #path("webhook/",  stripe_webhook, name="connect-webhook"),
+
+
     path('logout/', logout_view, name='logout'),
 ]
