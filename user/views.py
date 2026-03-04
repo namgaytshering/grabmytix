@@ -90,7 +90,7 @@ def dashboard_view(request, *args, **kwargs):
                 Q(filmshow__bill=0) & Q(film__owner=request.user) ) |
             ( Q(event__bill=0) & Q(event__owner=request.user)
             ) | Q(event_id__in=accessible_event_ids, event__bill=0) |
-            Q(filmshow_id__in=accessible_movies_ids, filmshow__bill=1)
+            Q(filmshow_id__in=accessible_movies_ids, filmshow__bill=0)
         )
     ).values(
         'title',
