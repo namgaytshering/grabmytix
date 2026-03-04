@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Film,Filmshow,User,Currency,Country,State,EventType,Event,Booking,EventAccess,FilmShowAccess
+from .models import ConnectAccount,Film,Filmshow,User,Currency,Country,State,EventType,Event,Booking,EventAccess,FilmShowAccess
 # Register your models here.
 admin.site.register(Film)
 admin.site.register(User)
@@ -12,6 +12,7 @@ admin.site.register(Event)
 
 admin.site.register(EventAccess)
 admin.site.register(FilmShowAccess)
+admin.site.register(ConnectAccount)
 
 # Custom admin for Booking with filter by event
 class BookingAdmin(admin.ModelAdmin):

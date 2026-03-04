@@ -864,23 +864,31 @@ function format_au_phone(phone) {
     // STEP 1: Create account
     // -----------------------------------------------------------------------
     async function createAccount() {
-        setLoading("btn-create", true, "Get Started →");
+    setLoading("btn-create", true, "Get Started →");
+    try {
+        const res = await apiPost("/create/", {});  // empty body is fine
+        stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+        goToStep(2);
+    } catch (err) {
+        // Try to parse JSON from server
+        let errorMsg = err.message;
         try {
-            await apiPost("/create/");
-            stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-            goToStep(2);
-        } catch (err) {
-            if (err.message.toLowerCase().includes("already exists")) {
+            const json = await err.response.json();
+            if (json.error && json.error.includes("already exists")) {
                 stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
                 goToStep(2);
-            } else {
-                showAlert(err.message);
+                return;
+            } else if (json.error) {
+                errorMsg = json.error;
             }
-        } finally {
-            setLoading("btn-create", false, "Get Started →");
+        } catch(e) {
+            // ignore parsing errors
         }
+        showAlert(errorMsg);
+    } finally {
+        setLoading("btn-create", false, "Get Started →");
     }
-
+}
     // -----------------------------------------------------------------------
     // STEP 2: KYC
     // -----------------------------------------------------------------------
