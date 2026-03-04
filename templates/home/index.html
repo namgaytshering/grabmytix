@@ -242,11 +242,13 @@
                 <b>Screenings</b><br/><br/>
                 <div class="mb-3">
                   {% for address in movie.filmshow.all %}
+                  {% if address.status == 1%}
                   <small class="d-block mb-1">
                       <i class="ci-check"></i> {{ address.state.state_short|upper }}
                       - {{ address.show_date|date:"M d" }}, {{ address.show_time|time:"h:i A" }}
                     
                   </small>
+                  {%endif%}
                   {% endfor %}
                 </div>
                 <a href="/{{ movie.slug }}" class="btn btn-md btn-danger">

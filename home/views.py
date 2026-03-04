@@ -85,7 +85,7 @@ def home_view(request):
     now = timezone.now() 
     movies = Film.objects.annotate(filmshow_count=Count('filmshow')).filter(filmshow_count__gt=0,filmshow__status=1).order_by('-created_at') # filmshow__show_date__gte=now.date()
     events = Event.objects.all().order_by('-created_at','-show_date')[:4]
-    upcoming = Filmshow.objects.all().select_related('film').order_by('state', 'show_date', 'show_time')
+    upcoming = Filmshow.objects.filter(status=1).select_related('film').order_by('state', 'show_date', 'show_time')
     #filter(show_date__gte=now.date())
     context = {'movies':movies,'events':events,'upcomings':upcoming}
     return render(request, 'home/index.html',context)
@@ -192,7 +192,7 @@ def moviedetail_view(request,slug_text):
     
     movie = get_object_or_404(Film, slug=slug_text)
     
-    shows = Filmshow.objects.filter(film=movie).select_related('state').order_by('-state__state_short', 'show_date', 'show_time')
+    shows = Filmshow.objects.filter(film=movie,status=1).select_related('state').order_by('-state__state_short', 'show_date', 'show_time')
     # if request.user.is_authenticated:
     #     name = request.user.name
     
@@ -228,10 +228,10 @@ def state_moviedetail_view(request,slug_text):
     movie =Film.objects.get(slug =filmshow.film.slug)
 
     form = TicketCheckoutForm(request.POST or None, initial={'full_name':name,'email':email,'phone':phone})
-
+    
     if request.method == "POST":
         try:    
-         
+            
             if form.is_valid():
           
                 no_adult = form.cleaned_data.get("no_adult")

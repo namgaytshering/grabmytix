@@ -3,6 +3,32 @@ from django.conf import settings
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+def format_au_phone(phone):
+    if not phone:
+        return None
+    
+    digits = ''.join(filter(str.isdigit, str(phone)))
+    
+    if not digits:
+        return None
+
+    # Already has country code
+    if digits.startswith("61"):
+        return "+" + digits           # 61451081907 → +61451081907
+
+    # Has leading 0
+    if digits.startswith("0"):
+        return "+61" + digits[1:]     # 0451081907 → +61451081907
+
+    # ✅ Missing leading 0 — stored as 451081907
+    if len(digits) == 9:
+        return "+61" + digits         # 451081907 → +61451081907
+
+    # 10 digits without leading 0
+    if len(digits) == 10:
+        return "+61" + digits[1:]     # 0451081907 → +61451081907
+
+    return "+61" + digits
 
 class StripeConnectService:
     """
@@ -13,65 +39,67 @@ class StripeConnectService:
     # 1. Create a Custom Connect Account
     # ------------------------------------------------------------------
     @staticmethod
-    def create_account(user, ip_address: str) -> stripe.Account:
-        """
-        Creates a Stripe Custom Connect account for a user.
-        Call this when a user signs up as a seller/service provider.
-        """
+    def create_account(user, ip_address: str, country: str = "AU") -> stripe.Account:
+        currency_map = {"AU":"aud","US":"usd","GB":"gbp","NZ":"nzd","CA":"cad"}
+
+        # Split full name
+        parts      = user.name.strip().split(" ")
+        first_name = parts[0]
+        last_name  = parts[-1] if len(parts) > 1 else parts[0]
+
         account = stripe.Account.create(
             type="custom",
-            country="US",
-            email=user.email,
+            country=country,
+            email=user.email,              # ✅ from logged-in user
+            default_currency=currency_map.get(country, "aud"),
             capabilities={
                 "card_payments": {"requested": True},
-                "transfers": {"requested": True},
+                "transfers":     {"requested": True},
             },
             tos_acceptance={
                 "date": int(__import__("time").time()),
-                "ip": ip_address,
+                "ip":   ip_address,
             },
-            business_type="individual",  # or "company"
+            business_type="individual",
+            business_profile={
+                "mcc": "7922",
+                "url": "https://grabmytix.com",
+            },
+            individual={
+                "first_name": first_name,  # ✅ from logged-in user
+                "last_name":  last_name,   # ✅ from logged-in user
+                "email":      user.email,  # ✅ from logged-in user
+                "phone":     format_au_phone(user.phone),  # ✅ from logged-in user
+            },
         )
         return account
-
     # ------------------------------------------------------------------
     # 2. Update Account with KYC Information
     # ------------------------------------------------------------------
     @staticmethod
     def update_account_individual(stripe_account_id: str, data: dict) -> stripe.Account:
-        """
-        Submits KYC info for an individual.
-
-        Expected data keys:
-            first_name, last_name, dob_day, dob_month, dob_year,
-            address_line1, address_city, address_state, address_postal_code,
-            ssn_last_4 (or id_number for full SSN),
-            phone
-        """
         account = stripe.Account.modify(
             stripe_account_id,
             individual={
                 "first_name": data["first_name"],
-                "last_name": data["last_name"],
+                "last_name":  data["last_name"],
                 "dob": {
-                    "day": data["dob_day"],
+                    "day":   data["dob_day"],
                     "month": data["dob_month"],
-                    "year": data["dob_year"],
+                    "year":  data["dob_year"],
                 },
                 "address": {
-                    "line1": data["address_line1"],
-                    "city": data["address_city"],
-                    "state": data["address_state"],
-                    "postal_code": data["address_postal_code"],
-                    "country": "US",
+                    "line1":       data["address_line1"],
+                    "city":        data["city"],
+                    "state":       data["state"],
+                    "postal_code": data["postal_code"],
+                    "country":     "AU",              # ✅ must match account country
                 },
-                "ssn_last_4": data.get("ssn_last_4"),  # Use id_number for full SSN
                 "phone": data.get("phone"),
                 "email": data.get("email"),
             },
         )
         return account
-
     # ------------------------------------------------------------------
     # 3. Upload Identity Document (ID Verification)
     # ------------------------------------------------------------------
@@ -107,12 +135,6 @@ class StripeConnectService:
     # ------------------------------------------------------------------
     @staticmethod
     def add_bank_account(stripe_account_id: str, bank_token: str) -> stripe.BankAccount:
-        """
-        Adds a bank account to the connected account for payouts.
-
-        bank_token: obtained from Stripe.js on the frontend using
-                    stripe.createToken('bank_account', {...})
-        """
         bank_account = stripe.Account.create_external_account(
             stripe_account_id,
             external_account=bank_token,

@@ -1,732 +1,777 @@
 {% extends "../includes/user_base.html" %}
 {% block content %}
-<div  >
-     <script src="https://js.stripe.com/v3/"></script>
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-{{ message.tags }} mt-2">
-        {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
- 
-    <h4 class="alert-heading ">
-        Add/Update you bank account</h4>
- 
-    <style>
+ <script src="https://js.stripe.com/v3/"></script>
 
-        /* Progress Bar */
-        .progress-wrapper {
-            margin-bottom: 40px;
-        }
+<style>
+    :root {
+        --ink: #0f0f12;
+        --surface: #ffffff;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --accent: #2563eb;
+        --accent-light: #eff6ff;
+        --accent-dark: #1d4ed8;
+        --success: #059669;
+        --success-light: #ecfdf5;
+        --error: #dc2626;
+        --error-light: #fef2f2;
+        --warn: #d97706;
+        --warn-light: #fffbeb;
+        --radius: 10px;
+        --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+        --shadow-lg: 0 8px 32px rgba(0,0,0,.1);
+    }
 
-        .progress-steps {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-        }
+    
+    .onboard-header p {
+        font-size: 15px;
+        color: var(--muted);
+        line-height: 1.6;
+    }
 
-        .progress-line {
-            position: absolute;
-            top: 18px;
-            left: 18px;
-            right: 18px;
-            height: 2px;
-            background: #e0e7ef;
-            z-index: 0;
-        }
+    /* Progress */
+    .progress-track {
+        display: flex;
+        align-items: center;
+        margin-bottom: 32px;
+        gap: 0;
+    }
 
-        .progress-line-fill {
-            height: 100%;
-            background: #635bff;
-            transition: width 0.4s ease;
-        }
+    .prog-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        position: relative;
+    }
 
-        .step-dot {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #e0e7ef;
-            border: 2px solid #e0e7ef;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 600;
-            color: #8898aa;
-            z-index: 1;
-            position: relative;
-            cursor: default;
-            transition: all 0.3s;
-        }
+    .prog-step:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 18px;
+        left: 50%;
+        width: 100%;
+        height: 2px;
+        background: var(--border);
+        z-index: 0;
+        transition: background 0.4s;
+    }
 
-        .step-dot.active {
-            background: #635bff;
-            border-color: #635bff;
-            color: #fff;
-        }
+    .prog-step.completed:not(:last-child)::after {
+        background: var(--accent);
+    }
 
-        .step-dot.completed {
-            background: #00d4aa;
-            border-color: #00d4aa;
-            color: #fff;
-        }
+    .prog-dot {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--surface);
+        border: 2px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+ ;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        z-index: 1;
+        position: relative;
+        transition: all 0.3s ease;
+    }
 
-        .step-dot.completed::after {
-            content: "✓";
-            font-size: 14px;
-        }
+    .prog-step.active .prog-dot {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        box-shadow: 0 0 0 4px rgba(37,99,235,.15);
+    }
 
-        .step-dot.completed span { display: none; }
+    .prog-step.completed .prog-dot {
+        background: var(--success);
+        border-color: var(--success);
+        color: #fff;
+        font-size: 16px;
+    }
 
-        .step-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 8px;
-        }
+    .prog-label {
+        font-size: 10px;
+        font-weight: 500;
+        color: var(--muted);
+        text-align: center;
+        white-space: nowrap;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
 
-        .step-label {
-            font-size: 11px;
-            color: #8898aa;
-            text-align: center;
-            width: 36px;
-            white-space: nowrap;
-            transform: translateX(-50%);
-            margin-left: 18px;
-        }
+    .prog-step.active .prog-label { color: var(--accent); font-weight: 700; }
+    .prog-step.completed .prog-label { color: var(--success); }
 
-        .step-label:first-child { margin-left: 18px; }
+    /* Card */
+    .onboard-card {
+        background: var(--surface);
+        border-radius: 16px;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        border: 1px solid var(--border);
+    }
 
-        /* Card */
-        .card {
-           
-            border-radius: 12px;
-            box-shadow: 0 4px 24px rgba(50,50,93,.08), 0 1px 4px rgba(0,0,0,.04);
-            overflow: hidden;
-        }
+    .card-top {
+        padding: 28px 32px 24px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(135deg, #fafbff 0%, #fff 100%);
+    }
 
-        .card-header {
-            padding: 28px 32px 24px;
-            border-bottom: 1px solid #f0f4f8;
-        }
+    .card-top .step-eyebrow {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        margin-bottom: 6px;
+    }
 
-        .card-header h1 {
-            font-size: 22px;
-            font-weight: 700;
-        
-            margin-bottom: 6px;
-        }
-
-        .card-header p {
-            font-size: 14px;
+    .card-top h2 {
        
-            line-height: 1.5;
-        }
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 4px;
+    }
 
-        .card-body {
-            padding: 32px;
-        }
+    .card-top p {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.5;
+    }
 
-        /* Steps */
-        .step { display: none; }
-        .step.active { display: block; }
+    .card-body { padding: 28px 32px 32px; }
 
-        /* Form */
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
+    /* Steps */
+    .step { display: none; }
+    .step.active { display: block; }
 
-        .form-row.single { grid-template-columns: 1fr; }
-        .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+    /* Alerts */
+    .alert {
+        display: none;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 16px;
+        border-radius: var(--radius);
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+    .alert.show { display: flex; }
+    .alert-error   { background: var(--error-light);   border: 1px solid #fca5a5; color: #991b1b; }
+    .alert-success { background: var(--success-light); border: 1px solid #6ee7b7; color: #065f46; }
+    .alert-info    { background: var(--accent-light);  border: 1px solid #bfdbfe; color: #1e40af; }
+    .alert-warn    { background: var(--warn-light);    border: 1px solid #fcd34d; color: #92400e; }
+    .alert-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+    /* Form */
+    .section-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+    }
 
-        label {
-            font-size: 13px;
-            font-weight: 600;
-      
-            letter-spacing: 0.02em;
-        }
+    .form-grid {
+        display: grid;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .form-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+    .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
 
-        label .required {
-        
-            margin-left: 2px;
-        }
+    .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
 
-        input, select {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1.5px solid #e0e7ef;
-            border-radius: 7px;
-            font-size: 15px;
-            color: #32325d;
-            background: #fff;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            outline: none;
-        }
+    label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink);
+    }
 
-        input:focus, select:focus {
-            border-color: #635bff;
-            box-shadow: 0 0 0 3px rgba(99,91,255,.12);
-        }
+    label .req { color: var(--accent); margin-left: 2px; }
 
-        input.error { border-color: #e25950; }
+    input, select {
+        width: 100%;
+        padding: 10px 13px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 14px;
+        font-family: 'DM Sans', sans-serif;
+        color: var(--ink);
+        background: #fff;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        outline: none;
+        -webkit-appearance: none;
+    }
 
-        .field-error {
-            font-size: 12px;
-            color: #e25950;
-            display: none;
-        }
+    input:focus, select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+    }
 
-        .field-error.visible { display: block; }
+    input.has-error { border-color: var(--error); }
 
-        /* File Upload */
-        .file-upload-area {
-            border: 2px dashed #c4d0e0;
-            border-radius: 10px;
-            padding: 36px 24px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: #f8fafc;
-        }
+    .field-hint {
+        font-size: 12px;
+        color: var(--muted);
+    }
 
-        .file-upload-area:hover {
-            border-color: #635bff;
-            background: #f3f2ff;
-        }
+    .field-error {
+        font-size: 12px;
+        color: var(--error);
+        display: none;
+    }
+    .field-error.show { display: block; }
 
-        .file-upload-area.has-file {
-            border-color: #00d4aa;
-            background: #f0fdf9;
-        }
+    hr.divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 20px 0;
+    }
 
-        .file-upload-icon {
-            font-size: 40px;
-            margin-bottom: 12px;
-            display: block;
-        }
+    /* File Upload */
+    .file-drop {
+        border: 2px dashed var(--border);
+        border-radius: 12px;
+        padding: 40px 24px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: #fafbfc;
+    }
 
-        .file-upload-area p {
-            font-size: 14px;
-            color: #697386;
-            margin-bottom: 4px;
-        }
+    .file-drop:hover, .file-drop.drag-over {
+        border-color: var(--accent);
+        background: var(--accent-light);
+    }
 
-        .file-upload-area .file-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: #635bff;
-            margin-top: 8px;
-        }
+    .file-drop.has-file {
+        border-color: var(--success);
+        background: var(--success-light);
+    }
 
-        #document-file { display: none; }
+    .file-drop-icon { font-size: 36px; margin-bottom: 10px; display: block; }
 
-        /* Stripe Element */
-        .stripe-element-wrapper {
-            padding: 11px 14px;
-            border: 1.5px solid #e0e7ef;
-            border-radius: 7px;
-            background: #fff;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
+    .file-drop p {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.5;
+    }
 
-        .stripe-element-wrapper.focused {
-            border-color: #635bff;
-            box-shadow: 0 0 0 3px rgba(99,91,255,.12);
-        }
+    .file-drop strong { color: var(--accent); }
+    .file-drop .file-chosen { font-size: 13px; font-weight: 500; color: var(--success); margin-top: 8px; }
+    #document-file { display: none; }
 
-        /* Divider */
-        .divider {
-            border: none;
-            border-top: 1px solid #f0f4f8;
-            margin: 24px 0;
-        }
+    /* Bank input wrapper */
+    .bank-input-wrap {
+        padding: 10px 13px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius);
+        background: #fff;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .bank-input-wrap.focused {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+    }
+    .bank-input-wrap input {
+        border: none;
+        padding: 0;
+        box-shadow: none;
+        font-size: 14px;
+    }
+    .bank-input-wrap input:focus {
+        border: none;
+        box-shadow: none;
+    }
 
-        /* Section title */
-        .section-title {
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #8898aa;
-            margin-bottom: 16px;
-        }
+    /* Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 22px;
+        border-radius: var(--radius);
+        font-size: 14px;
+        font-weight: 600;
+        font-family: 'DM Sans', sans-serif;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+        text-decoration: none;
+        letter-spacing: 0.01em;
+    }
 
-        /* Alert */
-        .alert {
-            padding: 14px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            margin-bottom: 20px;
-            display: none;
-        }
+    .btn-primary {
+        background: var(--accent);
+        color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,.3); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { background: #93c5fd; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        .alert.visible { display: flex; align-items: flex-start; gap: 10px; }
+    .btn-ghost {
+        background: transparent;
+        color: var(--muted);
+        border: 1.5px solid var(--border);
+    }
+    .btn-ghost:hover { background: #f3f4f6; color: var(--ink); }
 
-        .alert-success { background: #f0fdf9; border: 1px solid #00d4aa; color: #07664f; }
-        .alert-error { background: #fff5f5; border: 1px solid #fca5a5; color: #b91c1c; }
-        .alert-info { background: #f3f2ff; border: 1px solid #c7c4ff; color: #4f46e5; }
+    .btn-full { width: 100%; }
 
-        .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .btn-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 24px;
+    }
+    .btn-row .btn-ghost { flex-shrink: 0; }
+    .btn-row .btn-primary { flex: 1; }
 
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-            text-decoration: none;
-        }
+    /* Spinner */
+    .spin {
+        width: 16px; height: 16px;
+        border: 2px solid rgba(255,255,255,.35);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-        .btn-primary {
-            background: #635bff;
-            color: #fff;
-            width: 100%;
-        }
+    /* Trust row */
+    .trust-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        justify-content: center;
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 16px;
+    }
 
-        .btn-primary:hover { background: #4f46e5; }
-        .btn-primary:active { transform: scale(0.98); }
+    /* Success screen */
+    .success-wrap {
+        text-align: center;
+        padding: 12px 0 8px;
+    }
 
-        .btn-primary:disabled {
-            background: #a5b4fc;
-            cursor: not-allowed;
-            transform: none;
-        }
+    .success-circle {
+        width: 80px; height: 80px;
+        background: var(--success-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        margin: 0 auto 20px;
+        border: 2px solid #6ee7b7;
+    }
 
-        .btn-secondary {
-            background: transparent;
-            color: #697386;
-            border: 1.5px solid #e0e7ef;
-        }
+    .success-wrap h2 {
+        font-family: 'Syne', sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--ink);
+        margin-bottom: 10px;
+    }
 
-        .btn-secondary:hover { background: #f6f9fc; }
+    .success-wrap p {
+        font-size: 15px;
+        color: var(--muted);
+        line-height: 1.6;
+        max-width: 400px;
+        margin: 0 auto 24px;
+    }
 
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 28px;
-        }
+    .requirements-box {
+        background: var(--warn-light);
+        border: 1px solid #fcd34d;
+        border-radius: var(--radius);
+        padding: 16px;
+        text-align: left;
+        margin-bottom: 24px;
+    }
+    .requirements-box p {
+        font-size: 13px;
+        font-weight: 700;
+        color: #92400e;
+        margin-bottom: 8px;
+    }
+    .requirements-box ul { list-style: none; }
+    .requirements-box li {
+        font-size: 13px;
+        color: #92400e;
+        padding: 3px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .requirements-box li::before { content: "⚠"; }
 
-        .btn-group .btn-secondary { flex: 0 0 auto; }
-        .btn-group .btn-primary { flex: 1; }
+    /* Step 1 info */
+    .info-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    .info-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 14px;
+        color: #374151;
+        line-height: 1.5;
+    }
+    .info-list .icon {
+        width: 32px; height: 32px;
+        background: var(--accent-light);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+    }
 
-        /* Spinner */
-        .spinner {
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255,255,255,0.4);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
+    @media (max-width: 500px) {
+        .form-grid.cols-2,
+        .form-grid.cols-3 { grid-template-columns: 1fr; }
+        .card-body, .card-top { padding: 20px; }
+        .onboard-header h1 { font-size: 22px; }
+    }
+</style>
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+<div class="onboard-wrap">
+    <div class="onboard-container">
 
-        /* Success Screen */
-        .success-screen {
-            text-align: center;
-            padding: 20px 0;
-        }
-
-        .success-icon {
-            width: 72px;
-            height: 72px;
-            background: #f0fdf9;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            margin: 0 auto 20px;
-        }
-
-        .success-screen h2 {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1a1f36;
-            margin-bottom: 10px;
-        }
-
-        .success-screen p {
-            font-size: 15px;
-            color: #697386;
-            line-height: 1.6;
-            max-width: 400px;
-            margin: 0 auto 28px;
-        }
-
-        /* Requirements checklist */
-        .requirements-list {
-            background: #fff8e6;
-            border: 1px solid #fbbf24;
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-
-        .requirements-list p {
-            font-size: 13px;
-            font-weight: 700;
-            color: #92400e;
-            margin-bottom: 10px;
-        }
-
-        .requirements-list ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .requirements-list li {
-            font-size: 13px;
-            color: #92400e;
-            padding: 3px 0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .requirements-list li::before { content: "⚠"; }
-
-        /* Tooltip */
-        .help-text {
-            font-size: 12px;
-            color: #8898aa;
-            margin-top: 2px;
-        }
-
-        @media (max-width: 480px) {
-            .form-row { grid-template-columns: 1fr; }
-            .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
-            .card-body { padding: 24px 20px; }
-            .card-header { padding: 24px 20px 20px; }
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-
-    <!-- Progress Bar -->
-    <div class="progress-wrapper">
-        <div class="progress-steps">
-            <div class="progress-line">
-                <div class="progress-line-fill" id="progress-fill" style="width: 0%"></div>
-            </div>
-            <div class="step-dot active" id="dot-1"><span>1</span></div>
-            <div class="step-dot" id="dot-2"><span>2</span></div>
-            <div class="step-dot" id="dot-3"><span>3</span></div>
-            <div class="step-dot" id="dot-4"><span>4</span></div>
-            <div class="step-dot" id="dot-5"><span>5</span></div>
+        <!-- Header -->
+        <div class="onboard-header">
+            
+            <h1>Onboarding</h1>
+            <p>Set up your account to sell tickets and receive payouts in AUD.</p>
         </div>
-        <div class="step-labels">
-            <span class="step-label">Account</span>
-            <span class="step-label">Identity</span>
-            <span class="step-label">ID Doc</span>
-            <span class="step-label">Bank</span>
-            <span class="step-label">Done</span>
+
+        <!-- Progress -->
+        <div class="progress-track">
+            <div class="prog-step active" id="dot-1">
+                <div class="prog-dot" id="pdot-1"><span>1</span></div>
+                <span class="prog-label">Start</span>
+            </div>
+            <div class="prog-step" id="dot-2">
+                <div class="prog-dot" id="pdot-2"><span>2</span></div>
+                <span class="prog-label">Identity</span>
+            </div>
+            <div class="prog-step" id="dot-3">
+                <div class="prog-dot" id="pdot-3"><span>3</span></div>
+                <span class="prog-label">ID Doc</span>
+            </div>
+            <div class="prog-step" id="dot-4">
+                <div class="prog-dot" id="pdot-4"><span>4</span></div>
+                <span class="prog-label">Bank</span>
+            </div>
+            <div class="prog-step" id="dot-5">
+                <div class="prog-dot" id="pdot-5"><span>5</span></div>
+                <span class="prog-label">Done</span>
+            </div>
         </div>
-    </div>
 
-    <div class="card">
-        <div class="card-header">
-            <h1 id="step-title">Create Your Seller Account</h1>
-            <p id="step-subtitle">Get set up to accept payments through our platform. This takes about 5 minutes.</p>
-        </div>
-
-        <div class="card-body">
-
-            <!-- Global Alert -->
-            <div class="alert alert-error" id="global-alert">
-                <span class="alert-icon">✕</span>
-                <span id="global-alert-msg"></span>
+        <!-- Card -->
+        <div class="onboard-card">
+            <div class="card-top">
+                <div class="step-eyebrow" id="step-eyebrow">Step 1 of 4</div>
+                <h2 id="step-title">Create Your Seller Account</h2>
+                <p id="step-subtitle">Get set up to sell tickets and receive AUD payouts. Takes about 5 minutes.</p>
             </div>
 
-            <!-- ===== STEP 1: Create Account ===== -->
-            <div class="step active" id="step-1">
-                <div class="alert alert-info visible">
-                    <span class="alert-icon">ℹ</span>
-                    <span>We use Stripe to securely process payments. Your information is encrypted and never stored on our servers.</span>
+            <div class="card-body">
+
+                <!-- Global alert -->
+                <div class="alert alert-error" id="global-alert">
+                    <span class="alert-icon">✕</span>
+                    <span id="global-alert-msg"></span>
                 </div>
 
-                <p style="font-size:15px; color:#697386; line-height:1.7; margin-bottom: 24px;">
-                    By continuing, you agree to the
-                    <a href="https://stripe.com/connect-account/legal" target="_blank" style="color:#635bff;">Stripe Connected Account Agreement</a>
-                    and authorize our platform to manage your Stripe account for payment processing.
-                </p>
+                <!-- ===== STEP 1 ===== -->
+                <div class="step active" id="step-1">
+                    <ul class="info-list">
+                        <li>
+                            <span class="icon">🪪</span>
+                            <span><strong>Identity verification</strong> — we'll ask for your name, DOB and address.</span>
+                        </li>
+                        <li>
+                            <span class="icon">📄</span>
+                            <span><strong>ID document</strong> — a photo of your passport or driver's licence.</span>
+                        </li>
+                        <li>
+                            <span class="icon">🏦</span>
+                            <span><strong>Australian bank account</strong> — BSB + account number for AUD payouts.</span>
+                        </li>
+                    </ul>
 
-                <button class="btn btn-primary" id="btn-create" onclick="createAccount()">
-                    Get Started
-                </button>
-            </div>
+                    <!-- <div class="alert alert-info show">
+                        <span class="alert-icon">🔒</span>
+                        <span>Payments are powered by <strong>Stripe</strong>. Your data is encrypted and never stored on our servers. By continuing you agree to the <a href="https://stripe.com/au/connect-account/legal" target="_blank" style="color:var(--accent)">Stripe Connected Account Agreement</a>.</span>
+                    </div> -->
 
-            <!-- ===== STEP 2: KYC / Personal Info ===== -->
-            <div class="step" id="step-2">
-
-                <p class="section-title">Personal Information</p>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>First Name <span class="required">*</span></label>
-                        <input type="text" id="first-name" placeholder="John" autocomplete="given-name">
-                        <span class="field-error" id="err-first-name">Required</span>
-                    </div>
-                    <div class="form-group">
-                        <label>Last Name <span class="required">*</span></label>
-                        <input type="text" id="last-name" placeholder="Doe" autocomplete="family-name">
-                        <span class="field-error" id="err-last-name">Required</span>
-                    </div>
+                    <button class="btn btn-danger btn-full" id="btn-create" onclick="createAccount()">
+                        Get Started →
+                    </button>
+                    <!-- <div class="trust-row">🔐 256-bit SSL encryption &nbsp;·&nbsp; Powered by Stripe</div> -->
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Phone Number <span class="required">*</span></label>
-                        <input type="tel" id="phone" placeholder="+1 212 555 1234" autocomplete="tel">
-                        <span class="field-error" id="err-phone">Required</span>
-                    </div>
-                    <div class="form-group">
-                        <label>SSN Last 4 Digits <span class="required">*</span></label>
-                        <input type="password" id="ssn-last-4" placeholder="••••" maxlength="4" autocomplete="off">
-                        <p class="help-text">Last 4 digits only. For full verification, complete via Stripe later.</p>
-                        <span class="field-error" id="err-ssn">Must be 4 digits</span>
-                    </div>
-                </div>
+                <!-- ===== STEP 2: Identity ===== -->
+                <div class="step" id="step-2">
 
-                <hr class="divider">
-                <p class="section-title">Date of Birth</p>
-
-                <div class="form-row triple">
-                    <div class="form-group">
-                        <label>Month <span class="required">*</span></label>
-                        <select id="dob-month">
-                            <option value="">MM</option>
-                            <option value="1">01 — Jan</option>
-                            <option value="2">02 — Feb</option>
-                            <option value="3">03 — Mar</option>
-                            <option value="4">04 — Apr</option>
-                            <option value="5">05 — May</option>
-                            <option value="6">06 — Jun</option>
-                            <option value="7">07 — Jul</option>
-                            <option value="8">08 — Aug</option>
-                            <option value="9">09 — Sep</option>
-                            <option value="10">10 — Oct</option>
-                            <option value="11">11 — Nov</option>
-                            <option value="12">12 — Dec</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Day <span class="required">*</span></label>
-                        <input type="number" id="dob-day" placeholder="DD" min="1" max="31">
-                    </div>
-                    <div class="form-group">
-                        <label>Year <span class="required">*</span></label>
-                        <input type="number" id="dob-year" placeholder="YYYY" min="1900" max="2006">
-                    </div>
-                </div>
-
-                <hr class="divider">
-                <p class="section-title">Home Address</p>
-
-                <div class="form-row single">
-                    <div class="form-group">
-                        <label>Street Address <span class="required">*</span></label>
-                        <input type="text" id="address-line1" placeholder="123 Main St" autocomplete="street-address">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>City <span class="required">*</span></label>
-                        <input type="text" id="address-city" placeholder="New York" autocomplete="address-level2">
-                    </div>
-                    <div class="form-group">
-                        <label>State <span class="required">*</span></label>
-                        <select id="address-state" autocomplete="address-level1">
-                            <option value="">Select state</option>
-                            <option>AL</option><option>AK</option><option>AZ</option><option>AR</option>
-                            <option>CA</option><option>CO</option><option>CT</option><option>DE</option>
-                            <option>FL</option><option>GA</option><option>HI</option><option>ID</option>
-                            <option>IL</option><option>IN</option><option>IA</option><option>KS</option>
-                            <option>KY</option><option>LA</option><option>ME</option><option>MD</option>
-                            <option>MA</option><option>MI</option><option>MN</option><option>MS</option>
-                            <option>MO</option><option>MT</option><option>NE</option><option>NV</option>
-                            <option>NH</option><option>NJ</option><option>NM</option><option>NY</option>
-                            <option>NC</option><option>ND</option><option>OH</option><option>OK</option>
-                            <option>OR</option><option>PA</option><option>RI</option><option>SC</option>
-                            <option>SD</option><option>TN</option><option>TX</option><option>UT</option>
-                            <option>VT</option><option>VA</option><option>WA</option><option>WV</option>
-                            <option>WI</option><option>WY</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row" style="max-width:50%">
-                    <div class="form-group">
-                        <label>ZIP Code <span class="required">*</span></label>
-                        <input type="text" id="address-zip" placeholder="10001" maxlength="5" autocomplete="postal-code">
-                    </div>
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
-                    <button class="btn btn-primary" id="btn-kyc" onclick="submitKYC()">Save & Continue</button>
-                </div>
-            </div>
-
-            <!-- ===== STEP 3: Upload Document ===== -->
-            <div class="step" id="step-3">
-
-                <p class="section-title">Identity Verification</p>
-
-                <p style="font-size:14px; color:#697386; margin-bottom:20px; line-height:1.6;">
-                    Upload a clear photo of a government-issued ID (passport, driver's license, or national ID card).
-                    Make sure all four corners are visible and the text is readable.
-                </p>
-
-                <div class="form-group">
-                    <label>ID Document (Front) <span class="required">*</span></label>
-                    <div class="file-upload-area" id="upload-area" onclick="document.getElementById('document-file').click()">
-                        <span class="file-upload-icon" id="upload-icon">📄</span>
-                        <p><strong>Click to upload</strong> or drag and drop</p>
-                        <p>JPG, PNG or PDF — max 10MB</p>
-                        <p class="file-name" id="file-name-display" style="display:none"></p>
-                    </div>
-                    <input type="file" id="document-file" accept="image/jpeg,image/png,application/pdf" onchange="handleFileSelect(this)">
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
-                    <button class="btn btn-primary" id="btn-upload" onclick="uploadDocument()" disabled>Upload & Continue</button>
-                </div>
-            </div>
-
-            <!-- ===== STEP 4: Bank Account ===== -->
-            <div class="step" id="step-4">
-
-                <p class="section-title">Payout Bank Account</p>
-
-                <p style="font-size:14px; color:#697386; margin-bottom:20px; line-height:1.6;">
-                    Add a US bank account where you'd like to receive your payouts.
-                    Payouts are processed within 2–3 business days.
-                </p>
-
-                <div class="form-row single">
-                    <div class="form-group">
-                        <label>Account Holder Name <span class="required">*</span></label>
-                        <input type="text" id="account-holder-name" placeholder="John Doe" autocomplete="name">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Routing Number <span class="required">*</span></label>
-                        <div class="stripe-element-wrapper" id="routing-wrapper">
-                            <div id="routing-number-element"></div>
+                    <p class="section-label">Personal Details</p>
+                    <div class="form-grid cols-2">
+                        <div class="form-field">
+                            <label>First Name <span class="req">*</span></label>
+                            <input type="text" id="first-name" placeholder="Jenny" autocomplete="given-name">
+                            <span class="field-error" id="err-first-name">Required</span>
                         </div>
-                        <p class="help-text">9-digit number (found at the bottom left of a check)</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Account Number <span class="required">*</span></label>
-                        <div class="stripe-element-wrapper" id="account-wrapper">
-                            <div id="account-number-element"></div>
+                        <div class="form-field">
+                            <label>Last Name <span class="req">*</span></label>
+                            <input type="text" id="last-name" placeholder="Rosen" autocomplete="family-name">
+                            <span class="field-error" id="err-last-name">Required</span>
                         </div>
                     </div>
+
+                    <div class="form-grid cols-2">
+                        <div class="form-field">
+                            <label>Phone <span class="req">*</span></label>
+                            <input type="tel" id="phone" placeholder="0412 345 678" autocomplete="tel">
+                            <span class="field-hint">Australian mobile or landline</span>
+                            <span class="field-error" id="err-phone">Enter a valid phone number</span>
+                        </div>
+                        <!-- <div class="form-field">
+                            <label>Tax File Number (last 4) <span class="req">*</span></label>
+                            <input type="password" id="ssn-last-4" placeholder="••••" maxlength="4" autocomplete="off">
+                            <span class="field-hint">Last 4 digits of your TFN</span>
+                            <span class="field-error" id="err-ssn">Must be 4 digits</span>
+                        </div> -->
+                    </div>
+
+                    <hr class="divider">
+                    <p class="section-label">Date of Birth</p>
+                    <div class="form-grid cols-3">
+                        <div class="form-field">
+                            <label>Day <span class="req">*</span></label>
+                            <input type="number" id="dob-day" placeholder="DD" min="1" max="31">
+                        </div>
+                        <div class="form-field">
+                            <label>Month <span class="req">*</span></label>
+                            <select id="dob-month">
+                                <option value="">MM</option>
+                                <option value="1">01 — Jan</option>
+                                <option value="2">02 — Feb</option>
+                                <option value="3">03 — Mar</option>
+                                <option value="4">04 — Apr</option>
+                                <option value="5">05 — May</option>
+                                <option value="6">06 — Jun</option>
+                                <option value="7">07 — Jul</option>
+                                <option value="8">08 — Aug</option>
+                                <option value="9">09 — Sep</option>
+                                <option value="10">10 — Oct</option>
+                                <option value="11">11 — Nov</option>
+                                <option value="12">12 — Dec</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label>Year <span class="req">*</span></label>
+                            <input type="number" id="dob-year" placeholder="YYYY" min="1900" max="2006">
+                        </div>
+                    </div>
+
+                    <hr class="divider">
+                    <p class="section-label">Home Address</p>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label>Street Address <span class="req">*</span></label>
+                            <input type="text" id="address-line1" placeholder="123 George St" autocomplete="street-address">
+                        </div>
+                    </div>
+                    <div class="form-grid cols-2">
+                        <div class="form-field">
+                            <label>Suburb / City <span class="req">*</span></label>
+                            <input type="text" id="address-city" placeholder="Sydney" autocomplete="address-level2">
+                        </div>
+                        <div class="form-field">
+                            <label>State <span class="req">*</span></label>
+                            <select id="address-state" autocomplete="address-level1">
+                                <option value="">Select state</option>
+                                <option value="NSW">NSW — New South Wales</option>
+                                <option value="VIC">VIC — Victoria</option>
+                                <option value="QLD">QLD — Queensland</option>
+                                <option value="WA">WA — Western Australia</option>
+                                <option value="SA">SA — South Australia</option>
+                                <option value="TAS">TAS — Tasmania</option>
+                                <option value="ACT">ACT — Australian Capital Territory</option>
+                                <option value="NT">NT — Northern Territory</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-grid" style="max-width:50%">
+                        <div class="form-field">
+                            <label>Postcode <span class="req">*</span></label>
+                            <input type="text" id="address-zip" placeholder="2000" maxlength="4" autocomplete="postal-code">
+                        </div>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn btn-ghost" onclick="goToStep(1)">← Back</button>
+                        <button class="btn btn-primary" id="btn-kyc" onclick="submitKYC()">Save & Continue</button>
+                    </div>
                 </div>
 
-                <!-- Note: In a real integration you'd use Stripe.js bank account tokenization
-                     For simplicity, we use plain inputs here and show how to wire it up -->
-                <div class="alert alert-info visible" style="margin-top:8px;">
-                    <span class="alert-icon">🔒</span>
-                    <span>Your bank details are tokenized by Stripe and never touch our servers.</span>
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
-                    <button class="btn btn-primary" id="btn-bank" onclick="addBankAccount()">Add Bank Account</button>
-                </div>
-            </div>
-
-            <!-- ===== STEP 5: Complete ===== -->
-            <div class="step" id="step-5">
-                <div class="success-screen">
-                    <div class="success-icon">✅</div>
-                    <h2>You're all set!</h2>
-                    <p>
-                        Your seller account has been created and is under review by Stripe.
-                        You'll receive an email once you're approved to start accepting payments.
+                <!-- ===== STEP 3: ID Document ===== -->
+                <div class="step" id="step-3">
+                    <p class="section-label">Government-Issued Photo ID</p>
+                    <p style="font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.6;">
+                        Upload a clear photo of your <strong>Australian passport</strong>, <strong>driver's licence</strong>, or <strong>Medicare card</strong>. All four corners must be visible.
                     </p>
 
-                    <div id="requirements-wrapper" style="display:none; text-align:left; margin-bottom: 24px;">
-                        <div class="requirements-list">
-                            <p>⚠ Stripe still needs the following:</p>
-                            <ul id="requirements-list"></ul>
+                    <div class="file-drop" id="upload-area" onclick="document.getElementById('document-file').click()">
+                        <span class="file-drop-icon" id="upload-icon">📄</span>
+                        <p><strong>Click to upload</strong> or drag and drop</p>
+                        <p style="margin-top:4px;">JPG, PNG or PDF · Max 10MB</p>
+                        <p class="file-chosen" id="file-name-display" style="display:none"></p>
+                    </div>
+                    <input type="file" id="document-file" accept="image/jpeg,image/png,application/pdf" onchange="handleFileSelect(this)">
+
+                    <div class="btn-row">
+                        <button class="btn btn-ghost" onclick="goToStep(2)">← Back</button>
+                        <button class="btn btn-primary" id="btn-upload" onclick="uploadDocument()" disabled>Upload & Continue</button>
+                    </div>
+                </div>
+
+                <!-- ===== STEP 4: Bank Account ===== -->
+                <div class="step" id="step-4">
+                    <p class="section-label">Australian Bank Account</p>
+                    <p style="font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.6;">
+                        Add your Australian bank account to receive AUD payouts within 2–3 business days.
+                    </p>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label>Account Holder Name <span class="req">*</span></label>
+                            <input type="text" id="account-holder-name" placeholder="Jenny Rosen" autocomplete="name">
                         </div>
                     </div>
 
-                    <button class="btn btn-primary" style="max-width:280px; margin:0 auto;" onclick="window.location.href='/dashboard/'">
-                        Go to Dashboard →
-                    </button>
+                    <div class="form-grid cols-2">
+                        <div class="form-field">
+                            <label>BSB Number <span class="req">*</span></label>
+                            <div class="bank-input-wrap" id="bsb-wrapper">
+                                <input type="text" id="bsb-number" placeholder="110000" maxlength="6" style="border:none;box-shadow:none;">
+                            </div>
+                            <span class="field-hint">6-digit BSB (e.g. 110000)</span>
+                        </div>
+                        <div class="form-field">
+                            <label>Account Number <span class="req">*</span></label>
+                            <div class="bank-input-wrap" id="acct-wrapper">
+                                <input type="text" id="au-account-number" placeholder="000123456" style="border:none;box-shadow:none;">
+                            </div>
+                            <span class="field-hint">Your bank account number</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info show" style="margin-top:4px;">
+                        <span class="alert-icon">🔒</span>
+                        <span>Bank details are tokenised by Stripe and <strong>never touch our servers</strong>.</span>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn btn-ghost" onclick="goToStep(3)">← Back</button>
+                        <button class="btn btn-primary" id="btn-bank" onclick="addBankAccount()">Add Bank Account</button>
+                    </div>
                 </div>
-            </div>
 
-        </div><!-- /card-body -->
-    </div><!-- /card -->
+                <!-- ===== STEP 5: Done ===== -->
+                <div class="step" id="step-5">
+                    <div class="success-wrap">
+                        <div class="success-circle">✅</div>
+                        <h2>You're all set!</h2>
+                        <p>Your seller account has been created and is under review by Stripe. You'll be notified once approved to start selling tickets.</p>
 
-</div><!-- /container -->
+                        <div id="requirements-wrapper" style="display:none">
+                            <div class="requirements-box">
+                                <p>⚠ Stripe still needs the following:</p>
+                                <ul id="requirements-list"></ul>
+                            </div>
+                        </div>
 
+                        <button class="btn btn-primary" style="max-width:260px;margin:0 auto;" onclick="window.location.href='/dashboard/'">
+                            Go to Dashboard →
+                        </button>
+                    </div>
+                </div>
+
+            </div><!-- /card-body -->
+        </div><!-- /card -->
+
+    </div>
+</div>
 
 <script>
-    // -----------------------------------------------------------------------
-    // CONFIG — replace with your actual keys
-    // -----------------------------------------------------------------------
-    const STRIPE_PUBLISHABLE_KEY = "pk_test_51Oth1rGGc6poo9MItQtrvHZtVNp9d0c8uOcP0TWK0gCV9DAVrxjfCjQGI8UdwosTa6dYSJDiwtyt3aJMbjzMgp9400GVYUx7Sa";
-    const API_BASE = "http://127.0.0.1:8090/user";  // e.g. "" for same domain, or "https://api.example.com"
 
     // -----------------------------------------------------------------------
-    // CSRF helper for Django
+    // CONFIG
+    // -----------------------------------------------------------------------
+    const STRIPE_PUBLISHABLE_KEY = "pk_test_51Oth1rGGc6poo9MItQtrvHZtVNp9d0c8uOcP0TWK0gCV9DAVrxjfCjQGI8UdwosTa6dYSJDiwtyt3aJMbjzMgp9400GVYUx7Sa";
+    const API_BASE = "/user";
+
+    // -----------------------------------------------------------------------
+    // CSRF
     // -----------------------------------------------------------------------
     function getCookie(name) {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(";").shift();
     }
-
     const csrfToken = getCookie("csrftoken");
 
     async function apiPost(url, body = {}) {
         const res = await fetch(API_BASE + url, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": csrfToken,
-            },
+            headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
             credentials: "same-origin",
             body: JSON.stringify(body),
         });
+        const ct = res.headers.get("content-type");
+        if (!ct || !ct.includes("application/json")) {
+            throw new Error(`Server error (${res.status}). Check your URL and login.`);
+        }
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Something went wrong");
+        if (!res.ok) throw new Error(data.error || data.detail || "Something went wrong");
         return data;
     }
 
     async function apiGet(url) {
-        const res = await fetch(API_BASE + url, { credentials: "same-origin" });
+        const res = await fetch(API_BASE + url, {
+            credentials: "same-origin",
+            headers: { "X-CSRFToken": csrfToken },
+        });
+        const ct = res.headers.get("content-type");
+        if (!ct || !ct.includes("application/json")) {
+            throw new Error(`Server error (${res.status}).`);
+        }
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Something went wrong");
+        if (!res.ok) throw new Error(data.error || data.detail || "Something went wrong");
         return data;
     }
 
@@ -736,78 +781,103 @@
     let currentStep = 1;
     let stripe = null;
 
-    // -----------------------------------------------------------------------
-    // Progress UI
-    // -----------------------------------------------------------------------
-    const stepTitles = [
+    const stepMeta = [
         null,
-        ["Create Your Seller Account", "Get set up to accept payments. This takes about 5 minutes."],
-        ["Personal Information", "Tell us a bit about yourself so we can verify your identity."],
-        ["Upload ID Document", "We need a government-issued photo ID to verify your identity."],
-        ["Add Your Bank Account", "Where should we send your payouts?"],
-        ["Application Submitted", "Your account is under review."],
+        { eyebrow: "Step 1 of 4", title: "Create Your Seller Account",   sub: "Get set up to sell tickets and receive AUD payouts. Takes about 5 minutes." },
+        { eyebrow: "Step 2 of 4", title: "Personal Information",          sub: "Tell us about yourself so we can verify your identity." },
+        { eyebrow: "Step 3 of 4", title: "Upload ID Document",            sub: "We need a government-issued photo ID to verify your identity." },
+        { eyebrow: "Step 4 of 4", title: "Add Your Bank Account",         sub: "Where should we send your AUD payouts?" },
+        { eyebrow: "Complete ✓",  title: "Application Submitted",         sub: "Your account is under review by Stripe." },
     ];
 
+    // -----------------------------------------------------------------------
+    // Navigation
+    // -----------------------------------------------------------------------
     function goToStep(n) {
-        document.getElementById(`step-${currentStep}`).classList.remove("active");
-        document.getElementById(`dot-${currentStep}`).classList.remove("active");
-        document.getElementById(`dot-${currentStep}`).classList.add("completed");
+        // Update old dot
+        const oldDot  = document.getElementById(`dot-${currentStep}`);
+        const oldPdot = document.getElementById(`pdot-${currentStep}`);
+        oldDot.classList.remove("active");
+        if (n > currentStep) {
+            oldDot.classList.add("completed");
+            oldPdot.innerHTML = "✓";
+        } else {
+            oldDot.classList.remove("completed");
+            oldPdot.innerHTML = `<span>${currentStep}</span>`;
+        }
 
+        document.getElementById(`step-${currentStep}`).classList.remove("active");
         currentStep = n;
 
         document.getElementById(`step-${n}`).classList.add("active");
-        document.getElementById(`dot-${n}`).classList.add("active");
-        document.getElementById(`dot-${n}`).classList.remove("completed");
+        const newDot = document.getElementById(`dot-${n}`);
+        newDot.classList.add("active");
+        newDot.classList.remove("completed");
+        document.getElementById(`pdot-${n}`).innerHTML = `<span>${n}</span>`;
 
-        document.getElementById("step-title").textContent = stepTitles[n][0];
-        document.getElementById("step-subtitle").textContent = stepTitles[n][1];
-
-        // Update progress line
-        const fill = ((n - 1) / 4) * 100;
-        document.getElementById("progress-fill").style.width = fill + "%";
+        const meta = stepMeta[n];
+        document.getElementById("step-eyebrow").textContent  = meta.eyebrow;
+        document.getElementById("step-title").textContent    = meta.title;
+        document.getElementById("step-subtitle").textContent = meta.sub;
 
         hideAlert();
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function showAlert(message, type = "error") {
+    function showAlert(msg, type = "error") {
         const el = document.getElementById("global-alert");
-        el.className = `alert alert-${type} visible`;
-        document.getElementById("global-alert-msg").textContent = message;
+        el.className = `alert alert-${type} show`;
+        document.getElementById("global-alert-msg").textContent = msg;
     }
 
     function hideAlert() {
-        document.getElementById("global-alert").classList.remove("visible");
+        document.getElementById("global-alert").classList.remove("show");
     }
 
-    function setLoading(btnId, loading, text = "Save & Continue") {
-        const btn = document.getElementById(btnId);
+    function setLoading(id, loading, text) {
+        const btn = document.getElementById(id);
         btn.disabled = loading;
-        btn.innerHTML = loading
-            ? `<div class="spinner"></div> Processing...`
-            : text;
+        btn.innerHTML = loading ? `<div class="spin"></div> Processing…` : text;
     }
-
+// ✅ Add this function in your JS
+function format_au_phone(phone) {
+    if (!phone) return null;
+    
+    // Remove all non-digits
+    let digits = phone.replace(/\D/g, "");
+    
+    if (!digits) return null;
+    
+    // Already has country code 61
+    if (digits.startsWith("61")) return "+" + digits;
+    
+    // Has leading 0 (e.g. 0412345678)
+    if (digits.startsWith("0")) return "+61" + digits.slice(1);
+    
+    // 9 digits without leading 0 (e.g. 412345678)
+    if (digits.length === 9) return "+61" + digits;
+    
+    return "+61" + digits;
+}
+    
     // -----------------------------------------------------------------------
-    // STEP 1: Create Account
+    // STEP 1: Create account
     // -----------------------------------------------------------------------
     async function createAccount() {
-        setLoading("btn-create", true, "Get Started");
+        setLoading("btn-create", true, "Get Started →");
         try {
             await apiPost("/create/");
-            // Initialize Stripe.js after account creation
             stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
             goToStep(2);
         } catch (err) {
-            // If account already exists, skip to step 2
-            if (err.message.includes("already exists")) {
+            if (err.message.toLowerCase().includes("already exists")) {
                 stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
                 goToStep(2);
             } else {
                 showAlert(err.message);
             }
         } finally {
-            setLoading("btn-create", false, "Get Started");
+            setLoading("btn-create", false, "Get Started →");
         }
     }
 
@@ -815,47 +885,57 @@
     // STEP 2: KYC
     // -----------------------------------------------------------------------
     function validateKYC() {
-        let valid = true;
-
-        const fields = [
+        let ok = true;
+        const checks = [
             ["first-name", "err-first-name", v => v.trim().length > 0],
-            ["last-name", "err-last-name", v => v.trim().length > 0],
-            ["phone", "err-phone", v => v.trim().length > 7],
-            ["ssn-last-4", "err-ssn", v => /^\d{4}$/.test(v.trim())],
+            ["last-name",  "err-last-name",  v => v.trim().length > 0],
+            //["phone",      "err-phone",      v => v.replace(/\D/g,"").length >= 8],
+            // ["ssn-last-4", "err-ssn",        v => /^\d{4}$/.test(v.trim())],
         ];
-
-        fields.forEach(([id, errId, check]) => {
-            const input = document.getElementById(id);
+        checks.forEach(([id, errId, fn]) => {
+            const inp = document.getElementById(id);
             const err = document.getElementById(errId);
-            if (!check(input.value)) {
-                input.classList.add("error");
-                err.classList.add("visible");
-                valid = false;
+            if (!fn(inp.value)) {
+                inp.classList.add("has-error"); err.classList.add("show"); ok = false;
             } else {
-                input.classList.remove("error");
-                err.classList.remove("visible");
+                inp.classList.remove("has-error"); err.classList.remove("show");
             }
         });
 
-        return valid;
+        const day   = parseInt(document.getElementById("dob-day").value);
+        const month = parseInt(document.getElementById("dob-month").value);
+        const year  = parseInt(document.getElementById("dob-year").value);
+        if (!day || !month || !year || year < 1900 || year > 2006) {
+            showAlert("Please enter a valid date of birth."); ok = false;
+        }
+
+        ["address-line1","address-city","address-state","address-zip"].forEach(id => {
+            const inp = document.getElementById(id);
+            if (!inp.value.trim()) { inp.classList.add("has-error"); ok = false; }
+            else inp.classList.remove("has-error");
+        });
+
+        return ok;
     }
 
     async function submitKYC() {
         if (!validateKYC()) return;
-        setLoading("btn-kyc", true);
+        setLoading("btn-kyc", true, "Save & Continue");
+
+        let phone =   format_au_phone("{{ request.user.phone }}")
 
         const payload = {
-            first_name: document.getElementById("first-name").value.trim(),
-            last_name: document.getElementById("last-name").value.trim(),
-            phone: document.getElementById("phone").value.trim(),
-            ssn_last_4: document.getElementById("ssn-last-4").value.trim(),
-            dob_day: parseInt(document.getElementById("dob-day").value),
-            dob_month: parseInt(document.getElementById("dob-month").value),
-            dob_year: parseInt(document.getElementById("dob-year").value),
+            first_name:   document.getElementById("first-name").value.trim(),
+            last_name:    document.getElementById("last-name").value.trim(),
+            phone:        phone,
+            // ssn_last_4:   document.getElementById("ssn-last-4").value.trim(),
+            dob_day:      parseInt(document.getElementById("dob-day").value),
+            dob_month:    parseInt(document.getElementById("dob-month").value),
+            dob_year:     parseInt(document.getElementById("dob-year").value),
             address_line1: document.getElementById("address-line1").value.trim(),
-            address_city: document.getElementById("address-city").value.trim(),
-            address_state: document.getElementById("address-state").value,
-            address_postal_code: document.getElementById("address-zip").value.trim(),
+            city:          document.getElementById("address-city").value.trim(),
+            state:         document.getElementById("address-state").value,
+            postal_code:   document.getElementById("address-zip").value.trim(),
         };
 
         try {
@@ -864,7 +944,7 @@
         } catch (err) {
             showAlert(err.message);
         } finally {
-            setLoading("btn-kyc", false);
+            setLoading("btn-kyc", false, "Save & Continue");
         }
     }
 
@@ -874,37 +954,36 @@
     function handleFileSelect(input) {
         const file = input.files[0];
         if (!file) return;
-
-        const area = document.getElementById("upload-area");
-        const icon = document.getElementById("upload-icon");
-        const nameDisplay = document.getElementById("file-name-display");
-
-        area.classList.add("has-file");
-        icon.textContent = "✅";
-        nameDisplay.style.display = "block";
-        nameDisplay.textContent = file.name;
-
+        document.getElementById("upload-area").classList.add("has-file");
+        document.getElementById("upload-icon").textContent = "✅";
+        const nd = document.getElementById("file-name-display");
+        nd.style.display = "block";
+        nd.textContent = file.name;
         document.getElementById("btn-upload").disabled = false;
     }
 
     async function uploadDocument() {
         const fileInput = document.getElementById("document-file");
         if (!fileInput.files[0]) return;
-
         setLoading("btn-upload", true, "Upload & Continue");
 
-        const formData = new FormData();
-        formData.append("document", fileInput.files[0]);
-
         try {
-            const res = await fetch(API_BASE + "/connect/upload-document/", {
+            // Upload file directly to Stripe
+            const fd = new FormData();
+            fd.append("file", fileInput.files[0]);
+            fd.append("purpose", "identity_document");
+
+            const sr = await fetch("https://files.stripe.com/v1/files", {
                 method: "POST",
-                headers: { "X-CSRFToken": csrfToken },
-                credentials: "same-origin",
-                body: formData,
+                headers: { "Authorization": `Bearer ${STRIPE_PUBLISHABLE_KEY}` },
+                body: fd,
             });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Upload failed");
+            const sf = await sr.json();
+            if (sf.error) throw new Error(sf.error.message);
+            if (!sf.id)   throw new Error("No file ID from Stripe");
+
+            // Send file_id to Django
+            await apiPost("/upload-document/", { file_id: sf.id });
             goToStep(4);
         } catch (err) {
             showAlert(err.message);
@@ -914,39 +993,40 @@
     }
 
     // -----------------------------------------------------------------------
-    // STEP 4: Bank Account (Stripe.js tokenization)
+    // STEP 4: Bank Account (AU — BSB + account)
     // -----------------------------------------------------------------------
     async function addBankAccount() {
-        const holderName = document.getElementById("account-holder-name").value.trim();
-        const routingNumber = document.getElementById("routing-number-input")?.value.trim();
-        const accountNumber = document.getElementById("account-number-input")?.value.trim();
+        if (!stripe) stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
 
-        if (!holderName || !routingNumber || !accountNumber) {
-            showAlert("Please fill in all bank account fields.");
-            return;
+        const holderName = document.getElementById("account-holder-name").value.trim();
+        const bsb        = document.getElementById("bsb-number").value.trim();
+        const acctNo     = document.getElementById("au-account-number").value.trim();
+
+        if (!holderName || !bsb || !acctNo) {
+            showAlert("Please fill in all bank account fields."); return;
+        }
+        if (!/^\d{6}$/.test(bsb)) {
+            showAlert("BSB must be exactly 6 digits (e.g. 110000)."); return;
         }
 
         setLoading("btn-bank", true, "Add Bank Account");
 
         try {
-            // Tokenize with Stripe.js — never send raw bank details to your server
             const { token, error } = await stripe.createToken("bank_account", {
-                country: "US",
-                currency: "usd",
-                routing_number: routingNumber,
-                account_number: accountNumber,
-                account_holder_name: holderName,
-                account_holder_type: "individual",
+                country:              "AU",
+                currency:             "aud",
+                routing_number:       bsb,       // BSB = routing number for AU
+                account_number:       acctNo,
+                account_holder_name:  holderName,
+                account_holder_type:  "individual",
             });
 
             if (error) throw new Error(error.message);
 
-            // Send token to Django backend
-            await apiPost("/connect/bank-account/", { bank_token: token.id });
+            await apiPost("/bank-account/", { bank_token: token.id });
 
-            // Fetch final status
-            const status = await apiGet("/connect/status/");
-            showCompletionStep(status);
+            const accountStatus = await apiGet("/status/");
+            showCompletionStep(accountStatus);
             goToStep(5);
         } catch (err) {
             showAlert(err.message);
@@ -955,70 +1035,66 @@
         }
     }
 
+    // -----------------------------------------------------------------------
+    // Step 5: Requirements
+    // -----------------------------------------------------------------------
     function showCompletionStep(status) {
-        if (status.currently_due && status.currently_due.length > 0) {
-            const wrapper = document.getElementById("requirements-wrapper");
-            const list = document.getElementById("requirements-list");
-            wrapper.style.display = "block";
-            list.innerHTML = status.currently_due
-                .map(r => `<li>${formatRequirement(r)}</li>`)
-                .join("");
+        const due = status.requirements_currently_due || status.currently_due || [];
+        if (due.length > 0) {
+            document.getElementById("requirements-wrapper").style.display = "block";
+            document.getElementById("requirements-list").innerHTML =
+                due.map(r => `<li>${formatReq(r)}</li>`).join("");
         }
     }
 
-    function formatRequirement(key) {
+    function formatReq(key) {
         const map = {
-            "individual.id_number": "Full SSN required",
+            "individual.id_number":             "Full TFN required",
             "individual.verification.document": "ID document needed",
-            "external_account": "Bank account required",
-            "tos_acceptance.date": "Terms of service acceptance",
+            "external_account":                 "Bank account required",
+            "tos_acceptance.date":              "Terms of service acceptance",
+            "individual.dob.day":               "Date of birth required",
+            "individual.address.line1":         "Address required",
+            "individual.email":                 "Email address required",
+            "business_profile.mcc":             "Business category required",
+            "business_profile.url":             "Website URL required",
         };
-        return map[key] || key.replace(/_/g, " ").replace(/\./g, " → ");
+        return map[key] || key.replace(/_/g," ").replace(/\./g," → ");
     }
 
     // -----------------------------------------------------------------------
-    // Build bank input fields (simple replacement for Stripe Elements
-    // since bank_account tokenization uses createToken, not Elements)
+    // DOM Ready
     // -----------------------------------------------------------------------
     window.addEventListener("DOMContentLoaded", () => {
-        // Replace the placeholder divs with real inputs
-        document.getElementById("routing-number-element").outerHTML =
-            `<input type="text" id="routing-number-input" placeholder="110000000" maxlength="9" style="border:none;outline:none;width:100%;font-size:15px;color:#32325d;">`;
-
-        document.getElementById("account-number-element").outerHTML =
-            `<input type="password" id="account-number-input" placeholder="000123456789" style="border:none;outline:none;width:100%;font-size:15px;color:#32325d;">`;
-
-        // Focus styling
-        ["routing-wrapper", "account-wrapper"].forEach(wrapperId => {
-            const wrapper = document.getElementById(wrapperId);
-            const input = wrapper.querySelector("input");
-            if (input) {
-                input.addEventListener("focus", () => wrapper.classList.add("focused"));
-                input.addEventListener("blur", () => wrapper.classList.remove("focused"));
+        // BSB / account focus styling
+        [["bsb-wrapper","bsb-number"], ["acct-wrapper","au-account-number"]].forEach(([wId, iId]) => {
+            const wrap = document.getElementById(wId);
+            const inp  = document.getElementById(iId);
+            if (wrap && inp) {
+                inp.addEventListener("focus", () => wrap.classList.add("focused"));
+                inp.addEventListener("blur",  () => wrap.classList.remove("focused"));
             }
         });
 
-        // Drag & drop for file upload
-        const uploadArea = document.getElementById("upload-area");
-        uploadArea.addEventListener("dragover", e => {
-            e.preventDefault();
-            uploadArea.style.borderColor = "#635bff";
-        });
-        uploadArea.addEventListener("dragleave", () => {
-            uploadArea.style.borderColor = "";
-        });
-        uploadArea.addEventListener("drop", e => {
-            e.preventDefault();
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                const dt = new DataTransfer();
-                dt.items.add(file);
-                const input = document.getElementById("document-file");
-                input.files = dt.files;
-                handleFileSelect(input);
-            }
-        });
+        // Drag & drop
+        const area = document.getElementById("upload-area");
+        if (area) {
+            area.addEventListener("dragover",  e => { e.preventDefault(); area.classList.add("drag-over"); });
+            area.addEventListener("dragleave", () => area.classList.remove("drag-over"));
+            area.addEventListener("drop", e => {
+                e.preventDefault();
+                area.classList.remove("drag-over");
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    const inp = document.getElementById("document-file");
+                    inp.files = dt.files;
+                    handleFileSelect(inp);
+                }
+            });
+        }
     });
-</script>  
-</div>
+</script>
+
 {% endblock %}

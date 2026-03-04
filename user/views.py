@@ -43,6 +43,36 @@ from django.views.decorators.csrf import csrf_exempt
 from .services import StripeConnectService
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+
+# Example: 0412345678 → +61412345678
+# But if phone is stored as 412345678 (no leading 0) → +61412345678
+
+def format_au_phone(phone):
+    if not phone:
+        return None
+    
+    digits = ''.join(filter(str.isdigit, str(phone)))
+    
+    if not digits:
+        return None
+
+    # Already has country code
+    if digits.startswith("61"):
+        return "+" + digits           # 61451081907 → +61451081907
+
+    # Has leading 0
+    if digits.startswith("0"):
+        return "+61" + digits[1:]     # 0451081907 → +61451081907
+
+    # ✅ Missing leading 0 — stored as 451081907
+    if len(digits) == 9:
+        return "+61" + digits         # 451081907 → +61451081907
+
+    # 10 digits without leading 0
+    if len(digits) == 10:
+        return "+61" + digits[1:]     # 0451081907 → +61451081907
+
+    return "+61" + digits
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")
 def dashboard_view(request, *args, **kwargs):
@@ -57,10 +87,10 @@ def dashboard_view(request, *args, **kwargs):
     ).values_list('film_show_id', flat=True)
 
     current_bookings = (Booking.objects.filter( Q(payment_status=1), ( (
-                Q(filmshow__status=1) & Q(film__owner=request.user) ) |
-            ( Q(event__status=1) & Q(event__owner=request.user)
-            ) | Q(event_id__in=accessible_event_ids, event__status=1) |
-            Q(filmshow_id__in=accessible_movies_ids, filmshow__status=1)
+                Q(filmshow__bill=0) & Q(film__owner=request.user) ) |
+            ( Q(event__bill=0) & Q(event__owner=request.user)
+            ) | Q(event_id__in=accessible_event_ids, event__bill=0) |
+            Q(filmshow_id__in=accessible_movies_ids, filmshow__bill=1)
         )
     ).values(
         'title',
@@ -113,10 +143,10 @@ def past_booking_view(request, *args, **kwargs):
 
     
     past_bookings = (Booking.objects.filter( Q(payment_status=1), ( (
-                Q(filmshow__status=0) & Q(film__owner=request.user) ) |
-            ( Q(event__status=0) & Q(event__owner=request.user)
-            ) | Q(event_id__in=accessible_event_ids, event__status=1) |
-            Q(filmshow_id__in=accessible_movies_ids, filmshow__status=1)
+                Q(filmshow__bill=1) & Q(film__owner=request.user) ) |
+            ( Q(event__bill=1) & Q(event__owner=request.user)
+            ) | Q(event_id__in=accessible_event_ids, event__bill=1) |
+            Q(filmshow_id__in=accessible_movies_ids, filmshow__bill=1)
         )
     ).values(
         'title',
@@ -710,31 +740,36 @@ def bank_view(request, *args, **kwargs):
 @login_required
 @require_POST
 def create_connect_account(request):
-    """
-    POST /connect/create/
-    Creates a Stripe Custom Connect account for the logged-in user.
-    """
-    user = request.user
+    user = request.user  # ✅ logged-in user only
 
-    # Don't create a second account
     if hasattr(user, "connect_account"):
-        return JsonResponse(
-            {"error": "Connect account already exists",
-             "stripe_account_id": user.connect_account.stripe_account_id},
-            status=400,
-        )
+        return JsonResponse({
+            "error": "Connect account already exists",
+            "stripe_account_id": user.connect_account.stripe_account_id
+        }, status=400)
 
-    # Get the real IP (handle proxies)
     ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", ""))
     if "," in ip:
         ip = ip.split(",")[0].strip()
 
     try:
-        account = StripeConnectService.create_account(user, ip_address=ip)
+        data    = json.loads(request.body) if request.body else {}
+        country = data.get("country", "AU")
+
+        currency_map = {"AU":"aud","US":"usd","GB":"gbp","NZ":"nzd","CA":"cad"}
+
+        # ✅ Uses logged-in user's data — no new user created
+        account = StripeConnectService.create_account(
+            user,
+            ip_address=ip,
+            country=country,
+        )
 
         ConnectAccount.objects.create(
-            user=user,
+            user=user,                    # ✅ logged-in user's ID
             stripe_account_id=account.id,
+            country=country,
+            currency=currency_map.get(country, "aud"),
             charges_enabled=account.charges_enabled,
             payouts_enabled=account.payouts_enabled,
             details_submitted=account.details_submitted,
@@ -742,11 +777,37 @@ def create_connect_account(request):
 
         return JsonResponse({
             "stripe_account_id": account.id,
-            "message": "Connect account created. Proceed to onboarding.",
+            "message": "Account created.",
         })
 
     except stripe.error.StripeError as e:
-        return JsonResponse({"error": str(e)}, status=400)
+        return JsonResponse({"error": str(e) }, status=400)
+    
+@staticmethod
+def create_account(user, ip_address: str) -> stripe.Account:
+    account = stripe.Account.create(
+        type="custom",
+        country="US",
+        email=user.email,
+        capabilities={
+            "card_payments": {"requested": True},
+            "transfers": {"requested": True},
+        },
+        tos_acceptance={
+            "date": int(__import__("time").time()),
+            "ip": ip_address,
+        },
+        business_type="individual",
+        # ✅ Add these 3 fields
+        business_profile={
+            "mcc": "7922",                    # ticketing/events — perfect for grabmytix
+            "url": "https://grabmytix.com",   # your platform URL
+        },
+        individual={
+            "email": user.email,              # ✅ fixes "individual → email" requirement
+        },
+    )
+    return account
 
 
 # ---------------------------------------------------------------------------
@@ -755,54 +816,49 @@ def create_connect_account(request):
 @login_required
 @require_POST
 def submit_kyc(request):
-    """
-    POST /connect/kyc/
-    Submits personal information for identity verification.
+    user = request.user  # ✅ logged-in user
 
-    Expected JSON body:
-    {
-        "first_name": "John",
-        "last_name": "Doe",
-        "dob_day": 15,
-        "dob_month": 6,
-        "dob_year": 1990,
-        "address_line1": "123 Main St",
-        "address_city": "New York",
-        "address_state": "NY",
-        "address_postal_code": "10001",
-        "ssn_last_4": "1234",
-        "phone": "+12125551234"
-    }
-    """
     try:
-        connect_account = request.user.connect_account
+        connect = user.connect_account
     except ConnectAccount.DoesNotExist:
-        return JsonResponse({"error": "No connect account found. Create one first."}, status=404)
-
-    data = json.loads(request.body)
+        return JsonResponse({"error": "No connect account found."}, status=404)
 
     try:
-        account = StripeConnectService.update_account_individual(
-            connect_account.stripe_account_id, data
+        data = json.loads(request.body)
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON."}, status=400)
+
+    # Split name from logged-in user
+    parts      = user.name.strip().split(" ")
+    first_name = parts[0]
+    last_name  = parts[-1] if len(parts) > 1 else parts[0]
+
+    # Format phone from logged-in user
+    phone =  format_au_phone(user.phone)
+  
+    try:
+        StripeConnectService.update_account_individual(
+            connect.stripe_account_id,
+            {
+                # ✅ All from logged-in user — no form input needed
+                "first_name": first_name,
+                "last_name":  last_name,
+                "email":      user.email,
+                "phone":      phone,
+
+                # ✅ Only these come from the form
+                "dob_day":      data["dob_day"],
+                "dob_month":    data["dob_month"],
+                "dob_year":     data["dob_year"],
+                "address_line1": data["address_line1"],
+                "city":          data["city"],
+                "state":         data["state"],
+                "postal_code":   data["postal_code"],
+                "country":       data.get("country", "AU"),
+            }
         )
 
-        connect_account.requirements_currently_due = account.requirements.currently_due or []
-        connect_account.requirements_eventually_due = account.requirements.eventually_due or []
-        connect_account.requirements_past_due = account.requirements.past_due or []
-        connect_account.charges_enabled = account.charges_enabled
-        connect_account.payouts_enabled = account.payouts_enabled
-        connect_account.details_submitted = account.details_submitted
-        connect_account.save()
-
-        return JsonResponse({
-            "message": "KYC information submitted.",
-            "requirements": {
-                "currently_due": account.requirements.currently_due,
-                "eventually_due": account.requirements.eventually_due,
-            },
-            "charges_enabled": account.charges_enabled,
-            "payouts_enabled": account.payouts_enabled,
-        })
+        return JsonResponse({"message": "Identity updated."})
 
     except stripe.error.StripeError as e:
         return JsonResponse({"error": str(e)}, status=400)
@@ -814,29 +870,36 @@ def submit_kyc(request):
 @login_required
 @require_POST
 def upload_document(request):
-    """
-    POST /connect/upload-document/
-    Upload a front-of-ID photo for identity verification.
-    Expects multipart form data with a 'document' file field.
-    """
     try:
         connect_account = request.user.connect_account
     except ConnectAccount.DoesNotExist:
         return JsonResponse({"error": "No connect account found."}, status=404)
 
-    if "document" not in request.FILES:
-        return JsonResponse({"error": "No file uploaded. Use field name 'document'."}, status=400)
+    try:
+        data = json.loads(request.body)
+        file_id = data.get("file_id")
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON."}, status=400)
+
+    if not file_id:
+        return JsonResponse({"error": "No file_id provided."}, status=400)
 
     try:
-        file_id = StripeConnectService.upload_identity_document(
-            connect_account.stripe_account_id, request.FILES["document"]
+        # Attach Stripe file ID directly to account
+        stripe.Account.modify(
+            connect_account.stripe_account_id,
+            individual={
+                "verification": {
+                    "document": {
+                        "front": file_id,
+                    }
+                }
+            },
         )
         return JsonResponse({"message": "Document uploaded.", "stripe_file_id": file_id})
 
     except stripe.error.StripeError as e:
         return JsonResponse({"error": str(e)}, status=400)
-
-
 # ---------------------------------------------------------------------------
 # Step 4: Add Bank Account
 # ---------------------------------------------------------------------------

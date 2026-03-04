@@ -97,6 +97,29 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
 
+#for stripe partners account
+#    
+class ConnectAccount(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("active", "Active"),
+        ("restricted", "Restricted"),
+        ("rejected", "Rejected"),
+    ]
+
+    user              = models.OneToOneField(User, on_delete=models.CASCADE, related_name="connect_account")
+    stripe_account_id = models.CharField(max_length=255, unique=True)
+    country           = models.CharField(max_length=2, default="AU")   # ✅ add
+    currency          = models.CharField(max_length=3, default="aud")  # ✅ add
+    status            = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    requirements_currently_due  = models.JSONField(default=list)
+    requirements_eventually_due = models.JSONField(default=list)
+    requirements_past_due       = models.JSONField(default=list)
+    charges_enabled   = models.BooleanField(default=False)
+    payouts_enabled   = models.BooleanField(default=False)
+    details_submitted = models.BooleanField(default=False)
+    created_at        = models.DateTimeField(auto_now_add=True)
+    updated_at        = models.DateTimeField(auto_now=True)
 
 class Film(models.Model):
     title = models.CharField(max_length=200, unique=True)
@@ -129,7 +152,7 @@ class Filmshow(models.Model):
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     state = models.ForeignKey(State, on_delete=models.CASCADE)
     street = models.CharField(max_length=200)
-
+    bill = models.BooleanField(default=False)
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -178,7 +201,7 @@ class Event(models.Model):
     street = models.CharField(max_length=200)
 
     status = models.BooleanField(default=True)
-
+    bill = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
