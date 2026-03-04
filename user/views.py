@@ -729,7 +729,10 @@ def bank_view(request, *args, **kwargs):
     #     "stripe_publishable_key": settings.STRIPE_PUBLIC_KEY,
     #     "seller_id": seller.id,
     # }
-    return render(request, 'user/bank.html')
+    context = {
+    "STRIPE_PUBLISHABLE_KEY": settings.STRIPE_PUBLIC_KEY
+}
+    return render(request, 'user/bank.html',context)
 
 
 # For stripe connect accoutn

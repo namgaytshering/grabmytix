@@ -720,7 +720,7 @@
     // -----------------------------------------------------------------------
     // CONFIG
     // -----------------------------------------------------------------------
-    const STRIPE_PUBLISHABLE_KEY = "pk_live_51Oth1rGGc6poo9MIO4GdhUtsaX7vr8qtDYrIMWsGLu7V85Q4h7FhLpAqHzmzDiC8HmGxGOMPAm65rHWTbEwY4LoA00mdiyuMt5";
+    const STRIPE_PUBLISHABLE_KEY = "{{ STRIPE_PUBLISHABLE_KEY }}";
     const API_BASE = "/user";
 
     // -----------------------------------------------------------------------
@@ -885,21 +885,21 @@ function format_au_phone(phone) {
     // -----------------------------------------------------------------------
     function validateKYC() {
         let ok = true;
-        const checks = [
-            ["first-name", "err-first-name", v => v.trim().length > 0],
-            ["last-name",  "err-last-name",  v => v.trim().length > 0],
-            //["phone",      "err-phone",      v => v.replace(/\D/g,"").length >= 8],
-            // ["ssn-last-4", "err-ssn",        v => /^\d{4}$/.test(v.trim())],
-        ];
-        checks.forEach(([id, errId, fn]) => {
-            const inp = document.getElementById(id);
-            const err = document.getElementById(errId);
-            if (!fn(inp.value)) {
-                inp.classList.add("has-error"); err.classList.add("show"); ok = false;
-            } else {
-                inp.classList.remove("has-error"); err.classList.remove("show");
-            }
-        });
+        // const checks = [
+        //     // ["first-name", "err-first-name", v => v.trim().length > 0],
+        //     // ["last-name",  "err-last-name",  v => v.trim().length > 0],
+        //     //["phone",      "err-phone",      v => v.replace(/\D/g,"").length >= 8],
+        //     // ["ssn-last-4", "err-ssn",        v => /^\d{4}$/.test(v.trim())],
+        // ];
+        // checks.forEach(([id, errId, fn]) => {
+        //     const inp = document.getElementById(id);
+        //     const err = document.getElementById(errId);
+        //     if (!fn(inp.value)) {
+        //         inp.classList.add("has-error"); err.classList.add("show"); ok = false;
+        //     } else {
+        //         inp.classList.remove("has-error"); err.classList.remove("show");
+        //     }
+        // });
 
         const day   = parseInt(document.getElementById("dob-day").value);
         const month = parseInt(document.getElementById("dob-month").value);
@@ -924,8 +924,8 @@ function format_au_phone(phone) {
         let phone =   format_au_phone("{{ request.user.phone }}")
 
         const payload = {
-            first_name:   document.getElementById("first-name").value.trim(),
-            last_name:    document.getElementById("last-name").value.trim(),
+            // first_name:   document.getElementById("first-name").value.trim(),
+            // last_name:    document.getElementById("last-name").value.trim(),
             phone:        phone,
             // ssn_last_4:   document.getElementById("ssn-last-4").value.trim(),
             dob_day:      parseInt(document.getElementById("dob-day").value),
