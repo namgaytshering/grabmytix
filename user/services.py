@@ -163,6 +163,7 @@ class StripeConnectService:
             "disabled_reason": account.requirements.disabled_reason,
             "charges_enabled": account.charges_enabled,
             "payouts_enabled": account.payouts_enabled,
+            "details_submitted": account.details_submitted, 
         }
 
     # ------------------------------------------------------------------

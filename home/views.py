@@ -456,42 +456,86 @@ def payment_view(request,id,*args, **kwargs):
 class StripeIntentView(View):
     def post(self, request, *args, **kwargs):
         try:
-            #req_json = json.loads(request.body)
             booking_number = self.kwargs["id"]
-            slug = ''
-            booking_details = Booking.objects.get(id= booking_number)
+            booking_details = Booking.objects.get(id=booking_number)
+
             if booking_details.type == 'Event':
-                slug =   booking_details.event.slug
+                slug  = booking_details.event.slug
+                owner = booking_details.event.owner
             else:
-                slug =  booking_details.film.slug
-            customer = stripe.Customer.create(email=booking_details.email)
-            
-            total_cost = booking_details.total_payment 
-            # print(total_cost)
-            intent = stripe.PaymentIntent.create(
-                amount =  int(total_cost*100), 
-                payment_method_types=['card'],
-                currency='aud',
-                customer=customer['id'],
-                metadata={
-                    "name":   booking_details.full_name,
-                    "order_no":   booking_details.id,
-                    'total_amount':  booking_details.total_payment,
-                    'email':  booking_details.email,
-                    'movie':  booking_details.title,
-                    'slug':slug,
-                    'theater_name': booking_details.theater_name,
-                    'state':booking_details.state,
-                    'phone':booking_details.phone,
-                    'bookings':booking_details
-                }
+                slug  = booking_details.film.slug
+                owner = booking_details.film.owner
+
+            customer  = stripe.Customer.create(email=booking_details.email)
+            total_cost = int(booking_details.total_payment * 100)  # in cents
+
+            # ── Check if owner has an active Connect account ──────────
+            has_connect = (
+                owner and
+                not owner.is_admin and
+                not owner.is_superuser and
+                hasattr(owner, "connect_account") and
+                owner.connect_account.charges_enabled
             )
 
-            return JsonResponse({
-                'clientSecret': intent['client_secret']
-            })
+            if has_connect:
+                # Platform keeps 10%, seller gets 90%
+                application_fee = int(total_cost * 0.10)
+
+                intent = stripe.PaymentIntent.create(
+                    amount=total_cost,
+                    payment_method_types=['card'],
+                    currency='aud',
+                    customer=customer['id'],
+                    application_fee_amount=application_fee,
+                    transfer_data={
+                        "destination": owner.connect_account.stripe_account_id,
+                    },
+                    metadata={
+                        "name":         booking_details.full_name,
+                        "order_no":     booking_details.id,
+                        "total_amount": str(booking_details.total_payment),
+                        "email":        booking_details.email,
+                        "movie":        booking_details.title,
+                        "slug":         slug,
+                        "theater_name": booking_details.theater_name,
+                        "state":        str(booking_details.state),
+                        "phone":        booking_details.phone,
+                        "has_connect":  "true",
+                        "seller_id":    str(owner.id),
+                    }
+                )
+            else:
+                # No Connect account — full payment to platform
+                intent = stripe.PaymentIntent.create(
+                    amount=total_cost,
+                    payment_method_types=['card'],
+                    currency='aud',
+                    customer=customer['id'],
+                    metadata={
+                        "name":         booking_details.full_name,
+                        "order_no":     booking_details.id,
+                        "total_amount": str(booking_details.total_payment),
+                        "email":        booking_details.email,
+                        "movie":        booking_details.title,
+                        "slug":         slug,
+                        "theater_name": booking_details.theater_name,
+                        "state":        str(booking_details.state),
+                        "phone":        booking_details.phone,
+                        "has_connect":  "false",
+                    }
+                )
+
+            return JsonResponse({'clientSecret': intent['client_secret']})
+
+        except Booking.DoesNotExist:
+            return JsonResponse({'error': 'Booking not found.'}, status=404)
+        except stripe.error.StripeError as e:
+            return JsonResponse({'error': str(e)}, status=400)
         except Exception as e:
-            return JsonResponse({ 'error': str(e) })
+            import traceback; traceback.print_exc()
+            return JsonResponse({'error': str(e)}, status=500)
+    
 
 def send_payment_success_email(booking):
     subject = 'Thank You – Your booking confirmation - '+booking.title

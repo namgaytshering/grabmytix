@@ -769,7 +769,9 @@
     // -----------------------------------------------------------------------
     // State
     // -----------------------------------------------------------------------
-    let currentStep = 1;
+    let currentStep = `{{ initial_step }}`;
+   
+
     let stripe = null;
 
     const stepMeta = [
@@ -1065,6 +1067,30 @@ function format_au_phone(phone) {
     // DOM Ready
     // -----------------------------------------------------------------------
     window.addEventListener("DOMContentLoaded", () => {
+
+        // If user already has an account, jump to correct step
+    if (currentStep > 1) {
+        stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+        // Mark all previous steps as completed
+        for (let i = 1; i < currentStep; i++) {
+            const dot  = document.getElementById(`dot-${i}`);
+            const pdot = document.getElementById(`pdot-${i}`);
+            dot.classList.remove("active");
+            dot.classList.add("completed");
+            pdot.innerHTML = "✓";
+        }
+        // Activate current step UI
+        document.getElementById(`step-1`).classList.remove("active");
+        document.getElementById(`step-${currentStep}`).classList.add("active");
+        const activeDot = document.getElementById(`dot-${currentStep}`);
+        activeDot.classList.add("active");
+        activeDot.classList.remove("completed");
+        document.getElementById(`pdot-${currentStep}`).innerHTML = `<span>${currentStep}</span>`;
+        const meta = stepMeta[currentStep];
+        document.getElementById("step-eyebrow").textContent  = meta.eyebrow;
+        document.getElementById("step-title").textContent    = meta.title;
+        document.getElementById("step-subtitle").textContent = meta.sub;
+    }
         // BSB / account focus styling
         [["bsb-wrapper","bsb-number"], ["acct-wrapper","au-account-number"]].forEach(([wId, iId]) => {
             const wrap = document.getElementById(wId);

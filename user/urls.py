@@ -47,7 +47,7 @@ urlpatterns = [
     path("kyc/",  submit_kyc, name="connect-kyc"),
     path("upload-document/",  upload_document, name="connect-upload-doc"),
     path("bank-account/",  add_bank_account, name="connect-bank"),
-
+    path("bank/dashboard/", seller_dashboard_view, name="seller-dashboard"),
     # Status check
     path("status/",  account_status, name="connect-status"),
 

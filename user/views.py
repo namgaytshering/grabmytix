@@ -73,6 +73,75 @@ def format_au_phone(phone):
         return "+61" + digits[1:]     # 0451081907 → +61451081907
 
     return "+61" + digits
+
+def _get_dashboard_data(stripe_account_id, user=None):
+    try:
+        balance   = stripe.Balance.retrieve(stripe_account=stripe_account_id)
+        available = balance.available[0].amount / 100 if balance.available else 0
+        pending   = balance.pending[0].amount   / 100 if balance.pending   else 0
+        currency  = balance.available[0].currency.upper() if balance.available else "AUD"
+    except Exception:
+        available, pending, currency = 0, 0, "AUD"
+
+    try:
+        payouts = stripe.Payout.list(limit=5, stripe_account=stripe_account_id)
+        payout_list = [
+            {
+                "id":      p.id,
+                "amount":  p.amount / 100,
+                "currency": p.currency.upper(),
+                "status":  p.status,
+                "arrival": p.arrival_date,
+            }
+            for p in payouts.data
+        ]
+    except Exception:
+        payout_list = []
+
+    try:
+        transfers = stripe.Transfer.list(limit=5, destination=stripe_account_id)
+        transfer_list = [
+            {
+                "id":       t.id,
+                "amount":   t.amount / 100,
+                "currency": t.currency.upper(),
+                "created":  t.created,
+                "desc":     t.description or "Transfer",
+            }
+            for t in transfers.data
+        ]
+    except Exception:
+        transfer_list = []
+
+    # Group payouts by event from PayoutLog
+    payout_by_event = []
+    if user:
+        try:
+            from db.models import PayoutLog
+            from django.db.models import Sum, Count
+            payout_by_event = list(
+                PayoutLog.objects
+                .filter(owner=user)
+                .values("event_title", "event_type", "event_id")
+                .annotate(
+                    total_amount=Sum("amount"),
+                    payout_count=Count("id"),
+                )
+                .order_by("-total_amount")
+            )
+        except Exception:
+            payout_by_event = []
+
+    return {
+        "balance_available": available,
+        "balance_pending":   pending,
+        "currency":          currency,
+        "payouts":           payout_list,
+        "transfers":         transfer_list,
+        "payout_by_event":   payout_by_event,
+    }
+ 
+ 
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")
 def dashboard_view(request, *args, **kwargs):
@@ -679,7 +748,7 @@ def change_password(request):
     return render(request, 'user/change_password.html', {'form': form})
 
 #for create stripe connect account
-@csrf_exempt
+# @csrf_exempt
 def create_connected_account(request, seller_id):
     seller = User.object.get(id=seller_id)
 
@@ -698,42 +767,74 @@ def create_connected_account(request, seller_id):
 
     return redirect(f"/seller/embedded-onboarding/?seller_id={seller.id}")
  
+
 # Step 2c: Handle return URL (after onboarding)
-def seller_dashboard(request):
-   # seller_id = request.GET.get("seller_id")
-    seller = User.object.get(id=7)
+def seller_dashboard_view(request):
+    user = request.user
 
-    # Update onboarded status (optional: verify via Stripe API)
-    seller.is_onboarded = True
-    seller.save()
+    if not hasattr(user, "connect_account"):
+        return redirect("bank-account")  # no account yet
 
-    return render(request, "dashboard.html", {"seller": seller})
+    account = user.connect_account
+
+    if not account.charges_enabled:
+        return redirect("bank-account")  # not active yet
+
+    dashboard_data = _get_dashboard_data(account.stripe_account_id, user=request.user)
+
+    return render(request, "user/bank_dashboard.html", {
+        "account": account,
+        "stripe_account_id": account.stripe_account_id,
+        "STRIPE_PUBLISHABLE_KEY": settings.STRIPE_PUBLIC_KEY,
+        **dashboard_data,
+    })
 
 
 def bank_view(request, *args, **kwargs):
-    # seller = User.object.get(id=7)
+     
+    user = request.user
+    if not hasattr(user, "connect_account"):
+        return render(request, "user/bank.html", {
+            "initial_step": 1,
+            "STRIPE_PUBLISHABLE_KEY": settings.STRIPE_PUBLIC_KEY,
+        })
 
-    # account = stripe.Account.create(
-    # type="express",
-    # country="AU",
-    # email="seller_test@example.com",
-    # capabilities={
-    #     "card_payments": {"requested": True},
-    #     "transfers": {"requested": True},
-    # },
-    # business_type="individual"
-    #     )
-      
-    # context = {
-    #      "account_link_url": account,
-    #     "stripe_publishable_key": settings.STRIPE_PUBLIC_KEY,
-    #     "seller_id": seller.id,
-    # }
-    context = {
-    "STRIPE_PUBLISHABLE_KEY": settings.STRIPE_PUBLIC_KEY
-}
-    return render(request, 'user/bank.html',context)
+    account = user.connect_account
+    stripe_data = StripeConnectService.get_requirements(account.stripe_account_id)
 
+    # Update local DB
+    account.charges_enabled   = stripe_data["charges_enabled"]
+    account.payouts_enabled   = stripe_data["payouts_enabled"]
+    account.details_submitted = stripe_data["details_submitted"]
+    account.requirements_currently_due = stripe_data["currently_due"]
+    account.save()
+
+    due = stripe_data["currently_due"] or []
+    due_str = " ".join(due)  # easier to search
+
+    # Fully complete
+    if not due:
+        return redirect('seller-dashboard')
+
+    # Needs bank account
+    elif "external_account" in due_str:
+        initial_step = 4
+
+    # Needs ID document
+    elif "verification.document" in due_str:
+        initial_step = 3
+
+    # Needs KYC (DOB, address etc)
+    else:
+        initial_step = 2
+
+    return render(request, "user/bank.html", {
+        "initial_step": initial_step,
+        "STRIPE_PUBLISHABLE_KEY": settings.STRIPE_PUBLIC_KEY,
+        "account": account,
+        "requirements": due,
+    })
+ 
 
 # For stripe connect accoutn
 
@@ -785,34 +886,7 @@ def create_connect_account(request):
 
     except stripe.error.StripeError as e:
         return JsonResponse({"error": str(e) }, status=400)
-    
-@staticmethod
-def create_account(user, ip_address: str) -> stripe.Account:
-    account = stripe.Account.create(
-        type="custom",
-        country="US",
-        email=user.email,
-        capabilities={
-            "card_payments": {"requested": True},
-            "transfers": {"requested": True},
-        },
-        tos_acceptance={
-            "date": int(__import__("time").time()),
-            "ip": ip_address,
-        },
-        business_type="individual",
-        # ✅ Add these 3 fields
-        business_profile={
-            "mcc": "7922",                    # ticketing/events — perfect for grabmytix
-            "url": "https://grabmytix.com",   # your platform URL
-        },
-        individual={
-            "email": user.email,              # ✅ fixes "individual → email" requirement
-        },
-    )
-    return account
-
-
+ 
 # ---------------------------------------------------------------------------
 # Step 2: Submit KYC Information
 # ---------------------------------------------------------------------------
