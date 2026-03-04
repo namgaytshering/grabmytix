@@ -748,10 +748,10 @@ def create_connect_account(request):
             "stripe_account_id": user.connect_account.stripe_account_id
         }, status=400)
 
-    ip =  request.META.get("REMOTE_ADDR")
-    # if "," in ip:
-    #     ip = ip.split(",")[0].strip()
-    print(ip)
+    ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", ""))
+    if "," in ip:
+        ip = ip.split(",")[0].strip()
+
     try:
         data    = json.loads(request.body) if request.body else {}
         country = data.get("country", "AU")

@@ -538,19 +538,7 @@
                 <div class="step" id="step-2">
 
                     <p class="section-label">Personal Details</p>
-                    <div class="form-grid cols-2">
-                        <div class="form-field">
-                            <label>First Name <span class="req">*</span></label>
-                            <input type="text" id="first-name" placeholder="Jenny" autocomplete="given-name">
-                            <span class="field-error" id="err-first-name">Required</span>
-                        </div>
-                        <div class="form-field">
-                            <label>Last Name <span class="req">*</span></label>
-                            <input type="text" id="last-name" placeholder="Rosen" autocomplete="family-name">
-                            <span class="field-error" id="err-last-name">Required</span>
-                        </div>
-                    </div>
-
+              
                     <div class="form-grid cols-2">
                         <div class="form-field">
                             <label>Phone <span class="req">*</span></label>
@@ -732,7 +720,7 @@
     // -----------------------------------------------------------------------
     // CONFIG
     // -----------------------------------------------------------------------
-    const STRIPE_PUBLISHABLE_KEY = "pk_test_51Oth1rGGc6poo9MItQtrvHZtVNp9d0c8uOcP0TWK0gCV9DAVrxjfCjQGI8UdwosTa6dYSJDiwtyt3aJMbjzMgp9400GVYUx7Sa";
+    const STRIPE_PUBLISHABLE_KEY = "pk_live_51Oth1rGGc6poo9MIO4GdhUtsaX7vr8qtDYrIMWsGLu7V85Q4h7FhLpAqHzmzDiC8HmGxGOMPAm65rHWTbEwY4LoA00mdiyuMt5";
     const API_BASE = "/user";
 
     // -----------------------------------------------------------------------
@@ -753,6 +741,9 @@
             body: JSON.stringify(body),
         });
         const ct = res.headers.get("content-type");
+        console.log(`${ct}`);
+        console.log("status:", res);
+        console.log(API_BASE);
         if (!ct || !ct.includes("application/json")) {
             throw new Error(`Server error (${res.status}). Check your URL and login.`);
         }
@@ -866,7 +857,7 @@ function format_au_phone(phone) {
     async function createAccount() {
     setLoading("btn-create", true, "Get Started →");
     try {
-        const res = await apiPost("/create/", {});  // empty body is fine
+        const res = await apiPost("/create/");  // empty body is fine
         stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
         goToStep(2);
     } catch (err) {
