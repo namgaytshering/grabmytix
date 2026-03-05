@@ -680,7 +680,7 @@
 
                     <div class="alert alert-info show" style="margin-top:4px;">
                         <span class="alert-icon">🔒</span>
-                        <span>Bank details are tokenised by Stripe and <strong>never touch our servers</strong>.</span>
+                        <span>Bank details are tokenised by payment gateway and <strong>never touch our servers</strong>.</span>
                     </div>
 
                     <div class="btn-row">
@@ -694,16 +694,16 @@
                     <div class="success-wrap">
                         <div class="success-circle">✅</div>
                         <h2>You're all set!</h2>
-                        <p>Your seller account has been created and is under review by Stripe. You'll be notified once approved to start selling tickets.</p>
+                        <p>Your seller account has been created and is under review. You'll be notified once approved.</p>
 
                         <div id="requirements-wrapper" style="display:none">
                             <div class="requirements-box">
-                                <p>⚠ Stripe still needs the following:</p>
+                                <p>⚠ We still needs the following:</p>
                                 <ul id="requirements-list"></ul>
                             </div>
                         </div>
 
-                        <button class="btn btn-primary" style="max-width:260px;margin:0 auto;" onclick="window.location.href='/dashboard/'">
+                        <button class="btn btn-primary" style="max-width:260px;margin:0 auto;" onclick="window.location.href='/user/bank/dashboard/'">
                             Go to Dashboard →
                         </button>
                     </div>
@@ -981,7 +981,7 @@ function format_au_phone(phone) {
             });
             const sf = await sr.json();
             if (sf.error) throw new Error(sf.error.message);
-            if (!sf.id)   throw new Error("No file ID from Stripe");
+            if (!sf.id)   throw new Error("No file ID");
 
             // Send file_id to Django
             await apiPost("/upload-document/", { file_id: sf.id });
