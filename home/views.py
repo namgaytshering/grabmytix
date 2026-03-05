@@ -472,8 +472,7 @@ class StripeIntentView(View):
             # ── Check if owner has an active Connect account ──────────
             has_connect = (
                 owner and
-                not owner.is_admin and
-                not owner.is_superuser and
+           
                 hasattr(owner, "connect_account") and
                 owner.connect_account.charges_enabled
             )

@@ -71,6 +71,14 @@ class StripeConnectService:
                 "email":      user.email,  # ✅ from logged-in user
                 "phone":     format_au_phone(user.phone),  # ✅ from logged-in user
             },
+            settings={
+            "payouts": {
+                "schedule": {
+                    "interval":   "manual",  # hold until show ends
+                    "delay_days": 2,
+            }
+        }
+    },
         )
         return account
     # ------------------------------------------------------------------
