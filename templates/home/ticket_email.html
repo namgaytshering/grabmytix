@@ -74,16 +74,16 @@
       <p style="color: #060606;">Dear {{ full_name | title }},</p>
       <p style="color: #060606;">Your booking has been successfully confirmed for 
         <b>{{title|title}}.</b></p>
-       <p><b>Booking Details:</b></p>
+       <p style="color: #060606;"><b>Booking Details:</b></p>
       <div class="details">
         <p><strong>Ticket Number:</strong> {{ no }}</p>
         <p><strong>Venue:</strong> {{ theater_name }}</p>
         <!-- <p><strong>Tickets:</strong>Adult: {{ no_adult }} </p>
          -->
         <p><strong>Date & time :</strong> {{ show_date }},  {{ show_time }}</p>
-         <p><strong>Total Paymet :</strong> {{booking.total_payment}}</p>
+         <p><strong>Total Paymet :</strong> ${{booking.total_payment}}</p>
    
- 
+         <br/>
         
           {% if booking.economy_quantity > 0 %}
             <p><strong>{{ booking.economy_label }}: </strong>{{ booking.economy_quantity }} × ${{ booking.economy_price }}</p>
