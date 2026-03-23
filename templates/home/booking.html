@@ -1,15 +1,18 @@
 {% extends "../includes/base.html" %}
 
-{% block title %}{{ movie.title }}  - GrabMyTix  {% endblock title %}
+{% block title %}{{ movie.title }} - GrabMyTix {% endblock title %}
 
 {% block meta %}
-<meta name="description" content="{% if filmshow %}Book tickets for {{ movie.title }}. Now showing in {{ filmshow.state.state_short|upper }} on {{ filmshow.show_date|date:'M d, Y' }}. Secure online booking with GrabMyTix.{% else %}Book tickets for {{ movie.title }} online with GrabMyTix. Fast, secure, and easy movie ticket booking.{% endif %}">
+<meta name="description"
+  content="{% if filmshow %}Book tickets for {{ movie.title }}. Now showing in {{ filmshow.state.state_short|upper }} on {{ filmshow.show_date|date:'M d, Y' }}. Secure online booking with GrabMyTix.{% else %}Book tickets for {{ movie.title }} online with GrabMyTix. Fast, secure, and easy movie ticket booking.{% endif %}">
 
-<meta name="keywords" content="{{ movie.title }}, {{ movie.genre }}, movie tickets, book movie tickets online, GrabMyTix">
+<meta name="keywords"
+  content="{{ movie.title }}, {{ movie.genre }}, movie tickets, book movie tickets online, GrabMyTix">
 <meta name="author" content="GrabMyTix">
 
 <meta property="og:title" content="{{ movie.title }} | GrabMyTix">
-<meta property="og:description" content="{% if filmshow %}Now showing: {{ movie.title }} in {{ filmshow.state.state_short|upper }} on {{ filmshow.show_date|date:'M d, Y' }}. Book your tickets with GrabMyTix.{% else %}Book {{ movie.title }} tickets online with GrabMyTix. Fast and secure booking.{% endif %}">
+<meta property="og:description"
+  content="{% if filmshow %}Now showing: {{ movie.title }} in {{ filmshow.state.state_short|upper }} on {{ filmshow.show_date|date:'M d, Y' }}. Book your tickets with GrabMyTix.{% else %}Book {{ movie.title }} tickets online with GrabMyTix. Fast and secure booking.{% endif %}">
 
 <meta property="og:image" content="https://www.grabmytix.com/media/{{ movie.poster_image }}">
 <meta property="og:image:alt" content="{{ movie.title }} movie poster">
@@ -18,7 +21,8 @@
 {% endblock meta %}
 {% block content %}
 <main class="content-wrapper">
-    <!-- Hero Section -->
+ 
+  <!-- Hero Section -->
   <section class="position-relative" style="height: 40vh; min-height: 400px; overflow: hidden;">
 
     <!-- Blurred Background -->
@@ -54,7 +58,7 @@
       </p>
       <small><b>Director:</b> {{ movie.director }}</small><br>
       <small><b>Language:</b> {{ movie.language }}</small><br>
-       <small><b>Cast:</b> {{ movie.cast|capfirst }}</small>
+      <small><b>Cast:</b> {{ movie.cast|capfirst }}</small>
     </div>
   </section>
 
@@ -91,17 +95,17 @@
   </section> -->
 
   <!-- Payment Form Section -->
-  <section class="p-0 p-md-5 p-lg-5 "  >
- 
-{%if messages%}
-      {% for message in messages%}
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{message}}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-      {%endfor%}
-      {%endif%}
-      
+  <section class="p-0 p-md-5 p-lg-5 ">
+
+    {%if messages%}
+    {% for message in messages%}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{message}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {%endfor%}
+    {%endif%}
+
     {% if form.non_field_errors %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
       <strong>⚠ Please fix the following errors:</strong>
@@ -114,7 +118,7 @@
     </div>
     {% endif %}
 
-    
+
 
     <form method="POST" novalidate>
       {% csrf_token %}
@@ -123,56 +127,56 @@
         <div class="card-body">
 
           <h1 class="fw-bold   alert-heading">Primary Person Details</h1>
-    <!-- <p> Just one quick step to grab your tickets for <strong>{{ movie.title }}</strong> — let's make movie night unforgettable!
+          <!-- <p> Just one quick step to grab your tickets for <strong>{{ movie.title }}</strong> — let's make movie night unforgettable!
       </p> -->
-      <div class="col-md-8">
+          <div class="col-md-8">
 
-          <span class="text ">
-              <i class="ci-schedule"></i> 
+            <span class="text ">
+              <i class="ci-schedule"></i>
               <b>{{filmshow.show_date}},{{filmshow.show_time|date:'h:i A' }}</b>
-          </span>
-          <br/>
+            </span>
+            <br />
             <small><i class="ci-map-pin  "></i></small> {{ filmshow.theater_name }}
             <br />
-            <i class="ci-map-pin "></i> {{ filmshow.street }}, {{ filmshow.state }}, 
+            <i class="ci-map-pin "></i> {{ filmshow.street }}, {{ filmshow.state }},
             {{filmshow.country }}
- 
-        <br/> <br/>
-      </div>
- 
+
+            <br /> <br />
+          </div>
+
           <div class="row  mb-4">
 
             <div class="col-md-4">
               <label for="{{ form.full_name.id_for_label }}" class="form-label fw-semibold">Full Name</label>
-                  <div class="mb-3 position-relative">
-                                <i class="ci-user position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-                                {{ form.full_name }}
-                            </div>
+              <div class="mb-3 position-relative">
+                <i class="ci-user position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+                {{ form.full_name }}
+              </div>
               {% if form.full_name.errors %}
-                <div class="text-danger small mt-1">{{ form.full_name.errors.0 }}</div>
+              <div class="text-danger small mt-1">{{ form.full_name.errors.0 }}</div>
               {% endif %}
             </div>
 
             <div class="col-md-4">
-              
+
               <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">Email</label>
-                 <div class="mb-3 position-relative">
-                                <i class="ci-mail position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-                                {{ form.email }}
-                            </div>
+              <div class="mb-3 position-relative">
+                <i class="ci-mail position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+                {{ form.email }}
+              </div>
               {% if form.email.errors %}
-                <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+              <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
               {% endif %}
             </div>
 
             <div class="col-md-4">
               <label for="{{ form.phone.id_for_label }}" class="form-label fw-semibold">Phone</label>
-                  <div class="mb-3 position-relative">
-                                <i class="ci-phone position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-                                {{ form.phone }}
-                            </div>
+              <div class="mb-3 position-relative">
+                <i class="ci-phone position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+                {{ form.phone }}
+              </div>
               {% if form.phone.errors %}
-                <div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>
+              <div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>
               {% endif %}
             </div>
 
@@ -183,58 +187,86 @@
           <!-- Ticket Selection -->
           <h5 class="fw-semibold mb-3">Select Tickets</h5>
 
-          <div class="row g-4 mb-4">
-
-            <div class="col-md-3">
+          <div class="  g-4 mb-4">
+            {% comment %} Economy Ticket {% endcomment %}
+            {% if filmshow.economy_price > 0 %}
+            <div class="col-md-3 pb-2">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
                   <!-- <span class="fs-6 fw-semibold">Adult</span><br> -->
-                  <small class="fs-6" >Price: ${{ filmshow.adult }}</small>
+                  <small class="fs-6">{{ filmshow.economy_label }}: ${{ filmshow.economy_price }}</small>
+                </div>
+                <div class="input-group  input-group-sm" style="width: 140px;">
+                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="economy"
+                    data-decrement>−</button>
+                  <input type="number" min="0" id="economy-qty" name="economy_quantity"
+                    class="form-control  text-center" value="{{ form.economy_quantity.value|default:0 }}">
+                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="economy"
+                    data-increment>+</button>
+                </div>
+              </div>
+            </div>
+            {%endif%}
+
+            <div class="col-md-3 pb-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <!-- <span class="fs-6 fw-semibold">Adult</span><br> -->
+                  <small class="fs-6">{%if filmshow.general_label %}{{ filmshow.general_label }}{%else%}Ticket{%endif%}:
+                    ${{ filmshow.price }}</small>
                 </div>
                 <div class="input-group input-group-sm" style="width: 140px;">
-                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="adult" data-action="decrement" aria-label="Decrease adult tickets">−</button>
-                  <input type="number" min="0" id="adult-qty" name="no_adult" class="form-control text-center" value="{{ form.no_adult.value|default:1 }}">
-                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="adult" data-action="increment" aria-label="Increase adult tickets">+</button>
+                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="general"
+                    data-decrement>−</button>
+                  <input type="number" min="0" id="general-qty" name="general_quantity" class="form-control text-center"
+                    value="{{ form.general_quantity.value|default:0 }}">
+                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="general"
+                    data-increment>+</button>
                 </div>
               </div>
             </div>
 
-            <!-- <div class="col-md-3">
+            {% comment %} Economy Ticket {% endcomment %}
+            {% if filmshow.vip_price > 0 %}
+            <div class="col-md-3 pb-2">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <span class="fs-6 fw-semibold">Child</span><br>
-                  <small class="text-muted">Price: ${{ filmshow.child }}</small>
+                  <!-- <span class="fs-6 fw-semibold">Adult</span><br> -->
+                  <small class="fs-6">{{ filmshow.vip_label }}: ${{ filmshow.vip_price }}</small>
                 </div>
                 <div class="input-group input-group-sm" style="width: 140px;">
-                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="child" data-action="decrement" aria-label="Decrease child tickets">−</button>
-                  <input type="number" min="0" id="child-qty" name="no_child" class="form-control text-center" value="{{ form.no_child.value|default:0 }}">
-                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="child" data-action="increment" aria-label="Increase child tickets">+</button>
+                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="vip"
+                    data-decrement>−</button>
+                  <input type="number" min="0" id="vip-qty" name="vip_quantity" class="form-control text-center"
+                    value="{{ form.vip_quantity.value|default:0 }}">
+                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="vip"
+                    data-increment>+</button>
                 </div>
               </div>
-            </div> -->
-
+            </div>
           </div>
-
+          {%endif%}
           <!-- Total Summary -->
           <div class="  border-top pt-3 mb-4">
             <strong class="fs-5">Total:</strong>
             <span id="final-total" class="fs-5 fw-bold">$0.00</span>
           </div>
-     <!-- {{is_expired}} -->
-          
-            {% if  is_expired %}
-          <button type="submit" disabled class="btn btn-dark  rounded-pill fw-semibold" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="This is a demo; bookings are not available.">
+          <!-- {{is_expired}} -->
+
+          {% if is_expired %}
+          <button type="submit" disabled class="btn btn-dark  rounded-pill fw-semibold" data-bs-toggle="tooltip"
+            data-bs-placement="top" data-bs-title="This is a demo; bookings are not available.">
             <i class="ci-shopping-bag me-2"></i>
-             Expired – no more tickets available.
+            Expired – no more tickets available.
           </button>
           {%else%}
           <!-- Submit Button -->
-          <button type="submit"   class="btn btn-danger btn-lg w-80" >
+          <button type="submit" class="btn btn-danger btn-lg w-80">
             Continue to Payment &nbsp;&nbsp;<i class="ci-chevron-right"></i>
           </button>
-          <br/>  <br/>
+          <br /> <br />
           {%endif%}
-         
+
           <p class="text-muted small mt-4 mb-0 text-center">
             By completing your purchase, you agree to our
             <a href="#" class="text-decoration-underline">Terms & Conditions</a> and
@@ -250,30 +282,57 @@
 <!-- Script -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  $(function () {
-    var adultPrice = parseFloat("{{ filmshow.adult }}");
-    var childPrice = parseFloat("{{ filmshow.child }}");
+
+       document.addEventListener("DOMContentLoaded", function () {
+    const decrementButtons = document.querySelectorAll("[data-decrement]");
+    const incrementButtons = document.querySelectorAll("[data-increment]");
 
     function updateTotal() {
-      var adultQty = parseInt($("#adult-qty").val()) || 0;
-      var childQty = parseInt($("#child-qty").val()) || 0;
-      var total = (adultQty * adultPrice) + (childQty * childPrice);
-      $("#final-total").text(`$${total.toFixed(2)}`);
+        let total = 0;
+
+        //const adult = parseInt(document.getElementById("adult-qty")?.value) || 0;
+        const economy = parseInt(document.getElementById("economy-qty")?.value) || 0;
+        const general = parseInt(document.getElementById("general-qty")?.value) || 0;
+        const vip = parseInt(document.getElementById("vip-qty")?.value) || 0;
+        console.log(economy+""+general+""+vip)
+      
+        //total += adult * {{ event.price|default:0 }};
+        total += economy * {{ filmshow.economy_price|default:0 }};
+        total += general * {{ filmshow.price|default:0 }};
+        total += vip * {{ filmshow.vip_price|default:0 }};
+
+        document.getElementById("final-total").textContent = total.toFixed(2);
     }
 
-    $(".qty-btn").click(function () {
-      var type = $(this).data("type");
-      var action = $(this).data("action");
-      var input = (type === "adult") ? $("#adult-qty") : $("#child-qty");
-      var value = parseInt(input.val()) || 0;
-      if (action === "increment") value++;
-      else if (action === "decrement" && value > 0) value--;
-      input.val(value);
-      updateTotal();
+    decrementButtons.forEach(btn => {
+        btn.addEventListener("click", function () {
+            const type = btn.getAttribute("data-type");
+            const input = document.getElementById(type + "-qty");
+            if (!input) return;
+            let val = parseInt(input.value) || 0;
+            if (val > 0) input.value = val - 1;
+            updateTotal();
+        });
     });
 
-    $("#adult-qty, #child-qty").on("input", updateTotal);
+    incrementButtons.forEach(btn => {
+        btn.addEventListener("click", function () {
+            const type = btn.getAttribute("data-type");
+            const input = document.getElementById(type + "-qty");
+            if (!input) return;
+            let val = parseInt(input.value) || 0;
+            input.value = val + 1;
+            updateTotal();
+        });
+    });
+
+    ["adult-qty","economy-qty","general-qty","vip-qty"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("input", updateTotal);
+    });
+
     updateTotal();
-  });
-</script>
+});
+
+    </script>
 {% endblock content %}

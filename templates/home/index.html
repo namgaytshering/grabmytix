@@ -239,14 +239,15 @@
                 <div class="d-none d-md-block">
                   <p>{{ movie.description|safe|linebreaks|truncatewords:30 }}</p>
                 </div>
-                <b>Screenings</b><br/><br/>
+                <b>Screening in: </b><br/>
                 <div class="mb-3">
                   {% for address in movie.filmshow.all %}
                   {% if address.status == 1%}
-                  <small class="d-block mb-1">
-                      <i class="ci-check"></i> {{ address.state.state_short|upper }}
-                      - {{ address.show_date|date:"M d" }}, {{ address.show_time|time:"h:i A" }}
-                    
+                  <small class="d-block mb-1 ">
+                      <i class="ci-check"></i> {{ address.state|capfirst }}
+                      - {{ address.show_date|date:"d M" }}
+                      <!-- , {{ address.show_time|time:"h:i A" }}
+                     -->
                   </small>
                   {%endif%}
                   {% endfor %}
@@ -292,14 +293,13 @@
                 {%if event.price == 0%}
                 Free
                 {%else%}
-                ${{event.price}}
+                ${{event.price}} 
                 {%endif%}
                 {%endif%}
               </div>
             </div>
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
               <div class="nav align-items-center gap-1 fs-xs">
-
                 <i class="ci-schedule"></i>
                 In {{event.place}},{{event.state.state_short|upper}}
                 <div class="text-body-secondary">on </div>

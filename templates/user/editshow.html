@@ -48,7 +48,7 @@
                 {{ form.currency }}
             </div>
 
-            <div class="col-md-4 mb-3">
+            <!-- <div class="col-md-4 mb-3">
                 <label class="form-label">Adult Price</label>
                 {{ form.adult }}
             </div>
@@ -56,8 +56,57 @@
             <div class="col-md-4 mb-3">
                 <label class="form-label">Child Price</label>
                 {{ form.child }}
-            </div>
+            </div> -->
         </div>
+
+          <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Label</label>
+                                {{ form.general_label }}
+                            </div>
+ 
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Price</label>
+                                {{ form.price }}
+                            </div>
+                              <div class="col-md-4 mb-3">
+                                <label class="form-label">Quantity</label>
+                                {{ form.quantity }}
+                            </div>
+
+                        </div>
+                        <h5 class="mt-4">Optional</h5>
+                        <h6 class="mt-4">Economy Tickets</h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Label</label>
+                                {{ form.economy_label }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Price</label>
+                                {{ form.economy_price }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Quantity</label>
+                                {{ form.economy_quantity }}
+                            </div>
+                        </div>
+                        <h5 class="mt-4">VIP Tickets</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Label</label>
+                                {{ form.vip_label }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Price</label>
+                                {{ form.vip_price }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Quantity</label>
+                                {{ form.vip_quantity }}
+                            </div>
+                        </div>
 
         <div class="row">
             <div class="col-md-4 mb-3">

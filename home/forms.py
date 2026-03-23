@@ -93,28 +93,65 @@ class TicketCheckoutForm(ModelForm):
         widget=forms.NumberInput(attrs={'class': 'form-control form-icon-start','placeholder': 'Phone Number', 'required': 'required'})
     )
 
-    no_adult = forms.IntegerField(
-        label='Number of Adults',
-        min_value=1,
-        max_value=5,
-        initial=1,
-        required=True,
-        widget=forms.NumberInput(attrs={'class': 'form-control form-icon-start'})
-    )
-    no_child = forms.IntegerField(
-        label='Number of Children',
+    # no_adult = forms.IntegerField(
+    #     label='Number of Adults',
+    #     min_value=1,
+    #     max_value=5,
+    #     initial=1,
+    #     required=True,
+    #     widget=forms.NumberInput(attrs={'class': 'form-control form-icon-start'})
+    # )
+    # no_child = forms.IntegerField(
+    #     label='Number of Children',
+    #     min_value=0,
+    #     max_value=5,
+    #     initial=0,
+    #     required=False,
+    #     widget=forms.NumberInput(attrs={'class': 'form-control form-icon-start'})
+    # )
+    # --- Ticket quantities (optional) ---
+    economy_quantity = forms.IntegerField(
+        label='Economy Quantity',
         min_value=0,
-        max_value=5,
         initial=0,
         required=False,
         widget=forms.NumberInput(attrs={'class': 'form-control form-icon-start'})
     )
+    general_quantity = forms.IntegerField(
+        label='General Quantity',
+        min_value=0,
+        initial=1,
+        required=False,
+        widget=forms.NumberInput(attrs={'class': 'form-control form-icon-start'})
+    )
+    vip_quantity = forms.IntegerField(
+        label='VIP Quantity',
+        min_value=0,
+        initial=0,
+        required=False,
+        widget=forms.NumberInput(attrs={'class': 'form-control form-icon-start'})
+    )
+
  
     class Meta:
         model = Booking
-        fields = ('full_name', 'email','no_adult', 'no_child','phone' )
+        fields = ('full_name', 'email','phone' ,'economy_quantity', 'general_quantity', 'vip_quantity')
             
-    
+    def clean(self):
+        cleaned_data = super().clean()
+        economy = cleaned_data.get("economy_quantity") or 0
+        general = cleaned_data.get("general_quantity") or 0
+        vip = cleaned_data.get("vip_quantity") or 0
+       
+
+        # Ensure at least one ticket is selected
+        if economy == 0 and general == 0 and vip == 0  :
+            raise forms.ValidationError("You must select at least one ticket.")
+
+        # Ensure total cost is greater than zero
+      
+
+        return cleaned_data
 
      
 class TicketEventCheckoutForm(ModelForm):

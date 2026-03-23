@@ -73,7 +73,9 @@ class FilmShowForm(ModelForm):
         model = Filmshow
         fields = [
              "theater_name", "show_date", "show_time", "adult", "child",
-            "currency", "country", "state", "street"
+            "currency", "country", "state", "street",'price', 'quantity','general_label',
+            'vip_label', 'vip_price', 'vip_quantity',
+            'economy_label', 'economy_price', 'economy_quantity'
         ]
         widgets = {
             "show_date": forms.TextInput(attrs={
@@ -89,13 +91,26 @@ class FilmShowForm(ModelForm):
                 "data-datepicker": '{"enableTime": true, "noCalendar": true, "dateFormat": "H:i:S"}',
                 "placeholder": "Choose time"
             }),
+            #this gona out
             "adult": forms.NumberInput(attrs={"class": "form-control",  "placeholder": "Enter adult price"}),
             "child": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Enter adult child"}),
+            #till this
             "theater_name": forms.TextInput(attrs={"class": "form-control"}),
             "street": forms.TextInput(attrs={"class": "form-control"}),
             "currency": forms.Select(attrs={"class": "form-control"}),
             "country": forms.Select(attrs={"class": "form-control"}),
             "state": forms.Select(attrs={"class": "form-control"}),
+
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'general_label': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'General Ticket Label'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'vip_label': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'VIP Ticket Label'}),
+            'vip_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'vip_quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'economy_label': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Economy Ticket Label'}),
+            'economy_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'economy_quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+
             
         }
 

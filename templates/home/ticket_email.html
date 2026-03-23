@@ -83,7 +83,7 @@
         <p><strong>Date & time :</strong> {{ show_date }},  {{ show_time }}</p>
    
  
-        {%if booking.type == 'Movie'%}
+        <!-- {%if booking.type == 'Movie'%}
             {% if booking.no_adult > 0 %}
               <p><strong>Ticket Qty: </strong>{{ booking.no_adult }} × ${{ booking.price_adult }}</p>
             {% endif %}
@@ -92,12 +92,12 @@
               <p><strong>Child:</strong> {{ booking.no_child }} × ${{ booking.price_child }}</p>
             {% endif %}
    
-        {%else%}
+        {%else%} -->
           {% if booking.economy_quantity > 0 %}
             <p><strong>{{ booking.economy_label }}: </strong>{{ booking.economy_quantity }} × ${{ booking.economy_price }}</p>
           {% endif %}
           {% if booking.general_quantity > 0 %}
-           {% if booking.economy_quantity > 0 and booking.vip_quantity > 0 %} 
+           {% if booking.economy_quantity > 0 or  booking.vip_quantity > 0 %} 
              <p><strong>   {{ booking.general_label }}:</strong>
               {%else%}
              <p><strong>   Ticket Qty:</strong>
@@ -106,7 +106,7 @@
           {% if booking.vip_quantity > 0 %}
              <p><strong> {{ booking.vip_label }}: </strong>{{ booking.vip_quantity }} × ${{ booking.vip_price }}</p>
           {% endif %}
-      {% endif %}
+      <!-- {% endif %} -->
       <br/><p style="margin-bottom:10px;">Yours sincerely,</p>
       <p>The GrabMyTix Team</p>
       </div>

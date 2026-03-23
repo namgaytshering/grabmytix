@@ -120,6 +120,7 @@
           {% endif %}
         </h5>
        <h6> 
+
        {{ event.place }}<br/><br/>
         <i class="ci-map-pin  text-secondary"></i>  {{ event.state }}</h6>
 
@@ -156,104 +157,81 @@
               </div>
             </div>
           </div> -->
-          {% comment %} General Ticket {% endcomment %}
+     
+   {% comment %} Economy Ticket {% endcomment %}
+  {% if event.economy_price > 0 %}
+  <div class="col-md-6 mt-2 mb-3">
+    <span class="fs-6 fw-semibold">{{ event.economy_label }}</span><br />
+    <div class="d-flex mt-2 justify-content-between align-items-center">
+      <div class="input-group  input-group-sm" style="width: 140px;">
+        <button type="button" class="btn btn-outline-secondary qty-btn" data-type="economy" data-decrement>−</button>
+        <input type="number" min="0" id="economy-qty" name="economy_quantity" class="form-control  text-center"
+          value="{{ form.economy_quantity.value|default:0 }}">
+        <button type="button" class="btn btn-outline-secondary qty-btn" data-type="economy" data-increment>+</button>
+      </div>
+      <span class="ms-3 text-muted">${{ event.economy_price }} </span>
+    </div>
+  </div>
   
-          <div class="col-md-6 mb-3">
-            <span class="fs-6 fw-semibold"> {% if event.vip_price > 0 or  event.economy_price > 0  %}  {{event.general_label}}
-              {%endif%}
-            </span><br />
-            {% if event.event_type.name == "Lottery" or event.event_type.name == "Donation" %}
-            <div class="d-flex mt-1 justify-content-between align-items-center">
-              <div class="input-group input-group-sm" style="width: 140px;">
-                <input type="hidden" min="0" id="general-qty" name="general_quantity" class="form-control text-center"
-                  value=1>
-              </div>
-             
-            </div>
-         
-          </div>
-          <div class="alert alert-success " role="alert">
-  
-         <b>Note:</b> Please note that purchases are limited to one ticket at a time.
-   
-            </div> 
-              <p class="mb-3  fw-semibold">Cost: <span class="h5">$ <span id="final-total">{{ event.price }}</span></span></p> 
-          {%else%}
-          
-            <div class="d-flex mt-2 justify-content-between align-items-center">
-              <div class="input-group input-group-sm" style="width: 140px;">
-                <button type="button" class="btn btn-outline-secondary qty-btn " data-type="general"
-                  data-decrement>−</button>
-                <input type="number" min="0" id="general-qty" name="general_quantity" class="form-control text-center"
-                  value="{{ form.general_quantity.value|default:0 }}">
-                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="general"
-                  data-increment>+</button>
-              </div>
-              <span class="ms-3 text-muted">{%if  event.price > 0%}${{ event.price }}{%else%} Free {%endif%}</span>
-            </div>
-          </div>
-            <p class="mb-3  fw-semibold">Price: <span class="h5">$ <span id="final-total">{{ event.price }}</span></span></p>
-       {%endif%}
-       
+  {% endif %}
+
+
+{% comment %} General Ticket {% endcomment %}
+<div class="col-md-6 mb-3">
+  <span class="fs-6 fw-semibold">{%if event.general_label %}{{ event.general_label }}{%endif%}</span><br />
+  {% if event.event_type.name == "Lottery" or event.event_type.name == "Donation" %}
+    <div class="d-flex mt-1 justify-content-between align-items-center">
+      <div class="input-group input-group-sm" style="width: 140px;">
+        <input type="hidden" id="general-qty" name="general_quantity" value="1">
+      </div>
+    </div>
+  </div>
+  <div class="alert alert-success" role="alert">
+    <b>Note:</b> Please note that purchases are limited to one ticket at a time.
+  </div>
+  <!-- <p class="mb-3 fw-semibold">Cost: <span class="h5">$<span id="final-total">{{ event.price }}</span></span></p> -->
+
+{% else %}
+  <div class="d-flex mt-2 justify-content-between align-items-center">
+    <div class="input-group input-group-sm" style="width: 140px;">
+      <button type="button" class="btn btn-outline-secondary qty-btn" data-type="general" data-decrement>−</button>
+      <input type="number" min="0" id="general-qty" name="general_quantity" class="form-control text-center"
+        value="{{ form.general_quantity.value|default:0 }}">
+      <button type="button" class="btn btn-outline-secondary qty-btn" data-type="general" data-increment>+</button>
+    </div>
+    <span class="ms-3 text-muted">{% if event.price > 0 %}${{ event.price }}{% else %}Free{% endif %}</span>
+  </div>
+</div>
+{%endif%}
  
-        
- 
+{% comment %} VIP Ticket {% endcomment %}
+{% if event.vip_price > 0 %}
+<div class="col-md-6 mb-3">
+  <span class="fs-6 fw-semibold">{{ event.vip_label }}</span><br />
+  <div class="d-flex mt-2 justify-content-between align-items-center">
+    <div class="input-group input-group-sm" style="width: 140px;">
+      <button type="button" class="btn btn-outline-secondary qty-btn" data-type="vip" data-decrement>−</button>
+      <input type="number" min="0" id="vip-qty" name="vip_quantity" class="form-control text-center"
+        value="{{ form.vip_quantity.value|default:0 }}">
+      <button type="button" class="btn btn-outline-secondary qty-btn" data-type="vip" data-increment>+</button>
+    </div>
+    <span class="ms-3 text-muted">${{ event.vip_price }}</span>
+  </div>
+</div>
+{% endif %}
+<p class="mb-3 fw-semibold">Total: <span class="h5">$<span id="final-total">0.00</span></span></p>
 
-          {% comment %} Economy Ticket {% endcomment %}
-          {% if event.economy_price  > 0 %}
-          <div class="col-md-6 mb-3">
-            <span class="fs-6 fw-semibold">
-              {% if event.vip_price > 0 or  event.economy_price > 0  %}  {{event.general_label}}
-              {%endif%}
-             </span><br />
-            <div class="d-flex mt-2 justify-content-between align-items-center">
-              <div class="input-group input-group-sm" style="width: 140px;">
-                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="economy"
-                  data-decrement>−</button>
-                <input type="number" min="0" id="economy-qty" name="economy_quantity" class="form-control text-center"
-                  value="{{ form.economy_quantity.value|default:0 }}">
-                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="economy"
-                  data-increment>+</button>
-              </div>
-              <span class="ms-3 text-muted">${{ event.price }}</span>
-            </div>
-          </div>
-          {% endif %}
 
-         
-
-          {% comment %} VIP Ticket {% endcomment %}
-          {% if event.vip_price  > 0 %}
-          <div class="col-md-6 mb-3">
-            <span class="fs-6 fw-semibold">{{event.vip_label}} </span><br />
-            <div class="d-flex mt-2 justify-content-between align-items-center">
-              <div class="input-group input-group-sm" style="width: 140px;">
-                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="vip"
-                  data-decrement>−</button>
-                <input type="number" min="0" id="vip-qty" name="vip_quantity" class="form-control text-center"
-                  value="{{ form.vip_quantity.value|default:0 }}">
-                <button type="button" class="btn btn-outline-secondary qty-btn" data-type="vip"
-                  data-increment>+</button>
-              </div>
-              <span class="ms-3 text-muted">${{ event.vip_price }}</span>
-            </div>
-          </div>
-          {% endif %}
-
-          
-          
-          {% if is_expired %}
-          <button type="submit" disabled class="btn btn-dark  rounded-pill fw-semibold">
-            <i class="ci-shopping-bag me-2"></i>
-         Expired – no more tickets available.
-          </button>
-          {%else%}
-          <!-- Submit Button -->
-          <button type="submit"  class="btn btn-danger  rounded-pill fw-semibold">
-            <i class="ci-shopping-bag me-2"></i>
-            {% if event.price %} Proceed to Payment {% else %} Confirm {% endif %}
-          </button>
-          {%endif%}
+{% if is_expired %}
+<button type="submit" disabled class="btn btn-dark rounded-pill fw-semibold">
+  <i class="ci-shopping-bag me-2"></i> Expired – no more tickets available.
+</button>
+{% else %}
+<button type="submit" class="btn btn-danger rounded-pill fw-semibold">
+  <i class="ci-shopping-bag me-2"></i>
+  {% if event.price %}Proceed to Payment{% else %}Confirm{% endif %}
+</button>
+{% endif %}
         </form>
       </div>
     </div>
@@ -279,13 +257,14 @@
     function updateTotal() {
         let total = 0;
 
-        const adult = parseInt(document.getElementById("adult-qty")?.value) || 0;
+        //const adult = parseInt(document.getElementById("adult-qty")?.value) || 0;
         const economy = parseInt(document.getElementById("economy-qty")?.value) || 0;
         const general = parseInt(document.getElementById("general-qty")?.value) || 0;
         const vip = parseInt(document.getElementById("vip-qty")?.value) || 0;
-
-        total += adult * {{ event.price|default:0 }};
-        total += economy * {{ event.price|default:0 }};
+        console.log(economy+""+general+""+vip)
+      
+        //total += adult * {{ event.price|default:0 }};
+        total += economy * {{ event.economy_price|default:0 }};
         total += general * {{ event.price|default:0 }};
         total += vip * {{ event.vip_price|default:0 }};
 

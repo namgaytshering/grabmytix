@@ -5,6 +5,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime
 from django.utils.text import slugify
 from django_ckeditor_5.fields import CKEditor5Field
+from django.db.models.functions import Coalesce
+from django.db.models import Sum, F
 from django.core.validators import RegexValidator
 phone_validator = RegexValidator(
     regex=r'^\+?1?\d{9,15}$',
@@ -148,6 +150,21 @@ class Filmshow(models.Model):
 
     adult = models.DecimalField(max_digits=6, decimal_places=2)
     child = models.DecimalField(max_digits=6, decimal_places=2)
+    
+    general_label = models.CharField(max_length=50,  null=True, blank=True)
+    price = models.DecimalField(max_digits=8, decimal_places=1)
+    quantity = models.IntegerField(default=1)
+
+    # Three ticket levels (with names + prices)
+    vip_label = models.CharField(max_length=50,  null=True, blank=True)
+    vip_price = models.DecimalField(max_digits=8, decimal_places=1, default=0)
+    vip_quantity = models.IntegerField(default=0)
+
+    economy_label = models.CharField(max_length=50,  null=True, blank=True)
+    economy_price = models.DecimalField(max_digits=8, decimal_places=1, default=0)
+    economy_quantity = models.IntegerField(default=0)
+
+
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     state = models.ForeignKey(State, on_delete=models.CASCADE)
@@ -261,8 +278,6 @@ class Booking(models.Model):
     vip_price = models.DecimalField(max_digits=8, decimal_places=1, default=0)
     vip_quantity = models.IntegerField(default=0)
 
-    
-
 
     #grant total cost for both movie and event
     total_payment = models.DecimalField(max_digits=10, decimal_places=0, default=0.00)
@@ -291,7 +306,17 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"Booking by {self.title} - {self.full_name}"
+    @classmethod
+    def get_ticket_summary(cls, event_id, paid_only=True):
+        qs = cls.objects.filter(event_id=event_id)
+        if paid_only:
+            qs = qs.filter(payment_status=1)
 
+        return qs.aggregate(
+            economy=Coalesce(Sum('economy_quantity'), 0),
+            general=Coalesce(Sum('general_quantity'), 0),
+            vip=Coalesce(Sum('vip_quantity'), 0),
+        )
 # Slug generator signal
 def slug_generator(sender, instance, *args, **kwargs):
     if not instance.slug:

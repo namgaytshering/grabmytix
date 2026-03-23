@@ -231,14 +231,30 @@ def state_moviedetail_view(request,slug_text):
     
     if request.method == "POST":
         try:    
-            
+            print("try"+str(form.errors))
             if form.is_valid():
-          
-                no_adult = form.cleaned_data.get("no_adult")
-                no_child = form.cleaned_data.get("no_child")
+               
+
+                economy_quantity = form.cleaned_data.get("economy_quantity") or 0
+                # General tickets
+                general_quantity = form.cleaned_data.get("general_quantity") or 0
+                # VIP tickets
+                vip_quantity = form.cleaned_data.get("vip_quantity") or 0
+
+                # Calculate total cost
+                total_cost = (  
+                    economy_quantity * (filmshow.economy_price or 0) +
+                    general_quantity * (filmshow.price or 0) +
+                    vip_quantity * (filmshow.vip_price or 0)
+                )
+            
+               
+
+                # no_adult = form.cleaned_data.get("no_adult")
+                # no_child = form.cleaned_data.get("no_child")
 
                 filmshow = Filmshow.objects.get(slug =slug_text)
-                total_cost = (no_adult * filmshow.adult) 
+               # total_cost = total_cost
                 #+ (no_child * filmshow.child) 
                 saveform = form.save(commit=False)
                 if request.user.is_authenticated:
@@ -260,37 +276,49 @@ def state_moviedetail_view(request,slug_text):
                 saveform.street= filmshow.street
                 saveform.total_payment = total_cost
                 saveform.type = 'Movie'
+                 #save other level of tickets
+                saveform.economy_label = filmshow.economy_label  
+                saveform.economy_price = filmshow.economy_price  
+                 
+
+                saveform.general_label = filmshow.general_label  
+                saveform.general_price = filmshow.price  
+                
+
+                saveform.vip_label = filmshow.vip_label  
+                saveform.vip_price = filmshow.vip_price 
+
                 saveform.save()
                 
                 messages.success(request, "Successfully booked the ticket. Now proceed with payment to confirm your ticket.")
                 return redirect('payment_view', id=saveform.id)
 
         except Exception as e:
+                print(str(e))
                 messages.error(request, "Something happened, please again" +str(e))
+    print("out")
     is_expired = get_movie_datetime_local(filmshow)
     return render(request, 'home/booking.html',{'movie':movie,'form':form,'filmshow':filmshow,'is_expired':is_expired})
 
 
 def eventdetail_view(request,slug_text):
     event = Event.objects.get(slug=slug_text)
-    is_expired = False
+    booking_summary = Booking.get_ticket_summary(event_id=event.id)
+     
 
-    
+    is_expired = False    
     if request.user.is_authenticated:
         name = request.user.name
-    
         email = request.user.email
         phone = request.user.phone
     else:
         name = ''
-    
         email = ''
         phone = ''
+
     form = TicketEventCheckoutForm(request.POST or None,initial={'full_name':name,'email':email,'phone':phone})
     if request.method == "POST":
         try:    
-         
-      
             if form.is_valid():
              
                 #no_adult = form.cleaned_data.get("general_quantity")
@@ -302,12 +330,12 @@ def eventdetail_view(request,slug_text):
                 vip_quantity = form.cleaned_data.get("vip_quantity") or 0
 
                 # Calculate total cost
-                total_cost = (
-                   
+                total_cost = (  
                     economy_quantity * (event.economy_price or 0) +
                     general_quantity * (event.price or 0) +
                     vip_quantity * (event.vip_price or 0)
                 )
+
                 country = form.cleaned_data.get("country") or "Unknown"
                 city = form.cleaned_data.get("city") or "Unknown"
                # total_cost = (no_adult * event.price)
@@ -347,7 +375,6 @@ def eventdetail_view(request,slug_text):
                 saveform.street= event.street
                 saveform.theater_name = event.place
 
-
                 if event.price == 0:
                     saveform.payment_status = 1
                 saveform.save()
@@ -372,7 +399,7 @@ def eventdetail_view(request,slug_text):
     # Check if expired
     is_expired = get_event_datetime_local(event)
   
-    context= {'event':event,'form':form,'is_expired':is_expired}
+    context= {'event':event,'form':form,'is_expired':is_expired,'booking_summary':booking_summary}
     return render(request, 'home/eventdetail.html',context)
 
 def movies_view(request):
@@ -442,13 +469,15 @@ def payment_view(request,id,*args, **kwargs):
     booking = Booking.objects.get(id=id)
     if booking.type == "Event":
         is_expired = get_event_datetime_local(booking.event)
-        total_cost = (booking.economy_price * booking.economy_quantity) +  (booking.general_price * booking.general_quantity)+  (booking.vip_price * booking.vip_quantity)
+        #total_cost = (booking.economy_price * booking.economy_quantity) +  (booking.general_price * booking.general_quantity)+  (booking.vip_price * booking.vip_quantity)
     elif booking.type == "Movie":
         is_expired = get_movie_datetime_local(booking.filmshow)
-        total_cost = (booking.no_adult * booking.price_adult) +  (booking.no_child * booking.price_child)
+        #total_cost = (booking.no_adult * booking.price_adult) +  (booking.no_child * booking.price_child)
     else:
         is_expired = False
-   
+
+    total_cost = (booking.economy_price * booking.economy_quantity) +  (booking.general_price * booking.general_quantity)+  (booking.vip_price * booking.vip_quantity)
+    #print(total_cost)
     return render(request, 'home/payment.html',{'booking':booking,'total_cost':total_cost,"STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,'is_expired':is_expired})
  
  #Stripe payment
