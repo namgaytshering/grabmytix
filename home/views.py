@@ -587,6 +587,7 @@ def send_payment_success_email(booking):
         'show_date':booking.show_date,
         'show_time':booking.show_time,
         'theater_name':booking.theater_name,
+        'booking':booking,
     }
     
     html_message = render_to_string("home/ticket_email.html", context)
