@@ -152,7 +152,7 @@ class Filmshow(models.Model):
     child = models.DecimalField(max_digits=6, decimal_places=2)
     
     general_label = models.CharField(max_length=50,  null=True, blank=True)
-    price = models.DecimalField(max_digits=8, decimal_places=1)
+    price = models.DecimalField(max_digits=8, decimal_places=1,default=0)
     quantity = models.IntegerField(default=1)
 
     # Three ticket levels (with names + prices)

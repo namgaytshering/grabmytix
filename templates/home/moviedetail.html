@@ -115,11 +115,7 @@
   {% endif %}
 
 </ul>
-{% endif %}
-
-
-
-  
+{% endif %}  
 </ul>
 
 <div class="tab-content" id="showTabsContent">
@@ -146,7 +142,7 @@
 
             <div class="mt-auto d-flex justify-content-between align-items-center">
               <span class="fw-bold text-danger fs-6">
-                {{ show.currency }} {{ show.adult }}
+                {{ show.currency }} {{ show.price }}
               </span>
 
               {% if show.status == 0 %}
@@ -189,7 +185,7 @@
 
             <div class="mt-auto d-flex justify-content-between align-items-center">
               <span class="fw-bold text-danger fs-6">
-                {{ show.currency }} {{ show.adult }}
+                {{ show.currency }} {{ show.price }}
               </span>
 
               {% if show.status == 0 %}
