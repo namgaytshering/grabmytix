@@ -172,12 +172,13 @@ def dashboard_view(request, *args, **kwargs):
         'filmshow__id'
     )
     .annotate(
-        total_adult=Sum('no_adult'),
-        total_child=Sum('no_child'),
-        total_tickets=Sum(F('no_adult') + F('no_child')),
+        
+        # total_adult=Sum('no_adult'),
+        # total_child=Sum('no_child'),
+        total_tickets=Sum(F('economy_quantity') + F('general_quantity')+ F('vip_quantity')),
         total_payment=Sum(
             ExpressionWrapper(
-                F('no_adult') * F('price_adult') + F('no_child') * F('price_child'),
+                F('economy_quantity') * F('economy_price') + F('general_quantity') * F('general_price') + F('vip_quantity') * F('vip_price'),
                 output_field=FloatField()
             )
         )
@@ -550,10 +551,12 @@ def tickets_owner_view(request, id,*args, **kwargs):
     ticket_no = ''
     email = ''
     bookings = Booking.objects.filter(filmshow=filmshow, payment_status = 1).annotate(
-     total_tickets=F('no_adult') + F('no_child'),
+     total_tickets=F('no_adult') + F('no_child')+F('economy_quantity') + F('general_quantity') + F('vip_quantity'),
         )
     
-    total_booked = bookings.aggregate(total=Sum(F('no_adult') + F('no_child')))['total'] or 0
+    #total_booked = bookings.aggregate(total=Sum(F('no_adult') + F('no_child')))['total'] or 0
+    total_booked = bookings.aggregate(total=Sum(F('no_adult') + F('no_child')+F('economy_quantity') + F('general_quantity') + F('vip_quantity')))['total'] or 0
+
 
     total_attended = bookings.aggregate(total=Sum('attended_no'))['total'] or 0
 
@@ -570,8 +573,8 @@ def tickets_owner_view(request, id,*args, **kwargs):
     .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
     .order_by('date')) 
     
-    # labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
-    labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
+    labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    #labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
     data = [int(b['total']) for b in time_series] 
     
     if request.method == 'POST':
@@ -641,8 +644,8 @@ def event_tickets_owner_view(request, id, *args, **kwargs):
 
     # Prepare time series for Chart.js
     time_series = bookings.values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets')).order_by('date')
-    # labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
-    labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
+    labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    #labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
     data = [int(b['total']) for b in time_series]
 
     if request.method == 'POST':
@@ -751,19 +754,23 @@ def change_password(request):
 # @csrf_exempt
 def create_connected_account(request, seller_id):
     seller = User.object.get(id=seller_id)
-
+   
     if not seller.stripe_account_id:
         account = stripe.Account.create(
             type="express",
             country="AU",
+             business_type="individual",
             capabilities={
                 "card_payments": {"requested": True},
                 "transfers": {"requested": True},
-            },
-            business_type="individual"
+            }
+            
         )
         seller.stripe_account_id = account.id
+        
         seller.save()
+        
+        
 
     return redirect(f"/seller/embedded-onboarding/?seller_id={seller.id}")
  

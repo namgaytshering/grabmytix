@@ -18,10 +18,10 @@
         View the complete list of tickets booked, organized by movies and show locations.
       </p>
     <div class="table-responsive">
-        <div class="table-responsive overflow-auto" style="max-height: 400px;">
+   <div class="table-responsive overflow-auto" style="height: 500px;">
                 <table class="table align-middle fs-sm mb-0 table-striped">
     <thead class="position-sticky top-0 bg-light">
-            <thead>
+      
                 <tr>
                     <th scope="col" class="ps-0">Title</th>
                     <th scope="col" class="ps-0">Type</th>
@@ -87,7 +87,7 @@
     {% if your_bookings %}
     <h5>My Bookings</h5>
     <p>All the tickets that you have purchased
-        <div class="table-responsive">
+      <div class="table-responsive">
    <div class="table-responsive overflow-auto" style="height: 300px;">
                 <table class="table align-middle fs-sm mb-0 table-striped">
     <thead class="position-sticky top-0 bg-light">
@@ -109,17 +109,36 @@
             <td><b>{{ booking.id }}</b></td>
             <td>{{ booking.title }}</td>
             <td > 
-                {{ booking.type|capfirst }}
-                 
+                {{ booking.type|capfirst }}   
             </td>
             <td>{{ booking.theater_name }}, {{ booking.state.state_short }}, {{ booking.country }}</td>
             <td>{{ booking.street }}</td>
-            <td>{{ booking.show_date }} {{ booking.show_time }}</td>
+            <td>{{ booking.show_date }} {{ booking.show_time|date:'h:i A' }}</td>
             <td>
-                Adult: {{ booking.no_adult }} × ${{ booking.price_adult }}
-                {% if booking.film %}
-                    <br>Child: {{ booking.no_child }} × ${{ booking.price_child }}
+                {%if booking.economy_quantity > 0 %}
+                
+                   {{booking.economy_label}}: {{ booking.economy_quantity }} × ${{ booking.economy_price }}
+               <br/>
+                   {% endif %}
+
+                  {%if booking.general_quantity > 0 %}
+                
+                     {%if booking.economy_quantity > 0  or  booking.vip_quantity > 0 %} 
+                      {{booking.general_label}}: 
+                     {%else%}
+                        Tickets:
+                   {%endif%}
+                         {{ booking.general_quantity }} × ${{ booking.general_price }}
+                
                 {% endif %}
+
+                  {%if booking.vip_quantity > 0 %}
+                       <br/>
+                {{booking.vip_label}}: {{ booking.vip_quantity }} × ${{ booking.vip_price }}
+                {% endif %}
+                <!-- {% if booking.film %}
+                    <br>Child: {{ booking.no_child }} × ${{ booking.price_child }}
+                {% endif %} -->
             </td>
             <td><b>${{ booking.total_payment }}</b></td>
             <td>

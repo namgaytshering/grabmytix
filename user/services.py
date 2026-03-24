@@ -75,7 +75,7 @@ class StripeConnectService:
             "payouts": {
                 "schedule": {
                     "interval":   "manual",  # hold until show ends
-                    "delay_days": 2,
+                  
             }
         }
     },
