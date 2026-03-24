@@ -573,8 +573,8 @@ def tickets_owner_view(request, id,*args, **kwargs):
     .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
     .order_by('date')) 
     
-    labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
-    #labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
+    #labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
     data = [int(b['total']) for b in time_series] 
     
     if request.method == 'POST':
