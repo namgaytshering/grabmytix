@@ -499,7 +499,7 @@ class StripeIntentView(View):
                 percent = booking_details.filmshow.percent / Decimal('100')
 
             customer  = stripe.Customer.create(email=booking_details.email)
-            total_cost = booking_details.total_payment    # in cents
+            total_cost = int(Decimal(booking_details.total_payment) * 100)   # in cents
 
             # ── Check if owner has an active Connect account ──────────
             has_connect = (
@@ -511,7 +511,7 @@ class StripeIntentView(View):
 
             if has_connect:
                 # Platform keeps 10%, seller gets 90%
-                application_fee = int(total_cost * percent  )
+                application_fee =  int(total_cost * percent)
 
                 intent = stripe.PaymentIntent.create(
                     amount=total_cost,
