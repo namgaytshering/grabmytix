@@ -26,7 +26,7 @@ from datetime import datetime, time,date,timedelta
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
- 
+from decimal import Decimal
 from zoneinfo import ZoneInfo
 from django_q.tasks import async_task
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -487,16 +487,19 @@ class StripeIntentView(View):
         try:
             booking_number = self.kwargs["id"]
             booking_details = Booking.objects.get(id=booking_number)
+            percent = 0
 
             if booking_details.type == 'Event':
                 slug  = booking_details.event.slug
                 owner = booking_details.event.owner
+                percent = booking_details.event.percent / Decimal('100')
             else:
                 slug  = booking_details.film.slug
                 owner = booking_details.film.owner
+                percent = booking_details.filmshow.percent / Decimal('100')
 
             customer  = stripe.Customer.create(email=booking_details.email)
-            total_cost = int(booking_details.total_payment * 100)  # in cents
+            total_cost = booking_details.total_payment    # in cents
 
             # ── Check if owner has an active Connect account ──────────
             has_connect = (
@@ -508,7 +511,7 @@ class StripeIntentView(View):
 
             if has_connect:
                 # Platform keeps 10%, seller gets 90%
-                application_fee = int(total_cost * 0.10)
+                application_fee = int(total_cost * percent  )
 
                 intent = stripe.PaymentIntent.create(
                     amount=total_cost,
@@ -559,6 +562,7 @@ class StripeIntentView(View):
         except Booking.DoesNotExist:
             return JsonResponse({'error': 'Booking not found.'}, status=404)
         except stripe.error.StripeError as e:
+      
             return JsonResponse({'error': str(e)}, status=400)
         except Exception as e:
             import traceback; traceback.print_exc()

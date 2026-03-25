@@ -147,6 +147,7 @@ class Filmshow(models.Model):
     theater_name = models.CharField(max_length=255)
     show_date = models.DateField()
     show_time = models.TimeField()
+    percent = models.DecimalField(max_digits=8, decimal_places=1,default=10)
 
     adult = models.DecimalField(max_digits=6, decimal_places=2)
     child = models.DecimalField(max_digits=6, decimal_places=2)
@@ -198,7 +199,8 @@ class Event(models.Model):
     place = models.CharField(max_length=255)
     show_date = models.DateField()
     show_time = models.TimeField()
-    
+    percent = models.DecimalField(max_digits=8, decimal_places=1,default=10)
+
     general_label = models.CharField(max_length=50,  null=True, blank=True)
     price = models.DecimalField(max_digits=8, decimal_places=1)
     quantity = models.IntegerField(default=1)
