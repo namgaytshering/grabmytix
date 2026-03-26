@@ -925,8 +925,8 @@ def submit_kyc(request):
             connect.stripe_account_id,
             {
                 # ✅ All from logged-in user — no form input needed
-                "first_name": first_name,
-                "last_name":  last_name,
+                "first_name":   data["first_name"], 
+                "last_name":   data["last_name"], 
                 "email":      user.email,
                 "phone":      phone,
 

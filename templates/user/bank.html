@@ -538,7 +538,17 @@
                 <div class="step" id="step-2">
 
                     <p class="section-label">Personal Details</p>
-              
+                    <p class="section-label">Full Name</p>
+                <div class="form-grid cols-2">
+                    <div class="form-field">
+                        <label>First Name <span class="req">*</span></label>
+                        <input type="text" id="first-name"    name="first_name" placeholder="First name" autocomplete="given-name">
+                    </div>
+                    <div class="form-field">
+                        <label>Last Name <span class="req">*</span></label>
+                        <input type="text" id="last-name" name="last_name" placeholder="Last Name" autocomplete="family-name">
+                    </div>
+                </div>
                     <div class="form-grid cols-2">
                         <div class="form-field">
                             <label>Phone <span class="req">*</span></label>
@@ -902,6 +912,26 @@ function format_au_phone(phone) {
         //         inp.classList.remove("has-error"); err.classList.remove("show");
         //     }
         // });
+        const checks = [
+        ["first-name", "err-first-name", v => v.trim().length > 0],
+        ["last-name",  "err-last-name",  v => v.trim().length > 0],
+        ["phone",      "err-phone",      v => v.replace(/\D/g,"").length >= 8],
+        //["ssn-last-4", "err-ssn",      v => /^\d{4}$/.test(v.trim())], // optional
+            ];
+
+            checks.forEach(([id, errId, fn]) => {
+                const inp = document.getElementById(id);
+                const err = document.getElementById(errId);
+
+                if (!fn(inp.value)) {
+                    inp.classList.add("has-error");
+                    if(err) err.classList.add("show");
+                    ok = false;
+                } else {
+                    inp.classList.remove("has-error");
+                    if(err) err.classList.remove("show");
+                }
+            });
 
         const day   = parseInt(document.getElementById("dob-day").value);
         const month = parseInt(document.getElementById("dob-month").value);
@@ -926,8 +956,8 @@ function format_au_phone(phone) {
         let phone =   format_au_phone("{{ request.user.phone }}")
 
         const payload = {
-            // first_name:   document.getElementById("first-name").value.trim(),
-            // last_name:    document.getElementById("last-name").value.trim(),
+            first_name:   document.getElementById("first-name").value.trim(),
+            last_name:    document.getElementById("last-name").value.trim(),
             phone:        phone,
             // ssn_last_4:   document.getElementById("ssn-last-4").value.trim(),
             dob_day:      parseInt(document.getElementById("dob-day").value),
