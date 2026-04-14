@@ -52,34 +52,77 @@ def get_event_datetime_local(event):
 
 #compare time with movies
 def get_movie_datetime_local(flimshow):
-     # Combine date + time into naive datetime
+
+    # -------------------------
+    # 1. Check if show expired
+    # -------------------------
     if not flimshow.show_date or not flimshow.show_time:
-        return True  # consider expired if incomplete
-    
-    # Combine date + time into a naive datetime
+        return True
+
     naive_dt = datetime.combine(flimshow.show_date, flimshow.show_time)
-    print(flimshow.state.time_zone)
-    # Determine timezone
+
     tz_key = (flimshow.state.time_zone or "").strip()
+
     try:
         tz = ZoneInfo(tz_key)
     except Exception:
-        tz = ZoneInfo("UTC")  # fallback if invalid or missing
+        tz = ZoneInfo("UTC")
 
-    # Make timezone-aware datetime
     flimshow_time_local = naive_dt.replace(tzinfo=tz)
 
-    # Current time in that timezone
     now_local = datetime.now(tz)
-     # Current time in that timezone + 45 minutes buffer
     now_local = now_local - timedelta(minutes=45)
-    print(tz)
-    print(flimshow_time_local)
-    print(now_local)
-    # Compare
+
     is_expired = flimshow_time_local < now_local
 
-    return is_expired
+    # -------------------------
+    # 2. Get booked seats
+    # -------------------------
+    booked = Booking.objects.filter(
+        filmshow=flimshow,
+        payment_status=1
+    ).aggregate(
+        economy=Coalesce(Sum('economy_quantity'), 0),
+        general=Coalesce(Sum('general_quantity'), 0),
+        vip=Coalesce(Sum('vip_quantity'), 0)
+    )
+
+    # -------------------------
+    # 3. Available seats
+    # -------------------------
+    economy_available = flimshow.economy_quantity
+    general_available = flimshow.quantity
+    vip_available = flimshow.vip_quantity
+
+    # -------------------------
+    # 4. Booked seats
+    # -------------------------
+    economy_booked = booked["economy"]
+    general_booked = booked["general"]
+    vip_booked = booked["vip"]
+
+    # -------------------------
+    # 5. Check if each category full
+    # -------------------------
+    economy_full = economy_booked >= economy_available
+    general_full = general_booked >= general_available
+    vip_full = vip_booked >= vip_available
+
+    # -------------------------
+    # 6. Check if all categories full
+    # -------------------------
+    is_full = economy_full and general_full and vip_full
+     
+    return {
+        "expired": is_expired,
+        "economy_full": economy_full,
+        "general_full": general_full,
+        "vip_full": vip_full,
+        "all_full": is_full,
+        "economy_left": economy_available - economy_booked,
+        "general_left": general_available - general_booked,
+        "vip_left": vip_available - vip_booked,
+    }
 
 def home_view(request):
     now = timezone.now() 
