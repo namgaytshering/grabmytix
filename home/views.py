@@ -31,35 +31,103 @@ from zoneinfo import ZoneInfo
 from django_q.tasks import async_task
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-#compare local time with event time
 def get_event_datetime_local(event):
-     # Combine date + time into naive datetime
-    naive_dt = datetime.combine(event.show_date, event.show_time)
 
-    tz_key = (event.state.time_zone or "").strip()  # remove whitespace, handle None
+    # -------------------------
+    # 1. Validate event date
+    # -------------------------
+    if not event.show_date:
+        return {
+            "expired": True,
+            "economy_full": False,
+            "general_full": False,
+            "vip_full": False,
+            "all_full": False,
+            "economy_left": 0,
+            "general_left": 0,
+            "vip_left": 0,
+        }
+
+    # -------------------------
+    # 2. Get timezone
+    # -------------------------
+    tz_key = (event.state.time_zone or "").strip()
+
     try:
         tz = ZoneInfo(tz_key)
     except Exception:
-        tz = ZoneInfo("UTC")  # fallback
+        tz = ZoneInfo("UTC")
 
-    # Make it timezone-aware
-    event_time_local = naive_dt.replace(tzinfo=tz)
+    # -------------------------
+    # 3. Current local date
+    # -------------------------
+    current_date_local = datetime.now(tz).date()
 
-    # Current time in that tz
-    now_local = datetime.now(tz)
-    now_local = now_local - timedelta(minutes=45)
-    return event_time_local <= now_local
+    # -------------------------
+    # 4. Compare only dates
+    # -------------------------
+    is_expired = event.show_date < current_date_local
 
-#compare time with movies
+    # -------------------------
+    # 5. Get booked seats
+    # -------------------------
+    booked = Booking.objects.filter(
+        event=event,
+        payment_status=1
+    ).aggregate(
+        economy=Coalesce(Sum('economy_quantity'), 0),
+        general=Coalesce(Sum('general_quantity'), 0),
+        vip=Coalesce(Sum('vip_quantity'), 0)
+    )
+
+    # -------------------------
+    # 6. Available seats
+    # -------------------------
+    economy_available = event.economy_quantity
+    general_available = event.quantity
+    vip_available = event.vip_quantity
+
+    # -------------------------
+    # 7. Booked seats
+    # -------------------------
+    economy_booked = booked["economy"]
+    general_booked = booked["general"]
+    vip_booked = booked["vip"]
+
+    # -------------------------
+    # 8. Check if each category full
+    # -------------------------
+    economy_full = economy_booked >= economy_available
+    general_full = general_booked >= general_available
+    vip_full = vip_booked >= vip_available
+
+    # -------------------------
+    # 9. Check if all categories full
+    # -------------------------
+    is_full = economy_full and general_full and vip_full
+
+    # -------------------------
+    # 10. Return result
+    # -------------------------
+    return {
+        "expired": is_expired,
+        "economy_full": economy_full,
+        "general_full": general_full,
+        "vip_full": vip_full,
+        "all_full": is_full,
+        "economy_left": max(0, economy_available - economy_booked),
+        "general_left": max(0, general_available - general_booked),
+        "vip_left": max(0, vip_available - vip_booked),
+    }
+
+
 def get_movie_datetime_local(flimshow):
 
     # -------------------------
-    # 1. Check if show expired
+    # 1. Check if show expired (DATE ONLY)
     # -------------------------
-    if not flimshow.show_date or not flimshow.show_time:
+    if not flimshow.show_date:
         return True
-
-    naive_dt = datetime.combine(flimshow.show_date, flimshow.show_time)
 
     tz_key = (flimshow.state.time_zone or "").strip()
 
@@ -68,12 +136,11 @@ def get_movie_datetime_local(flimshow):
     except Exception:
         tz = ZoneInfo("UTC")
 
-    flimshow_time_local = naive_dt.replace(tzinfo=tz)
+    # Current date in movie timezone
+    current_date_local = datetime.now(tz).date()
 
-    now_local = datetime.now(tz)
-    now_local = now_local - timedelta(minutes=45)
-
-    is_expired = flimshow_time_local < now_local
+    # Compare only dates
+    is_expired = flimshow.show_date < current_date_local
 
     # -------------------------
     # 2. Get booked seats
@@ -112,7 +179,7 @@ def get_movie_datetime_local(flimshow):
     # 6. Check if all categories full
     # -------------------------
     is_full = economy_full and general_full and vip_full
-     
+
     return {
         "expired": is_expired,
         "economy_full": economy_full,

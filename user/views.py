@@ -183,7 +183,7 @@ def dashboard_view(request, *args, **kwargs):
             )
         )
     )
-    .order_by('show_date', 'show_time')
+    .order_by('show_date')
     )
      
     current_your_bookings =Booking.objects.filter(

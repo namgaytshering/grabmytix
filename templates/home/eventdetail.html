@@ -221,9 +221,9 @@
 </div>
 {% endif %}
 <p class="mb-3 fw-semibold">Total: <span class="h5">$<span id="final-total">0.00</span></span></p>
+ 
 
-
-{% if is_expired %}
+{% if is_expired.expired %}
 <button type="submit" disabled class="btn btn-dark rounded-pill fw-semibold">
   <i class="ci-shopping-bag me-2"></i> Expired – no more tickets available.
 </button>
