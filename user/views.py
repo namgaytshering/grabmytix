@@ -167,6 +167,7 @@ def dashboard_view(request, *args, **kwargs):
         'title',
         'theater_name',
         'show_date',
+        
       
         'state__state_short',
         'type',
