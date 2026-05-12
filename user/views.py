@@ -165,7 +165,7 @@ def dashboard_view(request, *args, **kwargs):
         'title',
         'theater_name',
         'show_date',
-        'show_time',
+      
         'state__state_short',
         'type',
         'event__id',
@@ -183,7 +183,7 @@ def dashboard_view(request, *args, **kwargs):
             )
         )
     )
-    .order_by('show_date')
+    .order_by('show_date', 'show_time')
     )
      
     current_your_bookings =Booking.objects.filter(
