@@ -162,14 +162,15 @@ def dashboard_view(request, *args, **kwargs):
             Q(filmshow_id__in=accessible_movies_ids, filmshow__bill=0)
         )
     ).values(
+        'event__id',
+        'filmshow__id',
         'title',
         'theater_name',
         'show_date',
       
         'state__state_short',
         'type',
-        'event__id',
-        'filmshow__id'
+        
     )
     .annotate(
         
@@ -183,7 +184,7 @@ def dashboard_view(request, *args, **kwargs):
             )
         )
     )
-    .order_by('show_date', 'show_time')
+    .order_by('show_date')
     )
      
     current_your_bookings =Booking.objects.filter(
