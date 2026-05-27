@@ -123,6 +123,19 @@ class ConnectAccount(models.Model):
     created_at        = models.DateTimeField(auto_now_add=True)
     updated_at        = models.DateTimeField(auto_now=True)
 
+
+class Subscribe(models.Model):
+    name = models.CharField( max_length=200 )
+    email =  models.EmailField(verbose_name="email", unique=True)
+    country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True)
+    state = models.ForeignKey(State, on_delete=models.SET_NULL, null=True)
+    status = models.BooleanField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.email
+
+
 class Film(models.Model):
     title = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(  unique=True, blank=True)  # Allow blank so it can be generated

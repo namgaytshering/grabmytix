@@ -3,7 +3,7 @@ from django.forms import ModelForm
 from db.models import *
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from django_ckeditor_5.fields import CKEditor5Field
+from django_ckeditor_5.widgets import CKEditor5Widget
 
 GENDER_CHOICES = [
     ('', '--- Select Sex--'),
@@ -181,3 +181,26 @@ class EventAccessForm(forms.Form):
             'placeholder': 'Enter email id'
         })
     )
+
+class MovieMessageForm(forms.Form):
+    movie = forms.ModelChoiceField(
+        queryset=Film.objects.all(),
+        empty_label="Select a movie",
+        label="Movie",
+        widget=forms.Select(attrs={
+            "class": "form-control form-icon-start"
+        })
+    )
+    state = forms.ModelChoiceField(
+        queryset=State.objects.all(),
+        empty_label="Select a movie",
+        label="State",
+        widget=forms.Select(attrs={
+            "class": "form-control form-icon-start"
+        })
+    )
+
+    message = forms.CharField(
+    label="Message",
+    widget=CKEditor5Widget(config_name="default")
+)

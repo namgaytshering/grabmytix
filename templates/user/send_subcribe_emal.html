@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ film.title }}</title>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: auto;
+            font-family: Arial, sans-serif;
+            border: 1px solid #eee;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .poster {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #e50914;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .btn:hover {
+            background: #b00610;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>🎬 {{ film.title }}</h2>
+
+    <img src="{{ film.poster_image.url }}" class="poster" alt="{{ film.title }}">
+
+    <p>{{ message }}</p>
+
+    <a href="https://www.grabmytix.com/{{ film.slug }}" class="btn">
+        🎟 Grab a Ticket
+    </a>
+
+</div>
+
+</body>
+</html>

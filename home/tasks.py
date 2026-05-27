@@ -66,4 +66,36 @@ def send_payment_success_email(booking):
 
     # --- Send email ---
     email.send(fail_silently=False)
+
+#send emails to subcribe
+def send_movie_email(film, message, recipient_list):
+
+    #film_detail = Film.objects.get(id=movie_id)
+
+    subject = f"🎬 New Movie: {film.title}"
+    from_email = settings.EMAIL_HOST_USER
+
+    plain_message = f"New movie update: {film.title}"
     
+    context = {
+    "film": film,
+    "message": message,
+    "ticket_url": film.slug,
+    "image_url": film.poster_image.url,
+       }
+    
+    html_message = render_to_string("user/send_subcribe_emal.html", context)
+
+    # Fallback plain text version
+    plain_message = ""
+
+    email = EmailMultiAlternatives(
+        subject=subject,
+        body=plain_message,
+        from_email=from_email,
+        to=[],  # important
+        bcc=recipient_list  # 👈 dynamic subscribers now used
+    )
+
+    email.attach_alternative(html_message, "text/html")
+    email.send(fail_silently=False)

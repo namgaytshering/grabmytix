@@ -17,7 +17,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.forms import PasswordChangeForm
 from .forms import UpdateinfoForm
 from django.contrib.auth import update_session_auth_hash  
-from .forms import AddMovieForm,FilmShowForm,EventForm,EventAccessForm
+from .forms import AddMovieForm,FilmShowForm,EventForm,EventAccessForm,MovieMessageForm
 import json
 import csv
 
@@ -41,9 +41,10 @@ import stripe
 from django.utils.timezone import localtime
 from django.views.decorators.csrf import csrf_exempt
 from .services import StripeConnectService
+from django.core.mail import EmailMultiAlternatives
+from django_q.tasks import async_task
 stripe.api_key = settings.STRIPE_SECRET_KEY
-
-
+ 
 # Example: 0412345678 → +61412345678
 # But if phone is stored as 412345678 (no leading 0) → +61412345678
 
@@ -397,6 +398,37 @@ def edit_shows_view(request, id):
     context = {'form': form}
     return render(request, "user/editshow.html", context)
 
+
+#send email to subcriber
+@login_required(login_url='/login')
+@user_passes_test(lambda u: u.is_admin, login_url="/login")
+def send_email_view(request, *args, **kwargs):
+    form = MovieMessageForm(request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+
+            movie = form.cleaned_data["movie"]
+            message = form.cleaned_data["message"]
+            state = form.cleaned_data["state"]
+
+            subscribers = Subscribe.objects.filter(state=state, status=True)
+
+            recipient_list = list(
+                subscribers.values_list("email", flat=True)
+            )
+ 
+            film = Film.objects.get(id=movie.id)
+            async_task(
+                'home.tasks.send_subcribe_email',
+                film,
+                message,
+                'namgay2340@gmail.com',
+                group=movie.title,
+                task_name=f"{movie.id} - movie email"
+                 )
+            
+    return render(request, "user/email_subcribe.html", {"form": form})
 
 #events
 @login_required(login_url='/login')

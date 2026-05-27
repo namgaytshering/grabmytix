@@ -1,0 +1,45 @@
+{% extends "../includes/user_base.html" %}
+
+{% block content %}
+<div  >
+    <div class="  shadow-sm">
+        <div  >
+            <h4 class="mb-0">Send Email to Subscribers</h4>
+        </div>
+
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3 p-2">
+                    {{ form.movie.label_tag }}
+                    {{ form.movie }}
+                </div>
+
+                <div class="mb-3 p-2">
+                    {{ form.state.label_tag }}
+                    {{ form.state }}
+                </div>
+
+                <div class="mb-3  p-2">
+                      <div class="ck-editor-container">
+                        {{ form.message.label_tag }}
+                    {{ form.message }}
+            </div>
+                   
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Send Email
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+ 
+
+<link href="/static/django_ckeditor_5/dist/styles.css" media="all" rel="stylesheet">
+<script src="/static/django_ckeditor_5/dist/bundle.js"></script>
+              
+{% endblock %}

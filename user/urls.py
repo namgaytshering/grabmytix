@@ -20,7 +20,7 @@ urlpatterns = [
     
     path('movies/access/<int:id>/', show_movies_access_view, name='show_movies_access_view'),
     path('access/delete/<int:id>/', delete_movies_access_view, name='delete_movies_access_view'),
-
+    path('email/', send_email_view, name='send_email_view'),
     
     path('password/', change_password, name='change_password'),
 
