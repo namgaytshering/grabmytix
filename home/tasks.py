@@ -68,11 +68,11 @@ def send_payment_success_email(booking):
     email.send(fail_silently=False)
 
 #send emails to subcribe
-def send_movie_email(film, message, recipient_list):
+def send_subcribe_email(film, message, recipient_list):
 
     #film_detail = Film.objects.get(id=movie_id)
 
-    subject = f"🎬 New Movie: {film.title}"
+    subject = f"Now screening {film.title}"
     from_email = settings.EMAIL_HOST_USER
 
     plain_message = f"New movie update: {film.title}"

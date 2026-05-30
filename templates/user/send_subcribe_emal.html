@@ -5,11 +5,11 @@
     <title>{{ film.title }}</title>
     <style>
         .container {
-            max-width: 600px;
+            max-width: 100%;
             margin: auto;
             font-family: Arial, sans-serif;
-            border: 1px solid #eee;
-            padding: 20px;
+            border: 10x solid #eee;
+            padding: 10px;
             border-radius: 10px;
         }
 
@@ -21,6 +21,7 @@
 
         .btn {
             display: inline-block;
+            width: 90%;
             margin-top: 15px;
             padding: 10px 20px;
             background: #e50914;
@@ -32,6 +33,18 @@
         .btn:hover {
             background: #b00610;
         }
+
+         .btn-sub {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #f2f0f0;
+            color: #616060;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+       
     </style>
 </head>
 
@@ -39,17 +52,24 @@
 
 <div class="container">
 
-    <h2>🎬 {{ film.title }}</h2>
-
-    <img src="{{ film.poster_image.url }}" class="poster" alt="{{ film.title }}">
-
-    <p>{{ message }}</p>
-
+    <img
+    src="https://www.grabmytix.com/{{ film.poster_image.url }}"
+    class="poster"
+    alt="{{ film.title }}"
+    width="300"
+    height="450"
+    style="display:block; width:100%; max-width:300px; height:auto;">
+    
+    <h2>Screening {{ film.title }}</h2>
+    <p>{{ message|safe  }}</p>
+<center>
     <a href="https://www.grabmytix.com/{{ film.slug }}" class="btn">
-        🎟 Grab a Ticket
+         Grab a Ticket
     </a>
 
+    </center>
 </div>
+ 
 
 </body>
 </html>

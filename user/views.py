@@ -412,23 +412,47 @@ def send_email_view(request, *args, **kwargs):
             message = form.cleaned_data["message"]
             state = form.cleaned_data["state"]
 
+            # All active subscribers in the state
             subscribers = Subscribe.objects.filter(state=state, status=True)
 
-            recipient_list = list(
-                subscribers.values_list("email", flat=True)
-            )
+            # Get emails of users who already watched/booked the movie
+            watched_emails = Booking.objects.filter(
+                film=movie
+            ).values_list("email", flat=True)
+
+            # Exclude them
+            subscribers = subscribers.exclude(email__in=watched_emails)
+
+            recipient_list = list(subscribers.values_list("email", flat=True))
  
             film = Film.objects.get(id=movie.id)
-            async_task(
-                'home.tasks.send_subcribe_email',
-                film,
-                message,
-                'namgay2340@gmail.com',
-                group=movie.title,
-                task_name=f"{movie.id} - movie email"
-                 )
-            
+            # 🔥 IMPORTANT: batch processing
+            BATCH_SIZE = 50
+
+            for i in range(0, len(recipient_list), BATCH_SIZE):
+                batch = recipient_list[i:i + BATCH_SIZE]
+
+                async_task(
+                    "home.tasks.send_subcribe_email",
+                    film,
+                    message,
+                    batch,
+                    group=film.title,
+                    task_name=f"{film.id}-batch-{i}"
+                )
+
     return render(request, "user/email_subcribe.html", {"form": form})
+
+    #         async_task(
+    #             'home.tasks.send_subcribe_email',
+    #             film,
+    #             message,
+    #             'namgay2340@gmail.com',
+    #             group=movie.title,
+    #             task_name=f"{movie.id} - movie email"
+    #              )
+            
+    # return render(request, "user/email_subcribe.html", {"form": form})
 
 #events
 @login_required(login_url='/login')
