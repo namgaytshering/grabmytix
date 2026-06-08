@@ -222,27 +222,30 @@ def past_booking_view(request, *args, **kwargs):
             Q(filmshow_id__in=accessible_movies_ids, filmshow__bill=1)
         )
     ).values(
+        'event__id',
+        'filmshow__id',
         'title',
         'theater_name',
         'show_date',
-        'show_time',
+        
+      
         'state__state_short',
         'type',
-        'event__id',
-        'filmshow__id'
+        
     )
     .annotate(
-        total_adult=Sum('no_adult'),
-        total_child=Sum('no_child'),
-        total_tickets=Sum(F('no_adult') + F('no_child')),
+        
+        # total_adult=Sum('no_adult'),
+        # total_child=Sum('no_child'),
+        total_tickets=Sum(F('economy_quantity') + F('general_quantity')+ F('vip_quantity')),
         total_payment=Sum(
             ExpressionWrapper(
-                F('no_adult') * F('price_adult') + F('no_child') * F('price_child'),
+                F('economy_quantity') * F('economy_price') + F('general_quantity') * F('general_price') + F('vip_quantity') * F('vip_price'),
                 output_field=FloatField()
             )
         )
     )
-    .order_by('-show_date', '-show_time')
+    .order_by('-show_date')
     )
     
     past_your_bookings =Booking.objects.filter(
