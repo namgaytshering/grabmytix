@@ -160,23 +160,28 @@
           </div> -->
      
    {% comment %} Economy Ticket {% endcomment %}
-  {% if event.economy_price > 0 %}
+  {% if event.economy_price > 0  %}
   <div class="col-md-6 mt-2 mb-3">
     <span class="fs-6 fw-semibold">{{ event.economy_label }}</span><br />
     <div class="d-flex mt-2 justify-content-between align-items-center">
+
       <div class="input-group  input-group-sm" style="width: 140px;">
+        {%if is_expired.economy_full%}
+         <span class="text-muted">Ticket Sold out</span>
+        {%else%}
         <button type="button" class="btn btn-outline-secondary qty-btn" data-type="economy" data-decrement>−</button>
         <input type="number" min="0" id="economy-qty" name="economy_quantity" class="form-control  text-center"
           value="{{ form.economy_quantity.value|default:0 }}">
         <button type="button" class="btn btn-outline-secondary qty-btn" data-type="economy" data-increment>+</button>
-      </div>
+     {%endif%}
+       </div>
       <span class="ms-3 text-muted">${{ event.economy_price }} </span>
     </div>
   </div>
   
   {% endif %}
 
-
+<!-- {{is_expired}} -->
 {% comment %} General Ticket {% endcomment %}
 <div class="col-md-6 mb-3">
   <span class="fs-6 fw-semibold">{%if event.general_label %}{{ event.general_label }}{%endif%}</span><br />
@@ -194,32 +199,46 @@
 
 {% else %}
   <div class="d-flex mt-2 justify-content-between align-items-center">
+      
     <div class="input-group input-group-sm" style="width: 140px;">
+      {%if is_expired.general_full%}
+         <span class="text-muted">Ticket Sold out</span>
+        {%else%}
       <button type="button" class="btn btn-outline-secondary qty-btn" data-type="general" data-decrement>−</button>
-      <input type="number" min="0" id="general-qty" name="general_quantity" class="form-control text-center"
+      <input type="number" min="0" max="{{is_expired.general_left}}" id="general-qty" name="general_quantity" class="form-control text-center"
         value="{{ form.general_quantity.value|default:0 }}">
       <button type="button" class="btn btn-outline-secondary qty-btn" data-type="general" data-increment>+</button>
-    </div>
+    
+  
+    {%endif%}
+      </div>
     <span class="ms-3 text-muted">{% if event.price > 0 %}${{ event.price }}{% else %}Free{% endif %}</span>
   </div>
 </div>
 {%endif%}
  
 {% comment %} VIP Ticket {% endcomment %}
-{% if event.vip_price > 0 %}
+{% if event.vip_price > 0 or vip_full %}
 <div class="col-md-6 mb-3">
   <span class="fs-6 fw-semibold">{{ event.vip_label }}</span><br />
   <div class="d-flex mt-2 justify-content-between align-items-center">
     <div class="input-group input-group-sm" style="width: 140px;">
+     {%if is_expired.vip_full%}
+         <span class="text-muted">Ticket Sold out</span>
+        {%else%}
+    
       <button type="button" class="btn btn-outline-secondary qty-btn" data-type="vip" data-decrement>−</button>
       <input type="number" min="0" id="vip-qty" name="vip_quantity" class="form-control text-center"
         value="{{ form.vip_quantity.value|default:0 }}">
       <button type="button" class="btn btn-outline-secondary qty-btn" data-type="vip" data-increment>+</button>
+     {%endif%}
     </div>
+   
     <span class="ms-3 text-muted">${{ event.vip_price }}</span>
   </div>
 </div>
 {% endif %}
+ 
 <p class="mb-3 fw-semibold">Total: <span class="h5">$<span id="final-total">0.00</span></span></p>
  
 
@@ -254,6 +273,11 @@
        document.addEventListener("DOMContentLoaded", function () {
     const decrementButtons = document.querySelectorAll("[data-decrement]");
     const incrementButtons = document.querySelectorAll("[data-increment]");
+    const ticketLimits = {
+    economy: {{ is_expired.economy_left|default:0 }},
+    general: {{ is_expired.general_left|default:0 }},
+    vip: {{ is_expired.vip_left|default:0 }}
+  };
 
     function updateTotal() {
         let total = 0;
@@ -265,7 +289,9 @@
         console.log(economy+""+general+""+vip)
       
         //total += adult * {{ event.price|default:0 }};
-        total += economy * {{ event.economy_price|default:0 }};
+ 
+        total+= economy * {{ event.economy_price|default:0 }};
+    
         total += general * {{ event.price|default:0 }};
         total += vip * {{ event.vip_price|default:0 }};
 
@@ -286,11 +312,20 @@
     incrementButtons.forEach(btn => {
         btn.addEventListener("click", function () {
             const type = btn.getAttribute("data-type");
+             
             const input = document.getElementById(type + "-qty");
             if (!input) return;
             let val = parseInt(input.value) || 0;
+            let type_full = "is_expired."+type+'_full';
+        
+             let max = ticketLimits[type] || 0;
+
+        
+
+        if (val < max) {
             input.value = val + 1;
             updateTotal();
+        }
         });
     });
 
