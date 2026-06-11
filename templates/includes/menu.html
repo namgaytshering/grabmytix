@@ -130,11 +130,13 @@
       <li class="nav-item p-1 ps-2"><a class="nav-link" href="/events"> <i class="ci-gift fs-base opacity-75 me-2"></i>&nbsp;Events</a></li>
       <li class="nav-item p-1 ps-2"><a class="nav-link" href="/ticket"> <i class="ci-ticket fs-base opacity-75 me-2"></i>&nbsp;Get ticket</a></li>
 
-      {% if request.user.is_partner %}
+     
       <li class="nav-item mt-3">
         <strong class="text-muted"><i class="ci-align-right fs-base opacity-75 me-2"></i>&nbsp;Dashboard</strong>
       </li>
-      <li><a class="nav-link ps-2" href="/user/"><i class="ci-book fs-base opacity-75 me-2"></i>&nbsp;Bookings</a></li>
+            <li><a class="nav-link ps-2" href="/user/"><i class="ci-book fs-base opacity-75 me-2"></i>&nbsp;Bookings</a></li>
+       {% if request.user.is_partner %}
+
       <li><a class="nav-link ps-2" href="/user/movies/"><i class="ci-video fs-base opacity-75 me-2"></i>&nbsp;Movies</a></li>
       <li><a class="nav-link ps-2" href="/user/events/"><i class="ci-shopping-bag fs-base opacity-75 me-2"></i>&nbsp;Events</a></li>
       {% endif %}
