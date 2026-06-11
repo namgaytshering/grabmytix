@@ -251,7 +251,7 @@
             <strong class="fs-5">Total:</strong>
             <span id="final-total" class="fs-5 fw-bold">$0.00</span>
           </div>
-          <!-- {{is_expired}} -->
+          {{is_expired}}
       {%if is_expired.general_left > 0 %}
           {% if is_expired.expired %}
           <button type="submit" disabled class="btn btn-dark  rounded-pill fw-semibold" data-bs-toggle="tooltip"
@@ -294,6 +294,13 @@
     const decrementButtons = document.querySelectorAll("[data-decrement]");
     const incrementButtons = document.querySelectorAll("[data-increment]");
 
+     const ticketLimits = {
+    economy: {{ is_expired.economy_left|default:0 }},
+    general: {{ is_expired.general_left|default:0 }},
+    vip: {{ is_expired.vip_left|default:0 }}
+  };
+ 
+
     function updateTotal() {
         let total = 0;
 
@@ -328,8 +335,14 @@
             const input = document.getElementById(type + "-qty");
             if (!input) return;
             let val = parseInt(input.value) || 0;
+            let type_full = "is_expired."+type+'_full';
+        
+             let max = ticketLimits[type] || 0;
+
+        if (val < max) {
             input.value = val + 1;
             updateTotal();
+        }
         });
     });
 

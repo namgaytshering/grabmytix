@@ -341,7 +341,7 @@ def state_moviedetail_view(request,slug_text):
     
     if request.method == "POST":
         try:    
-            print("try"+str(form.errors))
+             
             if form.is_valid():
                
 
@@ -406,8 +406,9 @@ def state_moviedetail_view(request,slug_text):
         except Exception as e:
                 print(str(e))
                 messages.error(request, "Something happened, please again" +str(e))
-    print("out")
+    
     is_expired = get_movie_datetime_local(filmshow)
+    print(is_expired)
     return render(request, 'home/booking.html',{'movie':movie,'form':form,'filmshow':filmshow,'is_expired':is_expired})
 
 
