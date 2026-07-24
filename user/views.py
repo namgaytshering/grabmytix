@@ -17,7 +17,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.forms import PasswordChangeForm
 from .forms import UpdateinfoForm
 from django.contrib.auth import update_session_auth_hash  
-from .forms import AddMovieForm,FilmShowForm,EventForm,EventAccessForm,MovieMessageForm
+from .forms import AddTicketMovieForm,AddMovieForm,FilmShowForm,EventForm,EventAccessForm,MovieMessageForm,AddTicketEventForm
 import json
 import csv
 
@@ -43,6 +43,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .services import StripeConnectService
 from django.core.mail import EmailMultiAlternatives
 from django_q.tasks import async_task
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
  
 # Example: 0412345678 → +61412345678
@@ -634,8 +635,8 @@ def tickets_owner_view(request, id,*args, **kwargs):
     .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
     .order_by('date')) 
     
-    #labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
-    labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
+    labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    #labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
     data = [int(b['total']) for b in time_series] 
     
     if request.method == 'POST':
@@ -679,6 +680,84 @@ def tickets_owner_view(request, id,*args, **kwargs):
                     'time':filmshow.show_time}
     
     return render(request, "user/ticketsowner.html",context)
+
+
+# Movie /event manual add tickets
+@login_required(login_url='/login')
+@user_passes_test(lambda u: u.is_user, login_url="/login")
+def add_tickets_movie_owner_view(request, slug, *args, **kwargs):
+    #form = AddTicketEventForm()
+    type = ""
+    filmshow = Filmshow.objects.filter(slug=slug).first()
+     
+    # event = Event.objects.filter(slug=slug).first()
+    # if filmshow:
+    #     type = "Movie"
+    # elif event:
+    #     type ="Event"
+
+    form = AddTicketMovieForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            economy_quantity = form.cleaned_data.get("economy_quantity") or 0
+            # General tickets
+            general_quantity = form.cleaned_data.get("general_quantity") or 0
+            # VIP tickets
+            vip_quantity = form.cleaned_data.get("vip_quantity") or 0
+
+            # Calculate total cost
+            total_cost = (  
+                economy_quantity * (filmshow.economy_price or 0) +
+                general_quantity * (filmshow.price or 0) +
+                vip_quantity * (filmshow.vip_price or 0)
+            )
+                
+
+            saveform = form.save(commit=False)
+            
+            saveform.title = filmshow.film.title
+                        
+            saveform.poster_image = filmshow.film.poster_image
+
+            saveform.film = filmshow.film
+            saveform.price_adult = filmshow.adult
+            saveform.price_child = filmshow.child
+            saveform.filmshow = filmshow
+            saveform.show_date = filmshow.show_date
+            saveform.show_time = filmshow.show_time
+            saveform.theater_name = filmshow.theater_name
+            saveform.country = filmshow.country
+            saveform.currency = filmshow.currency
+            saveform.state = filmshow.state
+            saveform.street= filmshow.street
+            saveform.total_payment = total_cost
+            saveform.type = 'Movie'
+                #save other level of tickets
+            saveform.economy_label = filmshow.economy_label  
+            saveform.economy_price = filmshow.economy_price  
+                
+
+            saveform.general_label = filmshow.general_label  
+            saveform.general_price = filmshow.price  
+            
+
+            saveform.vip_label = filmshow.vip_label  
+            saveform.vip_price = filmshow.vip_price 
+            saveform.payment_status = True
+            saveform.payment_date = timezone.now()
+            
+            saveform.online = False
+            saveform.save()
+            messages.success(request, "Tikcet add checked in successfully!")
+            return redirect('add_tickets_owner_view', slug=slug)
+        else:
+            messages.error(request, "Error found!")
+        
+
+    context={'form':form,'forms':form,'filmshow':filmshow}
+    return render(request, "user/addticketsowner.html",context)
+
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")
 def event_tickets_owner_view(request, id, *args, **kwargs):
@@ -705,8 +784,8 @@ def event_tickets_owner_view(request, id, *args, **kwargs):
 
     # Prepare time series for Chart.js
     time_series = bookings.values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets')).order_by('date')
-    #labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
-    labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
+    labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    #labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
     data = [int(b['total']) for b in time_series]
 
     if request.method == 'POST':

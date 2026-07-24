@@ -1,0 +1,247 @@
+{% extends "../includes/user_base.html" %}
+{% block content %}
+ 
+<main class="content-wrapper">
+  
+
+ 
+  <!-- Payment Form Section -->
+  <section class="p-0   ">
+
+    {%if messages%}
+    {% for message in messages%}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{message}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {%endfor%}
+    {%endif%}
+
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <strong>⚠ Please fix the following errors:</strong>
+      <ul class="mb-0">
+        {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+
+<p class="h4">Adding ticket manual</p>
+    <a href="/user/booking/tickets/{{filmshow.id}}" class="btn btn-outline-info bnt-sm">Go Back to {{filmshow.film | capfirst}}</a>
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+
+        
+
+          <div class="row  mb-4">
+
+            <div class="col-md-4">
+              <label for="{{ form.full_name.id_for_label }}" class="form-label fw-semibold">Full Name</label>
+              <div class="mb-3 position-relative">
+                <i class="ci-user position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+                {{ form.full_name }}
+              </div>
+              {% if form.full_name.errors %}
+              <div class="text-danger small mt-1">{{ form.full_name.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-4">
+
+              <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">Email</label>
+              <div class="mb-3 position-relative">
+                <i class="ci-mail position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+                {{ form.email }}
+              </div>
+              {% if form.email.errors %}
+              <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label for="{{ form.phone.id_for_label }}" class="form-label fw-semibold">Phone</label>
+              <div class="mb-3 position-relative">
+                <i class="ci-phone position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+                {{ form.phone }}
+              </div>
+              {% if form.phone.errors %}
+              <div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+          </div>
+
+          <hr class="my-4">
+
+          <!-- Ticket Selection -->
+          <h5 class="fw-semibold mb-3">Select Tickets</h5>
+
+          <div class="  g-4 mb-4">
+            {% comment %} Economy Ticket {% endcomment %}
+            {% if filmshow.economy_price > 0 %}
+            <div class="col-md-6 pb-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <!-- <span class="fs-6 fw-semibold">Adult</span><br> -->
+                  <small class="fs-6">{{ filmshow.economy_label }}: ${{ filmshow.economy_price }}</small>
+                </div>
+                <div class="input-group  input-group-sm" style="width: 140px;">
+                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="economy"
+                    data-decrement>−</button>
+                  <input type="number" min="0" id="economy-qty" name="economy_quantity"
+                    class="form-control  text-center" value="{{ form.economy_quantity.value|default:0 }}">
+                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="economy"
+                    data-increment>+</button>
+                </div>
+              </div>
+            </div>
+            {%endif%}
+
+            <div class="col-md-6 pb-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <!-- <span class="fs-6 fw-semibold">Adult</span><br> -->
+                  <small class="fs-6">{%if filmshow.general_label %}{{ filmshow.general_label }}{%else%}Ticket{%endif%}:
+                    ${{ filmshow.price }}</small>
+                </div>
+                <div class="input-group input-group-sm" style="width: 140px;">
+                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="general"
+                    data-decrement>−</button>
+                  <input type="number" min="0" id="general-qty" name="general_quantity" class="form-control text-center"
+                    value="{{ form.general_quantity.value|default:0 }}">
+                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="general"
+                    data-increment>+</button>
+                </div>
+              </div>
+            </div>
+
+            {% comment %} Economy Ticket {% endcomment %}
+            {% if filmshow.vip_price > 0 %}
+            <div class="col-md-6 pb-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <!-- <span class="fs-6 fw-semibold">Adult</span><br> -->
+                  <small class="fs-6">{{ filmshow.vip_label }}: ${{ filmshow.vip_price }}</small>
+                </div>
+                <div class="input-group input-group-sm" style="width: 140px;">
+                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="vip"
+                    data-decrement>−</button>
+                  <input type="number" min="0" id="vip-qty" name="vip_quantity" class="form-control text-center"
+                    value="{{ form.vip_quantity.value|default:0 }}">
+                  <button type="button" class="btn btn-outline-secondary qty-btn" data-type="vip"
+                    data-increment>+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {%endif%}
+          <!-- Total Summary -->
+          <div class="  border-top pt-3 mb-4">
+            <strong class="fs-5">Total:</strong>
+            <span id="final-total" class="fs-5 fw-bold">$0.00</span>
+          </div>
+      
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn-danger btn-lg w-80">
+            Add tciket &nbsp;&nbsp;<i class="ci-chevron-right"></i>
+          </button>
+         
+        
+
+           
+
+        </div>
+      </div>
+    </form>
+  </section>
+</main>
+
+ <!-- Script -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const decrementButtons = document.querySelectorAll("[data-decrement]");
+    const incrementButtons = document.querySelectorAll("[data-increment]");
+
+    function updateTotal() {
+
+        const economy = parseInt(document.getElementById("economy-qty")?.value) || 0;
+        const general = parseInt(document.getElementById("general-qty")?.value) || 0;
+        const vip = parseInt(document.getElementById("vip-qty")?.value) || 0;
+
+        let total = 0;
+
+        total += economy * {{ filmshow.economy_price|default:0 }};
+        total += general * {{ filmshow.price|default:0 }};
+        total += vip * {{ filmshow.vip_price|default:0 }};
+
+        document.getElementById("final-total").textContent = "$" + total.toFixed(2);
+    }
+
+    // Minus button
+    decrementButtons.forEach(function(btn) {
+        btn.addEventListener("click", function () {
+
+            const type = this.dataset.type;
+            const input = document.getElementById(type + "-qty");
+
+            if (!input) return;
+
+            let value = parseInt(input.value) || 0;
+
+            if (value > 0) {
+                input.value = value - 1;
+            }
+
+            updateTotal();
+        });
+    });
+
+    // Plus button
+    incrementButtons.forEach(function(btn) {
+        btn.addEventListener("click", function () {
+
+            const type = this.dataset.type;
+            const input = document.getElementById(type + "-qty");
+
+            if (!input) return;
+
+            let value = parseInt(input.value) || 0;
+
+            input.value = value + 1;
+
+            updateTotal();
+        });
+    });
+
+    // Manual typing
+    ["economy-qty", "general-qty", "vip-qty"].forEach(function(id) {
+
+        const input = document.getElementById(id);
+
+        if (!input) return;
+
+        input.addEventListener("input", function () {
+
+            if (this.value === "" || parseInt(this.value) < 0) {
+                this.value = 0;
+            }
+
+            updateTotal();
+        });
+
+    });
+
+    // Initial total
+    updateTotal();
+
+});
+</script>
+{% endblock %}

@@ -95,6 +95,14 @@
             <i class="ci-map-pin text-success"></i>
             {{ upcoming.street }}, {{ upcoming.state }}, {{ upcoming.country }}
 
+
+             <br>
+            {%if upcoming.status %}
+            <span class="badge text-bg-success">  active</span>
+             {%else%}
+            <span class="badge text-bg-warning">  Exipred</span>
+             {%endif%}
+             
             <br />
 
             <a

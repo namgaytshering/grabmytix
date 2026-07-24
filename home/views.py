@@ -196,8 +196,9 @@ def home_view(request):
     movies = Film.objects.annotate(filmshow_count=Count('filmshow')).filter(filmshow_count__gt=0,filmshow__status=1).order_by('-created_at') # filmshow__show_date__gte=now.date()
     events = Event.objects.all().order_by('-created_at','-show_date')[:4]
     upcoming = Filmshow.objects.filter(status=1).select_related('film').order_by('state', 'show_date', 'show_time')
+    past_movies = Film.objects.all().order_by('-created_at')
     #filter(show_date__gte=now.date())
-    context = {'movies':movies,'events':events,'upcomings':upcoming}
+    context = {'movies':movies,'events':events,'upcomings':upcoming,'past_movies':past_movies}
     return render(request, 'home/index.html',context)
 
 def about_view(request):
@@ -515,7 +516,7 @@ def eventdetail_view(request,slug_text):
 
 def movies_view(request):
     now = timezone.now() 
-    upcoming = Filmshow.objects.filter(status = 1).select_related('film').order_by('state', 'show_date', 'show_time')
+    upcoming = Filmshow.objects.all().select_related('film').order_by('state', 'show_date', 'show_time')
     
     context = {'upcomings':upcoming}
     return render(request, 'home/movies.html',context)

@@ -36,7 +36,8 @@ urlpatterns = [
     path('events/edit/<slug:slug_text>/',edit_events_view, name='edit_events'),
     path('booking/', booking_owner_view, name='booking_owner_view'),
     path('booking/tickets/<int:id>', tickets_owner_view, name='tickets_owner'),
-    path('booking/tickets/<int:id>/', tickets_owner_view, name='tickets_owner'),
+    #path('booking/tickets/<int:id>/', tickets_owner_view, name='tickets_owner'),
+    path('booking/tickets/add/<slug:slug>/', add_tickets_movie_owner_view, name='add_tickets_owner_view'),
     path('booking/tickets/e/<int:id>', event_tickets_owner_view, name='event_tickets_owner'),
     path('booking/tickets/e/<int:id>/', event_tickets_owner_view, name='event_tickets_owner'),
     # Add other user-related URL patterns here

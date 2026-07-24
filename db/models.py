@@ -312,6 +312,8 @@ class Booking(models.Model):
     attended_no =  models.IntegerField(default=0) #number of people attended
     attend_remarks = models.TextField(blank=True, null=True)
     attended_at = models.DateTimeField(null=True, blank=True)
+    online = models.BooleanField(default=True) 
+
    
     #record where user order the tickets
     booking_country = models.CharField(max_length=100,null=True, blank=True)
