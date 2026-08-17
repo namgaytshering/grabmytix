@@ -272,7 +272,7 @@ def movies_view(request, *args, **kwargs):
 
 
 @login_required(login_url='/login')
-@user_passes_test(lambda u: u.is_user, login_url="/login")
+@user_passes_test( lambda u: u.is_user and (u.is_partner or u.is_admin), login_url="/login")
 def add_movies_view(request, *args, **kwargs):
     form = AddMovieForm(request.POST or None, request.FILES or None)
     if request.method == 'POST':
@@ -289,7 +289,8 @@ def add_movies_view(request, *args, **kwargs):
     return render(request, "user/addmovies.html",context)
 
 @login_required(login_url='/login')
-@user_passes_test(lambda u: u.is_user, login_url="/login")
+@user_passes_test( lambda u: u.is_user and (u.is_partner or u.is_admin), login_url="/login")
+
 def edit_movies_view(request,slug_text, *args, **kwargs):
     movie = get_object_or_404(Film, slug=slug_text) 
     form = AddMovieForm(request.POST or None,request.FILES or None,instance=movie)
@@ -308,6 +309,8 @@ def edit_movies_view(request,slug_text, *args, **kwargs):
 
 #access to film show
 @login_required(login_url='/login')
+@user_passes_test( lambda u: u.is_user and (u.is_partner or u.is_admin), login_url="/login")
+
 def show_movies_access_view(request,id):
     show  = Filmshow.objects.filter(id =id).first()
     show_access = FilmShowAccess.objects.filter(film_show=show,film_show__film__owner = request.user)
@@ -361,7 +364,7 @@ def delete_movies_access_view(request,id):
 
 
 @login_required(login_url='/login')
-@user_passes_test(lambda u: hasattr(u, 'is_user') and u.is_user, login_url="/login")
+@user_passes_test( lambda u: u.is_user and (u.is_partner or u.is_admin), login_url="/login")
 def add_shows_view(request, slug_text, *args, **kwargs):
     film = get_object_or_404(Film, slug=slug_text)  # Ensures 404 instead of errors
     form = FilmShowForm(request.POST or None)
@@ -385,7 +388,7 @@ def add_shows_view(request, slug_text, *args, **kwargs):
 
 
 @login_required(login_url='/login')
-@user_passes_test(lambda u: hasattr(u, 'is_user') and u.is_user, login_url="/login")
+@user_passes_test( lambda u: u.is_user and (u.is_partner or u.is_admin), login_url="/login")
 def edit_shows_view(request, id):
     show = get_object_or_404(Filmshow, id=id)
     form = FilmShowForm(request.POST or None, request.FILES or None, instance=show)
@@ -467,6 +470,8 @@ def events_view(request, *args, **kwargs):
     context = {'events': events}
     return render(request, "user/events.html",context)
 
+@login_required(login_url='/login')
+@user_passes_test( lambda u: u.is_user and (u.is_partner or u.is_admin), login_url="/login")
 def add_event_view(request):
     form = EventForm(request.POST or None)
     if request.method == 'POST':
@@ -483,7 +488,7 @@ def add_event_view(request):
     return render(request, 'user/add_event.html', {'form': form})
 
 @login_required(login_url='/login')
-@user_passes_test(lambda u: u.is_user, login_url="/login")
+@user_passes_test( lambda u: u.is_user and (u.is_partner or u.is_admin), login_url="/login")
 def eventview_view(request,slug_text, *args, **kwargs):
     
     event = get_object_or_404(Event, owner=request.user, slug=slug_text)
@@ -635,8 +640,8 @@ def tickets_owner_view(request, id,*args, **kwargs):
     .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
     .order_by('date')) 
     
-    labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
-    #labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
+    #labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
     data = [int(b['total']) for b in time_series] 
     
     if request.method == 'POST':
@@ -784,8 +789,8 @@ def event_tickets_owner_view(request, id, *args, **kwargs):
 
     # Prepare time series for Chart.js
     time_series = bookings.values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets')).order_by('date')
-    labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
-    #labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
+    #labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
+    labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
     data = [int(b['total']) for b in time_series]
 
     if request.method == 'POST':
