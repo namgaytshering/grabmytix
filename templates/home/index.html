@@ -262,85 +262,10 @@
         {% endfor %}  
     </section>
     {%endif%}
-      <h1 class="pt-4"><i class="ci-aperture"></i>&nbsp;Previously Screened Movies</h1>
-
-       <!-- Product carousel -->
-        <div class="position-relative mx-md-1">
-
-          <!-- External slider prev/next buttons visible on screens > 500px wide (sm breakpoint) -->
-          <button type="button" class="offers-prev btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-start position-absolute top-50 start-0 z-2 translate-middle-y ms-n1 d-none d-sm-inline-flex" aria-label="Prev">
-            <i class="ci-chevron-left fs-lg animate-target"></i>
-          </button>
-          <button type="button" class="offers-next btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-end position-absolute top-50 end-0 z-2 translate-middle-y me-n1 d-none d-sm-inline-flex" aria-label="Next">
-            <i class="ci-chevron-right fs-lg animate-target"></i>
-          </button>
-
-          <!-- Slider -->
-          <div class="swiper py-4 px-sm-3" data-swiper='{
-            "slidesPerView": 2,
-            "spaceBetween": 24,
-            "loop": true,
-            "navigation": {
-              "prevEl": ".offers-prev",
-              "nextEl": ".offers-next"
-            },
-            "breakpoints": {
-              "768": {
-                "slidesPerView": 3
-              },
-              "992": {
-                "slidesPerView": 3
-              }
-            }
-          }'>
-            <div class="swiper-wrapper">
-               {%for m in past_movies%}
-              <!-- Item -->
-              <div class="swiper-slide">
-                <div class="product-card animate-underline hover-effect-opacity bg-body rounded">
-                  <div class="position-relative">
-                    
-                     
-                    <a class="d-block rounded-top overflow-hidden p-3 p-sm-4" href="/{{ m.slug }}">
-                      <div class="ratio" style="--cz-aspect-ratio: calc(200 / 258 * 100%)">
-                        
-                        <img src="/media/{{ m.poster_image }}" alt="{{m.title}}" class="rounded img-fluid">
-                      </div>
-                    </a>
-                  </div>
-                  <div class="w-100 min-w-0 px-1 pb-2 px-sm-3 pb-sm-3">
-                  <center>
-                    <h3 class="pb-1 mb-2">
-                    
-                        <span class="animate-target">{{m.title}}</span>
-                
-                    </h3>
-                 
-                    <div class="text-body-secondary fs-sm"><a href="/{{ m.slug }}" class="btn btn-sm btn-danger">Learn more</a></div>
-                    </center>
-                  </div>
-                </div>
-              </div>
-              {%endfor%}
-              
-
-              
-            </div>
-          </div>
-
-          <!-- External slider prev/next buttons visible on screens < 500px wide (sm breakpoint) -->
-          <div class="d-flex justify-content-center gap-2 mt-n2 mb-3 pb-1 d-sm-none">
-            <button type="button" class="offers-prev btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-start me-1" aria-label="Prev">
-              <i class="ci-chevron-left fs-lg animate-target"></i>
-            </button>
-            <button type="button" class="offers-next btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-end" aria-label="Next">
-              <i class="ci-chevron-right fs-lg animate-target"></i>
-            </button>
-          </div>
-        </div>
+    
 
     <div class="alert   alert-white pt-5 p-0" role="alert">
-      <h1 class="alert-heading mb-2"><span class="ci-gift fs-md ">&nbsp;Events</span> </h1>
+      <h1 class="alert-heading mb-2"><span class="ci-gift fs-md ">&nbsp;Upcoming Events</span> </h1>
     </div>
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-2">
@@ -390,7 +315,650 @@
 
     </div>
     <!-- WHAT WE OFFER -->
+<!-- =========================================================
+     MOVIE PRODUCER PLANS
+========================================================= -->
 
+<section class="container-fluid py-5 mt-2 mt-lg-5">
+
+    <!-- =====================================================
+         SECTION HEADER
+    ====================================================== -->
+
+    
+
+  <div class="card border-0 bg-body-tertiary rounded-4 mt-2 mb-4 overflow-hidden">
+
+        <div class="card-body p-4 p-lg-5">
+
+            <div class="row align-items-center g-4">
+
+
+                <div class="col-lg-8">
+
+                    <span class="badge rounded-pill bg-danger-subtle text-danger px-3 py-2 mb-3">
+            <i class="ci-film me-1"></i>
+            For Movie Producers
+        </span>
+
+
+                    <h3 class="h2 fw-bold mt-2 mb-2">
+
+                         Bring Your Movie to the Big Screen and Reach Audiences Worldwide
+
+                    </h3>
+
+
+                    <p class="text-body-secondary mb-0">
+
+                       Choose the level of support you need. From simple online
+            ticketing to a complete movie screening managed by GrabMyTix.
+
+                    </p>
+
+                </div>
+
+
+                
+
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- =====================================================
+         PRICING / SERVICE PLANS
+    ====================================================== -->
+
+    <div class="row row-cols-1 row-cols-md-3 g-4 g-xl-5 align-items-stretch">
+
+
+        <!-- =================================================
+             1. ESSENTIAL — MOST POPULAR
+        ================================================== -->
+
+        <div class="col">
+
+            <div class="card h-100 border-success rounded-4 shadow-lg overflow-hidden position-relative"
+                 style="border-width: 2px;">
+
+                <!-- Most Popular Badge -->
+
+                <div class="position-absolute top-0 start-50 translate-middle-x"
+                     style="z-index: 2;">
+
+                    <span class="badge rounded-pill mt-3  bg-success px-4 py-2 shadow-sm">
+
+                        <i class="ci-star me-1"></i>
+
+                        Most Popular
+
+                    </span>
+
+                </div>
+
+
+                <div class="card-body p-4 p-xl-5 d-flex flex-column pt-5">
+
+
+                    <!-- Plan Header -->
+
+                    <div class="mb-4">
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+
+                            <span class="d-inline-flex align-items-center justify-content-center
+                                         bg-danger-subtle text-success rounded-3"
+                                  style="width:48px; height:48px;">
+
+                                <i class="ci-ticket fs-4"></i>
+
+                            </span>
+
+                            <span class="badge rounded-pill bg-danger-subtle text-success">
+
+                                Self-Service
+
+                            </span>
+
+                        </div>
+
+
+                        <h3 class="h3 fw-bold mb-2">
+                            Essential
+                        </h3>
+
+
+                        <p class="text-body-secondary mb-0">
+
+                            Affordable ticketing for producers who already
+                            have their screening arrangements in place.
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- Features -->
+
+                    <div class="border-top pt-4 mb-4">
+
+                        <div class="fw-semibold mb-3">
+
+                            Everything you need to sell tickets
+
+                        </div>
+
+
+                        <ul class="list-unstyled d-grid gap-3 mb-0">
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Movie listing on GrabMyTix
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Online ticket sales
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Secure online payments
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Digital tickets & QR codes
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Booking management
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Sales & attendance reports
+                                </span>
+
+                            </li>
+                              
+
+
+                        </ul>
+
+                    </div>
+
+
+                    <!-- CTA -->
+
+                    <div class="mt-auto ">
+
+                        <a href="/about/"
+                           class="btn btn-danger w-100 rounded-pill">
+
+                            Get Started
+
+                            <i class="ci-chevron-right ms-1"></i>
+
+                        </a>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             2. PROFESSIONAL
+        ================================================== -->
+
+        <div class="col">
+
+            <div class="card h-100 border rounded-4 shadow-sm overflow-hidden">
+
+                <div class="card-body p-4 p-xl-5 d-flex flex-column">
+
+
+                    <!-- Plan Header -->
+
+                    <div class="mb-4">
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+
+                            <span class="d-inline-flex align-items-center justify-content-center
+                                         bg-body-tertiary rounded-3"
+                                  style="width:48px; height:48px;">
+
+                               
+                                <i class="ci-book fs-4"></i>
+
+                            </span>
+
+
+                            <span class="badge rounded-pill bg-body-tertiary text-body-secondary">
+
+                                Supported
+
+                            </span>
+
+                        </div>
+
+
+                        <h3 class="h3 fw-bold mb-2">
+
+                            Professional
+
+                        </h3>
+
+
+                        <p class="text-body-secondary mb-0">
+
+                            More than ticketing. Get GrabMyTix support to
+                            help promote and coordinate your screening.
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- Features -->
+
+                    <div class="border-top pt-4 mb-4">
+
+                        <div class="fw-semibold mb-3">
+
+                            Everything in Essential, plus:
+
+                        </div>
+
+
+                        <ul class="list-unstyled d-grid gap-3 mb-0">
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-danger mt-1"></i>
+
+                                <span>
+                                    GrabMyTix support
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-danger mt-1"></i>
+
+                                <span>
+                                    Promotional support
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-danger mt-1"></i>
+
+                                <span>
+                                    Social media promotion
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-danger mt-1"></i>
+
+                                <span>
+                                    Screening planning assistance
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-danger mt-1"></i>
+
+                                <span>
+                                    Venue coordination assistance
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-danger mt-1"></i>
+
+                                <span>
+                                    Ticket-sales monitoring
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-danger mt-1"></i>
+
+                                <span>
+                                    Screening-day support
+                                </span>
+
+                            </li>
+
+
+                        </ul>
+
+                    </div>
+
+
+                    <!-- CTA -->
+
+                    <div class="mt-auto pt-3">
+
+                        <a href="/about/"
+                           class="btn btn-outline-dark w-100 rounded-pill">
+
+                            Choose Professional
+
+                            <i class="ci-chevron-right ms-1"></i>
+
+                        </a>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             3. PREMIUM
+        ================================================== -->
+
+        <div class="col">
+
+            <div class="card h-100 border rounded-4 shadow-sm overflow-hidden">
+
+                <div class="card-body p-4 p-xl-5 d-flex flex-column">
+
+
+                    <!-- Plan Header -->
+
+                    <div class="mb-4">
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+
+
+                            <span class="d-inline-flex align-items-center justify-content-center
+                                         bg-warning-subtle text-warning-emphasis rounded-3"
+                                  style="width:48px; height:48px;">
+
+                             
+                                <i class="ci-box fs-4"></i>
+
+                            </span>
+
+
+                            <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis">
+
+                                Fully Managed
+
+                            </span>
+
+                        </div>
+
+
+                        <h3 class="h3 fw-bold mb-2">
+
+                            Premium
+
+                        </h3>
+
+
+                        <p class="text-body-secondary mb-0">
+
+                            A complete movie screening solution managed
+                            from planning through to the big screen.
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- Features -->
+
+                    <div class="border-top pt-4 mb-4">
+
+                        <div class="fw-semibold mb-3">
+
+                            Everything in Professional, plus:
+
+                        </div>
+
+
+                        <ul class="list-unstyled d-grid gap-3 mb-0">
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Venue / cinema hall sourcing
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Hall booking & coordination
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Complete screening logistics
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Marketing campaign support
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Ticketing & audience management
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Screening-day coordination
+                                </span>
+
+                            </li>
+
+
+                            <li class="d-flex gap-2">
+
+                                <i class="ci-check text-success mt-1"></i>
+
+                                <span>
+                                    Post-screening reporting
+                                </span>
+
+                            </li>
+
+
+                        </ul>
+
+                    </div>
+
+
+                    <!-- CTA -->
+
+                    <div class="mt-auto pt-3">
+
+                        <a href="/about/"
+                           class="btn btn-outline-dark w-100 rounded-pill">
+
+                            Talk to GrabMyTix
+
+                            <i class="ci-chevron-right ms-1"></i>
+
+                        </a>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         BOTTOM MARKETING MESSAGE
+    ====================================================== -->
+
+    <div class="card border-0 bg-body-tertiary rounded-4 mt-5 overflow-hidden">
+
+        <div class="card-body p-4 p-lg-5">
+
+            <div class="row align-items-center g-4">
+
+
+                <div class="col-lg-8">
+
+                    <span class="text-danger fw-semibold fs-sm">
+
+                        YOUR MOVIE. YOUR AUDIENCE. YOUR SCREEN.
+
+                    </span>
+
+
+                    <h3 class="h2 fw-bold mt-2 mb-2">
+
+                        Ready to bring your movie to audiences across Australia?
+
+                    </h3>
+
+
+                    <p class="text-body-secondary mb-0">
+
+                        Whether you only need ticketing or want us to handle
+                        the entire screening, GrabMyTix can help turn your
+                        movie into a memorable audience experience.
+
+                    </p>
+
+                </div>
+
+
+                <div class="col-lg-4 text-lg-end">
+
+                    <a href="/contact"
+                       class="btn btn-danger btn-lg rounded-pill px-4">
+
+                        Discuss Your Screening
+
+                        <i class="ci-arrow-right ms-1"></i>
+
+                    </a>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
     <section class="mt-5 mb-5">
       <div class="">
         <h2 class="section-title   alert-heading ">

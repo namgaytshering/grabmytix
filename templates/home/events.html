@@ -1,73 +1,675 @@
 {% extends "../includes/base.html" %}
 {% block content %}
+
 <main class="content-wrapper">
-<div class="container">
- 
-        <div class="alert d-sm-flex alert-white  " role="alert">
-            
-            <div class=" ">
-                <h1 class="alert-heading mb-2">Events</h1>
-                <p class="mb-3">
-                    Party, Religious, birthday
-                </p>
 
-            </div>
+  <div class="container-fluid px-3 px-md-4 px-xl-5 py-4">
+
+    <!-- =========================================================
+         PAGE HEADER
+ 
+
+
+    <!-- =========================================================
+         UPCOMING EVENTS
+    ========================================================== -->
+
+    <section class="mb-5">
+
+      <div class="d-flex align-items-end justify-content-between gap-3 mb-4">
+
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <i class="ci-calendar text-danger fs-4"></i>
+
+            <h2 class="h3 fw-bold mb-0">
+              Upcoming Events
+            </h2>
+          </div>
+
+          <p class="text-body-secondary mb-0">
+            Find something exciting to do next.
+          </p>
         </div>
 
- 
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-            {% for event in events%}
-            <div class="col">
-                <div
-                    class="card h-100 animate-underline hover-effect-opacity hover-effect-scale rounded-4 overflow-hidden">
-                    <div class="card-img-top position-relative bg-body-tertiary overflow-hidden">
-                        <a class="ratio d-block  " style="--cz-aspect-ratio: calc(220 / 304 * 100%)"
-                            href="/event/{{event.slug}}">
-                            <img src="/media/{{event.poster_image}}" class="w-100 h-100 object-fit-cover" alt="Image">
-                        </a>
-                        
-                    </div>
-                    <div class="card-body p-3">
-                        <div class="d-flex min-w-0 justify-content-between gap-2 gap-sm-3 mb-2">
-                            <h3 class="nav min-w-0 mb-0">
-                                <a class="nav-link text-truncate p-0" href="/event/{{event.slug}}">
-                                    <span class="text-truncate animate-target">{{event.title}}</span>
-                                </a>
-                            </h3>
-                            <div class="h6 mb-0 text text-success">
-                                 {%if event.status == 0 %}
-                                <span class="text text-warning"> Expired</span>
-                                      {%else%}
+        {% if events %}
+        <span class="badge rounded-pill text-bg-danger px-3 py-2">
+          {{ events|length }} event{{ events|length|pluralize }}
+        </span>
+        {% endif %}
 
-                                {%if event.price == 0%}
-                                Free
-                                {%else%}
-                                ${{event.price}}
-                                {%endif%}          {%endif%}
-                            </div>
-                        </div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="nav align-items-center gap-1 fs-xs">
+      </div>
 
-                                <i class="ci-schedule"></i>
-                                In {{event.place}}, {{event.state.state_short|upper}} 
-                                <div class="text-body-secondary">on </div>
-                                 {{event.show_date}} at {{event.show_time|date:'h:i A'}}
-                            </div>
-                            <small><span class="text text-info"> <i class="ci-ticket"></i> {{event.event_type}}</span></small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {%endfor%}
 
-            
-        </div>
+      {% if events %}
+
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+
+        {% for event in events %}
+
+        <div class="col">
+
+          <article
+            class="card h-100 border-0 shadow-sm animate-underline hover-effect-opacity hover-effect-scale rounded-4 overflow-hidden"
+          >
+
+           <!-- Event Image -->
+<div class="card-img-top position-relative bg-body-tertiary overflow-hidden">
+
+  <a
+    href="/event/{{ event.slug }}"
+    class="ratio d-block hover-effect-target"
+    style="--cz-aspect-ratio: 56.25%;"
+  >
+    <img
+      src="/media/{{ event.poster_image }}"
+      class="w-100 h-100 object-fit-cover"
+      alt="{{ event.title }}"
+      loading="lazy"
+    >
+  </a>
+
+  <!-- Event Type -->
+  <div class="position-absolute top-0 start-0 p-3">
+
+    <span class="badge rounded-pill bg-dark bg-opacity-75 text-white">
+
+      <i class="ci-ticket me-1"></i>
+      {{ event.event_type }}
+
+    </span>
+
+  </div>
+
+  <!-- Price -->
+  <div class="position-absolute top-0 end-0 p-3">
+
+    {% if event.price == 0 %}
+
+      <span class="badge rounded-pill text-bg-success px-3 py-2">
+        Free
+      </span>
+
+    {% else %}
+
+      <span class="badge rounded-pill bg-white text-dark shadow-sm px-3 py-2">
+        ${{ event.price }}
+      </span>
+
+    {% endif %}
+
+  </div>
 
 </div>
-    </div>
+
+
+            <!-- Card body -->
+            <div class="card-body p-3 p-lg-4">
+
+              <!-- Title -->
+              <h3 class="h5 mb-3">
+
+                <a
+                  href="/event/{{ event.slug }}"
+                  class="nav-link text-body p-0 fw-semibold"
+                >
+
+                  <span class="animate-target">
+                    {{ event.title }}
+                  </span>
+
+                </a>
+
+              </h3>
+
+
+              <!-- Date -->
+              <div class="d-flex align-items-start gap-2 mb-2">
+
+                <i class="ci-calendar text-danger mt-1"></i>
+
+                <div class="min-w-0">
+
+                  <div class="fw-medium">
+                    {{ event.show_date }}
+                  </div>
+
+                  <div class="fs-sm text-body-secondary">
+                    {{ event.show_time|date:'h:i A' }}
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- Location -->
+              <div class="d-flex align-items-start gap-2 mb-3">
+
+                <i class="ci-map-pin text-danger mt-1"></i>
+
+                <div class="fs-sm text-body-secondary">
+
+                  <div class="text-body">
+                    {{ event.place }}
+                  </div>
+
+                  <div>
+                    {{ event.state.state_short|upper }}
+                  </div>
+
+                </div>
+
+              </div>
+
+ {% if event.price == 0 %}
+
+      <span class="badge rounded-pill text-bg-success px-3 mb-3 py-2">
+        Free
+      </span>
+
+    {% else %}
+
+      <span class="badge rounded-pill bg-white text-dark shadow-sm px-3 mb-3 py-2">
+        ${{ event.price }}
+      </span>
+
+    {% endif %}
+              <!-- Footer -->
+              <div class="border-top pt-3 mt-auto">
+
+                <a
+                  href="/event/{{ event.slug }}"
+                  class="btn btn-danger w-100"
+                >
+
+                  <i class="ci-ticket me-2"></i>
+
+                  {% if event.price == 0 %}
+                    Get Free Ticket
+                  {% else %}
+                    Get Tickets
+                  {% endif %}
+
+                  <i class="ci-chevron-right ms-2"></i>
+
+                </a>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        </div>
+
+        {% endfor %}
+
+      </div>
+
+      {% else %}
+
+      <!-- Empty upcoming events -->
+      <div class="bg-body-tertiary rounded-5 p-5 text-center">
+
+        <div
+          class="d-flex align-items-center justify-content-center rounded-circle bg-danger-subtle text-danger mx-auto mb-4"
+          style="width: 72px; height: 72px;"
+        >
+
+          <i class="ci-calendar fs-2"></i>
+
+        </div>
+
+        <h3 class="h4 fw-bold mb-2">
+          No Upcoming Events
+        </h3>
+
+        <p class="text-body-secondary mb-4">
+          There are currently no upcoming events.
+          Check back soon for new experiences and activities.
+        </p>
+
+        <a href="/" class="btn btn-outline-secondary">
+
+          <i class="ci-home me-2"></i>
+
+          Back to Home
+
+        </a>
+
+      </div>
+
+      {% endif %}
+
+    </section>
+
+
+
+    <!-- =========================================================
+         PROMOTIONAL BANNER
+    ========================================================== -->
+
+    <section class="mb-5">
+
+      <div
+        class="position-relative overflow-hidden rounded-5 bg-body-tertiary"
+      >
+
+        <div class="row align-items-center g-0">
+
+          <div class="col-lg-7">
+
+            <div class="p-4 p-md-5">
+
+              <span class="badge rounded-pill text-bg-danger mb-3">
+                <i class="ci-sparkles me-1"></i>
+                Host your event
+              </span>
+
+              <h2 class="h3 fw-bold mb-3">
+                Have an event to share?
+              </h2>
+
+              <p class="text-body-secondary mb-4">
+                Create your event on GrabMyTix and connect with your
+                audience through a simple and transparent ticketing
+                experience.
+              </p>
+
+              <div class="d-flex flex-wrap gap-2">
+
+                <!-- <a
+                  href="/event/create/"
+                  class="btn btn-danger"
+                >
+                  <i class="ci-plus me-2"></i>
+                  Create an Event
+                </a> -->
+
+                <a
+                  href="/about/"
+                  class="btn btn-outline-secondary"
+                >
+                  Learn More
+                  <i class="ci-chevron-right ms-2"></i>
+                </a>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="col-lg-5 d-none d-lg-block">
+
+            <div
+              class="d-flex align-items-center justify-content-center p-4"
+              style="min-height: 250px;"
+            >
+
+              <i
+                class="ci-gift text-danger opacity-25"
+                style="font-size: 10rem;"
+              ></i>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         PAST EVENTS
+    ========================================================== -->
+
+    <section class="mb-5">
+
+      <div class="d-flex align-items-end justify-content-between gap-3 mb-4">
+
+        <div>
+
+          <div class="d-flex align-items-center gap-2 mb-1">
+
+            <i class="ci-history text-body-secondary fs-4"></i>
+
+            <h2 class="h3 fw-bold mb-0">
+              Past Events
+            </h2>
+
+          </div>
+
+          <p class="text-body-secondary mb-0">
+            Explore events previously hosted on GrabMyTix.
+          </p>
+
+        </div>
+
+        {% if past %}
+
+        <span class="badge rounded-pill text-bg-secondary px-3 py-2">
+          {{ past|length }} event{{ past|length|pluralize }}
+        </span>
+
+        {% endif %}
+
+      </div>
+
+
+      {% if past %}
+
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-3 g-4">
+
+        {% for event in past %}
+
+        <div class="col">
+
+          <article
+            class="card h-100 border-0 bg-body-tertiary rounded-4 overflow-hidden"
+          >
+
+            <!-- Poster -->
+           <!-- Event Image -->
+<div class="card-img-top position-relative bg-body-tertiary overflow-hidden">
+
+  <a
+    href="/event/{{ event.slug }}"
+    class="ratio d-block hover-effect-target"
+    style="--cz-aspect-ratio: 56.25%;"
+  >
+    <img
+      src="/media/{{ event.poster_image }}"
+      class="w-100 h-100 object-fit-cover"
+      alt="{{ event.title }}"
+      loading="lazy"
+    >
+  </a>
+
+  <!-- Event Type -->
+  <div class="position-absolute top-0 start-0 p-3">
+
+    <span class="badge rounded-pill bg-dark bg-opacity-75 text-white">
+
+      <i class="ci-ticket me-1"></i>
+      {{ event.event_type }}
+
+    </span>
+
+  </div>
+
+  <!-- Price -->
+  <div class="position-absolute top-0 end-0 p-3">
+
+    {% if event.price == 0 %}
+
+      <span class="badge rounded-pill text-bg-success px-3 py-2">
+        Free
+      </span>
+
+    {% else %}
+
+      <span class="badge rounded-pill bg-white text-dark shadow-sm px-3 py-2">
+        ${{ event.price }}
+      </span>
+
+    {% endif %}
+
+  </div>
+
+</div>
+
+
+            <!-- Body -->
+            <div class="card-body p-3 p-lg-4">
+
+              <h3 class="h5 mb-3">
+
+                <a
+                  href="/event/{{ event.slug }}"
+                  class="nav-link text-body p-0 fw-semibold"
+                >
+
+                  <span>
+                    {{ event.title }}
+                  </span>
+
+                </a>
+
+              </h3>
+
+
+              <div class="d-flex align-items-start gap-2 mb-2">
+
+                <i class="ci-calendar text-body-secondary mt-1"></i>
+
+                <div class="fs-sm">
+
+                  <div>
+                    {{ event.show_date }}
+                  </div>
+
+                  <div class="text-body-secondary">
+                    {{ event.show_time|date:'h:i A' }}
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="d-flex align-items-start gap-2 mb-3">
+
+                <i class="ci-map-pin text-body-secondary mt-1"></i>
+
+                <div class="fs-sm text-body-secondary">
+
+                  {{ event.place }},
+                  {{ event.state.state_short|upper }}
+
+                </div>
+
+              </div>
+
+
+              <div class="border-top pt-3">
+
+                <a
+                  href="/event/{{ event.slug }}"
+                  class="btn btn-sm btn-danger w-100"
+                >
+
+                  View Event
+
+                  <i class="ci-chevron-right ms-1"></i>
+
+                </a>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        </div>
+
+        {% endfor %}
+
+      </div>
+
+      {% else %}
+
+      <div class="text-center bg-body-tertiary rounded-5 p-5">
+
+        <i
+          class="ci-history text-body-secondary mb-3"
+          style="font-size: 3rem;"
+        ></i>
+
+        <h3 class="h5 fw-bold">
+          No Past Events
+        </h3>
+
+        <p class="text-body-secondary mb-0">
+          Previous events will appear here.
+        </p>
+
+      </div>
+
+      {% endif %}
+
+    </section>
+
+
+
+    <!-- =========================================================
+         WHY GRABMYTIX
+    ========================================================== -->
+
+    <section class="mb-5">
+
+      <div class="text-center mb-4">
+
+        <span class="text-danger fw-semibold">
+          GRABMYTIX
+        </span>
+
+        <h2 class="h3 fw-bold mt-1">
+          Everything you need for your event
+        </h2>
+
+        <p class="text-body-secondary mb-0">
+          Simple, reliable and transparent ticketing.
+        </p>
+
+      </div>
+
+
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
+
+        <!-- Feature -->
+        <div class="col">
+
+          <div class="h-100 bg-body-tertiary rounded-4 p-4 text-center">
+
+            <div
+              class="d-flex align-items-center justify-content-center rounded-circle bg-danger-subtle text-danger mx-auto mb-3"
+              style="width: 56px; height: 56px;"
+            >
+
+              <i class="ci-ticket fs-4"></i>
+
+            </div>
+
+            <h3 class="h6 fw-bold">
+              Easy Ticketing
+            </h3>
+
+            <p class="fs-sm text-body-secondary mb-0">
+              Make it simple for your audience to discover and
+              book tickets.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- Feature -->
+        <div class="col">
+
+          <div class="h-100 bg-body-tertiary rounded-4 p-4 text-center">
+
+            <div
+              class="d-flex align-items-center justify-content-center rounded-circle bg-danger-subtle text-danger mx-auto mb-3"
+              style="width: 56px; height: 56px;"
+            >
+
+              <i class="ci-lock fs-4"></i>
+
+            </div>
+
+            <h3 class="h6 fw-bold">
+              Secure Payments
+            </h3>
+
+            <p class="fs-sm text-body-secondary mb-0">
+              Secure payment processing gives organisers and
+              customers peace of mind.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- Feature -->
+        <div class="col">
+
+          <div class="h-100 bg-body-tertiary rounded-4 p-4 text-center">
+
+            <div
+              class="d-flex align-items-center justify-content-center rounded-circle bg-danger-subtle text-danger mx-auto mb-3"
+              style="width: 56px; height: 56px;"
+            >
+
+              <i class="ci-chart fs-4"></i>
+
+            </div>
+
+            <h3 class="h6 fw-bold">
+              Real-time Insights
+            </h3>
+
+            <p class="fs-sm text-body-secondary mb-0">
+              Keep track of bookings, sales and transactions
+              through your dashboard.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- Feature -->
+        <div class="col">
+
+          <div class="h-100 bg-body-tertiary rounded-4 p-4 text-center">
+
+            <div
+              class="d-flex align-items-center justify-content-center rounded-circle bg-danger-subtle text-danger mx-auto mb-3"
+              style="width: 56px; height: 56px;"
+            >
+
+              <i class="ci-globe fs-4"></i>
+
+            </div>
+
+            <h3 class="h6 fw-bold">
+              Reach More People
+            </h3>
+
+            <p class="fs-sm text-body-secondary mb-0">
+              Promote your event and connect with audiences
+              beyond your local area.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
 
 </main>
 
-
-    {% endblock content %}
+{% endblock content %}
