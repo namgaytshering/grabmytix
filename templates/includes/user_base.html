@@ -75,7 +75,142 @@
 
     </main>
 
+<nav class="d-md-none fixed-bottom bg-body border-top shadow-lg"
+     style="z-index: 1030;">
 
+  <div class="d-flex justify-content-around align-items-center px-2 py-1">
+
+
+    <!-- HOME -->
+    <a href="/"
+       class="text-decoration-none text-center flex-fill py-1">
+
+      <div class="mx-auto rounded-3 px-2 py-1
+        {% if request.path == '/' %}
+          active-menu
+        {% else %}
+          text-body-secondary
+        {% endif %}"
+        style="max-width: 72px;">
+
+        <i class="ci-home fs-5 d-block"></i>
+
+        <small class="d-block mt-1 fw-medium">
+          Home
+        </small>
+
+      </div>
+
+    </a>
+
+
+    <!-- MOVIES -->
+    <a href="/movies/"
+       class="text-decoration-none text-center flex-fill py-1">
+
+      <div class="mx-auto rounded-3 px-2 py-1
+        {% if request.path|slice:':8' == '/movies/' %}
+          active-menu
+        {% else %}
+          text-body-secondary
+        {% endif %}"
+        style="max-width: 72px;">
+
+        <i class="ci-film fs-5 d-block"></i>
+
+        <small class="d-block mt-1 fw-medium">
+          Movies
+        </small>
+
+      </div>
+
+    </a>
+
+
+    <!-- EVENTS -->
+    <a href="/events/"
+       class="text-decoration-none text-center flex-fill py-1">
+
+      <div class="mx-auto rounded-3 px-2 py-1
+        {% if request.path|slice:':8' == '/events/' %}
+          active-menu
+        {% else %}
+          text-body-secondary
+        {% endif %}"
+        style="max-width: 72px;">
+
+        <i class="ci-calendar fs-5 d-block"></i>
+
+        <small class="d-block mt-1 fw-medium">
+          Events
+        </small>
+
+      </div>
+
+    </a>
+
+
+    <!-- PROFILE -->
+    <a href="/user/"
+       class="text-decoration-none text-center flex-fill py-1">
+
+      <div class="mx-auto rounded-3 px-2 py-1
+      {% if request.path == '/login' or request.path == '/login/' or request.path == '/register' or request.path == '/register/' or '/user/' in request.path %}
+     
+      active-menu
+        {% else %}
+          text-body-secondary
+        {% endif %}"
+        style="max-width: 72px;">
+
+        <i class="ci-user fs-5 d-block"></i>
+
+        <small class="d-block mt-1 fw-medium">
+          Profile
+        </small>
+
+      </div>
+
+    </a>
+
+  </div>
+
+</nav>
+<style>
+
+@media (max-width: 767.98px) {
+
+  body {
+    padding-bottom: 72px;
+  }
+
+  .active-menu {
+    background: linear-gradient(
+      135deg,
+      #FFD54F 0%,
+      #FF9800 50%,
+      #F44336 100%
+    );
+
+    color: #fff !important;
+
+    box-shadow: 0 4px 10px rgba(244, 67, 54, 0.25);
+
+    font-weight: 600;
+
+  }
+
+  .active-menu i {
+    color: #fff !important;
+  }
+
+  .active-menu small {
+    color: #fff !important;
+  }
+
+}
+
+</style>
     {% include "../includes/footer.html" %}
 </body>
 <!-- Vendor scripts -->
