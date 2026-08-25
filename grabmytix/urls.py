@@ -62,9 +62,13 @@ urlpatterns = [
          name="password_reset_complete"),
     path('test-email/', test_email_view, name='test-email'),    
     path('login',login_view,name='login' ),
+    path('login/',login_view,name='login' ),
     path('movies',movies_view, name='movies_view' ),
     path('events',events_view, name='events_view' ),
+    path('movies/',movies_view, name='movies_view' ),
+    path('events/',events_view, name='events_view' ),
     path('register',register_view,name='register'),
+    path('register/',register_view,name='register'),
    
     # path('organizer/',partner_register_view,name='partner_register'),
     # path('organiser/',partner_register_view,name='partner_register'),
