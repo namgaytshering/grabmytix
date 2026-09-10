@@ -147,60 +147,180 @@ def _get_dashboard_data(stripe_account_id, user=None):
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")
 def dashboard_view(request, *args, **kwargs):
- 
+
+    # ---------------------------------------------------------
+    # Accessible events and movies
+    # ---------------------------------------------------------
     accessible_event_ids = EventAccess.objects.filter(
         user=request.user,
         can_view=True
     ).values_list('event_id', flat=True)
+
     accessible_movies_ids = FilmShowAccess.objects.filter(
         user=request.user,
         can_view=True
     ).values_list('film_show_id', flat=True)
 
-    current_bookings = (Booking.objects.filter( Q(payment_status=1), ( (
-                Q(filmshow__bill=0) & Q(film__owner=request.user) ) |
-            ( Q(event__bill=0) & Q(event__owner=request.user)
-            ) | Q(event_id__in=accessible_event_ids, event__bill=0) |
-            Q(filmshow_id__in=accessible_movies_ids, filmshow__bill=0)
-        )
-    ).values(
-        'event__id',
-        'filmshow__id',
-        'title',
-        'theater_name',
-        'show_date',
-        
-      
-        'state__state_short',
-        'type',
-        
+
+    # ---------------------------------------------------------
+    # ACTIVE FILMSHOWS
+    # ---------------------------------------------------------
+    active_filmshows = Filmshow.objects.filter(
+       
+        bill=0
+    ).filter(
+        Q(film__owner=request.user) |
+        Q(id__in=accessible_movies_ids)
     )
-    .annotate(
-        
-        # total_adult=Sum('no_adult'),
-        # total_child=Sum('no_child'),
-        total_tickets=Sum(F('economy_quantity') + F('general_quantity')+ F('vip_quantity')),
-        total_payment=Sum(
-            ExpressionWrapper(
-                F('economy_quantity') * F('economy_price') + F('general_quantity') * F('general_price') + F('vip_quantity') * F('vip_price'),
-                output_field=FloatField()
+
+
+    # ---------------------------------------------------------
+    # ACTIVE EVENTS
+    # ---------------------------------------------------------
+    active_events = Event.objects.filter(
+       
+        bill=0
+    ).filter(
+        Q(owner=request.user) |
+        Q(id__in=accessible_event_ids)
+    )
+
+
+    # ---------------------------------------------------------
+    # Get bookings for active filmshows
+    # ---------------------------------------------------------
+    filmshow_bookings = (
+        Booking.objects
+        .filter(
+            payment_status=1,
+            filmshow__in=active_filmshows
+        )
+        .values('filmshow_id')
+        .annotate(
+            total_tickets=Sum(
+                F('economy_quantity') +
+                F('general_quantity') +
+                F('vip_quantity')
+            ),
+            total_payment=Sum(
+                ExpressionWrapper(
+                    F('economy_quantity') * F('economy_price') +
+                    F('general_quantity') * F('general_price') +
+                    F('vip_quantity') * F('vip_price'),
+                    output_field=FloatField()
+                )
             )
         )
     )
-    .order_by('show_date')
-    )
-     
-    current_your_bookings =Booking.objects.filter(
-        Q(user=request.user),
-        Q(filmshow__status=1 )| Q(event__status=1)
-      
-    ).order_by('-id')
-    context ={
-        'bookings':current_bookings,'your_bookings':current_your_bookings,
-       
-        }
 
-    return render(request, "user/userbooking.html",context)
+    filmshow_booking_data = {
+        item['filmshow_id']: item
+        for item in filmshow_bookings
+    }
+
+
+    # ---------------------------------------------------------
+    # Get bookings for active events
+    # ---------------------------------------------------------
+    event_bookings = (
+        Booking.objects
+        .filter(
+            payment_status=1,
+            event__in=active_events
+        )
+        .values('event_id')
+        .annotate(
+            total_tickets=Sum(
+                F('economy_quantity') +
+                F('general_quantity') +
+                F('vip_quantity')
+            ),
+            total_payment=Sum(
+                ExpressionWrapper(
+                    F('economy_quantity') * F('economy_price') +
+                    F('general_quantity') * F('general_price') +
+                    F('vip_quantity') * F('vip_price'),
+                    output_field=FloatField()
+                )
+            )
+        )
+    )
+
+    event_booking_data = {
+        item['event_id']: item
+        for item in event_bookings
+    }
+
+
+    # ---------------------------------------------------------
+    # Build final list
+    # ---------------------------------------------------------
+    current_bookings = []
+
+
+    # Filmshows
+    for filmshow in active_filmshows:
+
+        booking = filmshow_booking_data.get(filmshow.id, {})
+
+        current_bookings.append({
+            'event__id': None,
+            'filmshow__id': filmshow.id,
+            'title': filmshow.film.title,
+            'theater_name': filmshow.theater_name,
+            'show_date': filmshow.show_date,
+            'state__state_short': filmshow.state.state_short,
+            'type': 'Movie',
+
+            'total_tickets': booking.get('total_tickets', 0),
+            'total_payment': booking.get('total_payment', 0),
+        })
+
+
+    # Events
+    for event in active_events:
+
+        booking = event_booking_data.get(event.id, {})
+
+        current_bookings.append({
+            'event__id': event.id,
+            'filmshow__id': None,
+            'title': event.title,
+            'theater_name': event.place,
+            'show_date': event.show_date,
+            'state__state_short': event.state.state_short,
+            'type': 'Event',
+
+            'total_tickets': booking.get('total_tickets', 0),
+            'total_payment': booking.get('total_payment', 0),
+        })
+
+
+    # Sort by show date
+    current_bookings.sort(
+        key=lambda x: x['show_date']
+    )
+
+
+    # ---------------------------------------------------------
+    # User's own bookings
+    # ---------------------------------------------------------
+    current_your_bookings = Booking.objects.filter(
+        Q(user=request.user),
+        Q(filmshow__status=1) | Q(event__status=1)
+    ).order_by('-id')
+
+
+    context = {
+        'bookings': current_bookings,
+        'your_bookings': current_your_bookings,
+    }
+
+    return render(
+        request,
+        "user/userbooking.html",
+        context
+    )
 
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")
@@ -613,79 +733,212 @@ def booking_owner_view(request, *args, **kwargs):
 
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")
-def tickets_owner_view(request, id,*args, **kwargs):
-    filmshow = Filmshow.objects.get(id = id)
+def tickets_owner_view(request, id, *args, **kwargs):
+
+    filmshow = Filmshow.objects.get(id=id)
+
     ticket_no = ''
     email = ''
-    bookings = Booking.objects.filter(filmshow=filmshow, payment_status = 1).annotate(
-     total_tickets=F('no_adult') + F('no_child')+F('economy_quantity') + F('general_quantity') + F('vip_quantity'),
+
+    # Get all paid bookings for this filmshow
+    bookings = Booking.objects.filter(
+        filmshow=filmshow,
+        payment_status=1
+    ).annotate(
+        total_tickets=(
+            F('no_adult') +
+            F('no_child') +
+            F('economy_quantity') +
+            F('general_quantity') +
+            F('vip_quantity')
         )
-    
-    #total_booked = bookings.aggregate(total=Sum(F('no_adult') + F('no_child')))['total'] or 0
-    total_booked = bookings.aggregate(total=Sum(F('no_adult') + F('no_child')+F('economy_quantity') + F('general_quantity') + F('vip_quantity')))['total'] or 0
+    )
+
+    # Total booked tickets
+    total_booked = bookings.aggregate(
+        total=Sum(
+            F('no_adult') +
+            F('no_child') +
+            F('economy_quantity') +
+            F('general_quantity') +
+            F('vip_quantity')
+        )
+    )['total'] or 0
+
+    # Total attended tickets
+    total_attended = bookings.aggregate(
+        total=Sum('attended_no')
+    )['total'] or 0
+
+    # Avoid division by zero
+    if total_booked > 0:
+        percentage = round(
+            (total_attended / total_booked) * 100,
+            0
+        )
+    else:
+        percentage = 0
 
 
-    total_attended = bookings.aggregate(total=Sum('attended_no'))['total'] or 0
-
-    percentage = round((total_attended / total_booked) * 100, 0) 
-
+    # ---------------------------------------------------------
+    # Search by ticket number and email
+    # ---------------------------------------------------------
     if request.method == 'GET':
-        ticket_no = request.GET.get('ticket_no', '')  # Default to empty string if 'name' is not present
+
+        ticket_no = request.GET.get('ticket_no', '')
         email = request.GET.get('email', '')
-        
-        if ticket_no != '' and email !='':
-            bookings = bookings.filter(id=ticket_no, email=email,filmshow=filmshow)
-    
-    time_series = ( bookings
-    .values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets'))
-    .order_by('date')) 
-    
-    #labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
-    labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
-    data = [int(b['total']) for b in time_series] 
-    
+
+        if ticket_no != '' and email != '':
+            bookings = bookings.filter(
+                id=ticket_no,
+                email=email,
+                filmshow=filmshow
+            )
+
+
+    # ---------------------------------------------------------
+    # Time series
+    # ---------------------------------------------------------
+    time_series = (
+        bookings
+        .values(date=TruncDate('created_at'))
+        .annotate(
+            total=Sum('total_tickets')
+        )
+        .order_by('date')
+    )
+
+    labels = [
+        b['date'].strftime('%Y-%m-%d')
+        for b in time_series
+        if b['date'] is not None
+    ]
+
+    data = [
+        int(b['total'] or 0)
+        for b in time_series
+    ]
+
+
+    # ---------------------------------------------------------
+    # Check-in
+    # ---------------------------------------------------------
     if request.method == 'POST':
-        booking_id_str = request.POST.get("booking_id", "")
+
+        booking_id_str = request.POST.get(
+            "booking_id",
+            ""
+        )
+
         if booking_id_str.isdigit():
+
             booking_id = int(booking_id_str)
+
             try:
-                book =  Booking.objects.filter(id=booking_id,filmshow=filmshow, payment_status = 1).annotate(total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')).first()
-               
+
+                book = (
+                    Booking.objects
+                    .filter(
+                        id=booking_id,
+                        filmshow=filmshow,
+                        payment_status=1
+                    )
+                    .annotate(
+                        total_tickets=(
+                            F('economy_quantity') +
+                            F('general_quantity') +
+                            F('vip_quantity')
+                        )
+                    )
+                    .first()
+                )
+
                 if book:
-                    total_attend =int(request.POST.get("total_ticket_number", 0) )
+
+                    total_attend = int(
+                        request.POST.get(
+                            "total_ticket_number",
+                            0
+                        )
+                    )
+
                     if book.total_tickets == total_attend:
                         book.attended = True
-                    book.attend_remarks = request.POST.get("remarks", "")
+
+                    book.attend_remarks = request.POST.get(
+                        "remarks",
+                        ""
+                    )
+
                     book.attended_at = timezone.now()
-                    book.attended_no =  total_attend
-        
+                    book.attended_no = total_attend
+
                     book.save()
-                    messages.success(request, f"{book.full_name} checked in successfully!")
+
+                    messages.success(
+                        request,
+                        f"{book.full_name} checked in successfully!"
+                    )
+
                 else:
-                    messages.error(request, f"{book.full_name} not found!")
+
+                    messages.error(
+                        request,
+                        "Booking not found!"
+                    )
+
             except Exception as e:
-                messages.error(request, f"Error: {e}")
+
+                messages.error(
+                    request,
+                    f"Error: {e}"
+                )
+
         else:
-            messages.error(request, "Invalid booking ID")
-        
-        return redirect('tickets_owner', id=id)
 
-    context = {'id':id,'ticket_no':ticket_no,'email':email,'bookings': bookings,
-                    'title':filmshow,
-                    'type':'movie',
-                    'label' : json.dumps(labels),
-                    'data':json.dumps(data),
-                    'poster_image':filmshow.film.poster_image,
-                    'theater_name':filmshow.theater_name,
-                    'percentage':percentage,
-                    'total_booked':total_booked,
-                    'street':filmshow.street,
-                    'state':filmshow.state,
-                    'date':filmshow.show_date,
-                    'time':filmshow.show_time}
-    
-    return render(request, "user/ticketsowner.html",context)
+            messages.error(
+                request,
+                "Invalid booking ID"
+            )
 
+        return redirect(
+            'tickets_owner',
+            id=id
+        )
+
+
+    # ---------------------------------------------------------
+    # Context
+    # ---------------------------------------------------------
+    context = {
+        'id': id,
+        'ticket_no': ticket_no,
+        'email': email,
+        'bookings': bookings,
+
+        'title': filmshow,
+        'type': 'movie',
+
+        'label': json.dumps(labels),
+        'data': json.dumps(data),
+
+        'poster_image': filmshow.film.poster_image,
+
+        'theater_name': filmshow.theater_name,
+        'percentage': percentage,
+        'total_booked': total_booked,
+
+        'street': filmshow.street,
+        'state': filmshow.state,
+        'date': filmshow.show_date,
+        'time': filmshow.show_time,
+    }
+
+    return render(
+        request,
+        "user/ticketsowner.html",
+        context
+    )
 
 # Movie /event manual add tickets
 @login_required(login_url='/login')
@@ -766,76 +1019,218 @@ def add_tickets_movie_owner_view(request, slug, *args, **kwargs):
 @login_required(login_url='/login')
 @user_passes_test(lambda u: u.is_user, login_url="/login")
 def event_tickets_owner_view(request, id, *args, **kwargs):
+
     ticket_no = request.GET.get('ticket_no', '').strip()
-    email = request.GET.get('email', '').strip().lower()  # normalize email
+    email = request.GET.get('email', '').strip().lower()
+
     event = Event.objects.get(id=id)
 
-    bookings = Booking.objects.filter(event=event, payment_status=1).annotate(
-        total_tickets=F('economy_quantity') + F('general_quantity') + F('vip_quantity')
-    ).order_by('-id')
-    total_booked = bookings.aggregate(total=Sum(F('economy_quantity') + F('general_quantity') + F('vip_quantity')))['total'] or 0
+    # ---------------------------------------------------------
+    # Paid bookings for this event
+    # ---------------------------------------------------------
+    bookings = (
+        Booking.objects
+        .filter(
+            event=event,
+            payment_status=1
+        )
+        .annotate(
+            total_tickets=(
+                F('economy_quantity') +
+                F('general_quantity') +
+                F('vip_quantity')
+            )
+        )
+        .order_by('-id')
+    )
 
-    total_attended = bookings.aggregate(total=Sum('attended_no'))['total'] or 0
+    # ---------------------------------------------------------
+    # Total booked tickets
+    # ---------------------------------------------------------
+    total_booked = bookings.aggregate(
+        total=Sum(
+            F('economy_quantity') +
+            F('general_quantity') +
+            F('vip_quantity')
+        )
+    )['total'] or 0
 
-    percentage = round((total_attended / total_booked) * 100, 0) 
+    # ---------------------------------------------------------
+    # Total attended tickets
+    # ---------------------------------------------------------
+    total_attended = bookings.aggregate(
+        total=Sum('attended_no')
+    )['total'] or 0
+
+    # ---------------------------------------------------------
+    # Attendance percentage
+    # ---------------------------------------------------------
+    if total_booked > 0:
+        percentage = round(
+            (total_attended / total_booked) * 100,
+            0
+        )
+    else:
+        percentage = 0
 
 
+    # ---------------------------------------------------------
+    # Search ticket
+    # ---------------------------------------------------------
     if ticket_no and email:
+
         if ticket_no.isdigit():
+
             ticket_no_int = int(ticket_no)
-            bookings = bookings.filter(id=ticket_no_int, email=email)
+
+            bookings = bookings.filter(
+                id=ticket_no_int,
+                email=email
+            )
+
         else:
             bookings = bookings.none()
 
-    # Prepare time series for Chart.js
-    time_series = bookings.values(date=TruncDate('created_at')).annotate(total=Sum('total_tickets')).order_by('date')
-    #labels = [b['date'].strftime('%Y-%m-%d') for b in time_series]
-    labels = [localtime(b['date']).strftime('%Y-%m-%d') for b in time_series]
-    data = [int(b['total']) for b in time_series]
 
+    # ---------------------------------------------------------
+    # Chart data
+    # ---------------------------------------------------------
+    time_series = (
+        bookings
+        .values(
+            date=TruncDate('created_at')
+        )
+        .annotate(
+            total=Sum('total_tickets')
+        )
+        .order_by('date')
+    )
+
+    labels = [
+        localtime(b['date']).strftime('%Y-%m-%d')
+        for b in time_series
+        if b['date'] is not None
+    ]
+
+    data = [
+        int(b['total'] or 0)
+        for b in time_series
+    ]
+
+
+    # ---------------------------------------------------------
+    # Check-in
+    # ---------------------------------------------------------
     if request.method == 'POST':
-        booking_id_str = request.POST.get("booking_id", "")
+
+        booking_id_str = request.POST.get(
+            "booking_id",
+            ""
+        )
+
         if booking_id_str.isdigit():
+
             booking_id = int(booking_id_str)
-            book = Booking.objects.filter(id=booking_id, event=event).first()
+
+            book = (
+                Booking.objects
+                .filter(
+                    id=booking_id,
+                    event=event,
+                    payment_status=1
+                )
+                .first()
+            )
+
             if book:
-                total_tickets = book.economy_quantity + book.general_quantity + book.vip_quantity
-                total_attend = int(request.POST.get("total_ticket_number", 0))
+
+                total_tickets = (
+                    book.economy_quantity +
+                    book.general_quantity +
+                    book.vip_quantity
+                )
+
+                total_attend = int(
+                    request.POST.get(
+                        "total_ticket_number",
+                        0
+                    )
+                )
 
                 if total_attend == total_tickets:
                     book.attended = True
-                book.attend_remarks = request.POST.get("remarks", "Checked in")
+                else:
+                    book.attended = False
+
+                book.attend_remarks = request.POST.get(
+                    "remarks",
+                    "Checked in"
+                )
+
                 book.attended_at = timezone.now()
                 book.attended_no = total_attend
+
                 book.save()
 
-                messages.success(request, f"{book.full_name} checked in successfully!")
-            else:
-                messages.error(request, "Booking not found!")
-        else:
-            messages.error(request, "Invalid booking ID")
-        return redirect('event_tickets_owner', id=id)
+                messages.success(
+                    request,
+                    f"{book.full_name} checked in successfully!"
+                )
 
+            else:
+
+                messages.error(
+                    request,
+                    "Booking not found!"
+                )
+
+        else:
+
+            messages.error(
+                request,
+                "Invalid booking ID"
+            )
+
+        return redirect(
+            'event_tickets_owner',
+            id=id
+        )
+
+
+    # ---------------------------------------------------------
+    # Context
+    # ---------------------------------------------------------
     context = {
         'id': id,
         'ticket_no': ticket_no,
         'email': email,
         'bookings': bookings,
+
         'title': event,
+        'type': 'event',
+
         'label': json.dumps(labels),
         'data': json.dumps(data),
-        'type': 'event',
+
         'poster_image': event.poster_image,
         'theater_name': event.place,
+
+        'percentage': percentage,
+        'total_booked': total_booked,
+
+        'street': event.street,
+        'state': event.state,
         'date': event.show_date,
         'time': event.show_time,
-        'street':event.street,
-        'state':event.state,
-        'percentage':percentage,
-        'total_booked':total_booked,
     }
-    return render(request, "user/ticketsowner.html", context)
 
+    return render(
+        request,
+        "user/ticketsowner.html",
+        context
+    )
+
+    
 def scan_qrcode_view(request, *args, **kwargs):
  
     return render(request,'user/scan_qrcode.html')

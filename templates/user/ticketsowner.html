@@ -70,11 +70,21 @@
     <div class="progress-bar fw-medium bg-info rounded-pill" style="width: {{percentage}}%">{{percentage}}%</div>
     </div>
     </div>
- 
-   <div class="mt-4 mb-4">
-   
+ <div class="row">
+
+   <div class="mt-4 mb-4 col-6">
+    
+       {%if type == "movie" %}
         <a href="/user/booking/tickets/add/{{title.slug}}  " class="btn btn-danger btn-sm">Add Ticket</a>
+       {%endif%}
     </div>
+
+   <div class="mt-4 mb-4 col-6 justify-content-right">
+    <button type="button" class="btn btn-success btn-sm d-block d-md-none "
+    data-bs-toggle="modal" data-bs-target="#scanQRModal">
+    <i class="ci-camera"></i> Scan
+</button>
+</div>
         <div
             data-filter-list='{"searchClass": "table-search", "listClass": "table-list", "sortClass": "table-sort", "valueNames": ["ticket-no", "detail", "tickets", "total-cost", "payment", "attended"]}'>
             <!-- Search field -->
@@ -90,6 +100,7 @@
                         <tr>
                             <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="ticket-no">Ticket No.</button></th>
                             <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="detail">Detail</button></th>
+                            <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="detail">Booked</button></th>
                             <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="tickets">Tickets</button></th>
                             <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="total-cost">Total Cost</button></th>
                             <th scope="col"><button type="button" class="btn fs-base fw-semibold table-sort p-0" data-sort="payment">Payment</button></th>
@@ -106,6 +117,7 @@
                                 {{ booking.phone }} <br>
                                 {{ booking.email }}
                             </td>
+                             <td class="ticket-no">{% if booking.online %}Online{% else %}Manual{% endif %}</td>
                             <td class="tickets">{{ booking.attended_no }}/{{ booking.total_tickets }}</td>
                             <td class="total-cost text-start">$ {{ booking.total_payment }}</td>
                             <td class="payment">
@@ -263,10 +275,7 @@
 </div>
 
 <!-- Floating Scan QR Button -->
-<button type="button" class="btn btn-danger btn-lf d-block d-md-none position-fixed end-0 bottom-0 m-3"
-    data-bs-toggle="modal" data-bs-target="#scanQRModal">
-    <i class="ci-camera"></i>
-</button>
+
 
 <!-- ===== SCRIPTS ===== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
