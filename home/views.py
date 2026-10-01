@@ -17,7 +17,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 from collections import defaultdict
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import HttpResponse
 from datetime import datetime
 from itertools import chain
@@ -196,9 +196,9 @@ def home_view(request):
     movies = Film.objects.annotate(filmshow_count=Count('filmshow')).filter(filmshow_count__gt=0,filmshow__status=1).order_by('created_at') # filmshow__show_date__gte=now.date()
     events = Event.objects.filter(status=1).order_by('-created_at','-show_date')[:4]
     upcoming = Filmshow.objects.filter(status=1).select_related('film').order_by('state', '-show_date', 'show_time')
-    #past_movies = Film.objects.annotate(filmshow_count=Count('filmshow')).filter(filmshow_count__gt=0,filmshow__status=0).order_by('-created_at')
+    past_movies  = Film.objects.annotate(total=Count('filmshow'), inactive=Count('filmshow', filter=Q(filmshow__status=0))).filter(total__gt=0, total=F('inactive')).order_by('-created_at')
     #filter(show_date__gte=now.date())
-    context = {'movies':movies,'events':events,'upcomings':upcoming}
+    context = {'movies':movies,'events':events,'upcomings':upcoming,'past_movies':past_movies}
     return render(request, 'home/index.html',context)
 
 def about_view(request):
@@ -401,7 +401,7 @@ def state_moviedetail_view(request,slug_text):
 
                 saveform.save()
                 
-                messages.success(request, "Successfully booked the ticket. Now proceed with payment to confirm your ticket.")
+                messages.info(request, "Please proceed with payment to confirm your ticket.")
                 return redirect('payment_view', id=saveform.id)
 
         except Exception as e:
@@ -517,7 +517,7 @@ def eventdetail_view(request,slug_text):
 def movies_view(request):
     now = timezone.now() 
     upcoming = Filmshow.objects.filter(status=1).select_related('film').order_by('state', 'show_date', 'show_time')
-    past_movies = Film.objects.annotate(filmshow_count=Count('filmshow')).filter(filmshow_count__gt=0,filmshow__status=0).order_by('-created_at')
+    past_movies = Film.objects.annotate(total=Count('filmshow'), inactive=Count('filmshow', filter=Q(filmshow__status=0))).filter(total__gt=0, total=F('inactive')).order_by('-created_at')
     context = {'upcomings':upcoming,'past_movies':past_movies}
     return render(request, 'home/movies.html',context)
 

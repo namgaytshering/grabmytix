@@ -22,7 +22,7 @@
 
 {% block content %}
 <main class="content-wrapper">
-  <section class="position-relative" style="height: 40vh; min-height: 400px; overflow: hidden;">
+  <section class="position-relative" style="height: 40vh; min-height: 450px; overflow: hidden;">
 
     <!-- Blurred Background -->
     <div class="position-absolute top-0 start-0 w-100 h-100" style="
@@ -50,14 +50,13 @@
 
     <!-- Hero text -->
     <div class="position-absolute bottom-0 start-0 p-4 text-white w-100" style="z-index: 4;  ">
-      <h1 class="fw-bold text-white  alert-heading mb-2">{{ movie.title }}</h1>
+      <h1 class="fw-bold text-white  alert-heading mb-2 h3">{{ movie.title }}</h1>
       <h5 class="text-white">{{ movie.genre }}</h5>
       <p class="mb-1">
         <i class="ci-clock"></i> {{ movie.duration }} hr{{ movie.duration|pluralize }}
       </p>
       <small><b>Director:</b> {{ movie.director }}</small><br>
       <small><b>Language:</b> {{ movie.language }}</small><br>
-      <small><b>Cast:</b> {{ movie.cast|capfirst }}</small>
     </div>
   </section>
 
@@ -76,6 +75,7 @@
     <!-- Show Locations -->
     <section class="mt-5">
       <div class="  mb-4">
+    
         <h1 class="alert-heading mb-2">Pick a Show Location</h1>
         <p class="text-muted">Browse available shows by state and choose your preferred theater and time.</p>
       </div>
@@ -219,7 +219,10 @@
     <div>
       <!-- Summary -->
       <section class="mt-md-2   mb-lg-4">
-        <h1 class="alert-heading mb-3 mt-4">About {{movie.title|capfirst}}</h1>
+        <h2 class="alert-heading mb-3 mt-4">About {{movie.title|capfirst}}</h2>
+         <p>   
+      <small><b>Cast:</b><i> {{ movie.cast|capfirst }}</i></small>
+      </p>
         <p class="mb-0  " style="line-height: 1.6;">
           {{ movie.description|safe }}
         </p>
