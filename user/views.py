@@ -269,6 +269,8 @@ def dashboard_view(request, *args, **kwargs):
             'title': filmshow.film.title,
             'theater_name': filmshow.theater_name,
             'show_date': filmshow.show_date,
+            'show_time': filmshow.show_time,
+            
             'state__state_short': filmshow.state.state_short,
             'type': 'Movie',
 

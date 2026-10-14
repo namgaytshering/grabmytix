@@ -52,13 +52,13 @@
     <!-- Hero text -->
     <div class="position-absolute bottom-0 start-0 p-4 text-white w-100" style="z-index: 4;  ">
       <h1 class="fw-bold text-white  alert-heading mb-2">{{ movie.title }}</h1>
-      <h5 class="text-white">{{ movie.genre }}</h5>
+      <small class="text-white">{{ movie.genre }}</small>
       <p class="mb-1">
         <i class="ci-clock"></i> {{ movie.duration }} hr{{ movie.duration|pluralize }}
       </p>
       <small><b>Director:</b> {{ movie.director }}</small><br>
       <small><b>Language:</b> {{ movie.language }}</small><br>
-      <small><b>Cast:</b> {{ movie.cast|capfirst }}</small>
+      <!-- <small><b>Cast:</b> {{ movie.cast|capfirst }}</small> -->
     </div>
   </section>
 
@@ -215,6 +215,8 @@
                   <small class="fs-6">{%if filmshow.general_label %}{{ filmshow.general_label }}{%else%}Ticket{%endif%}:
                     ${{ filmshow.price }}</small>
                 </div>
+ 
+
                 <div class="input-group input-group-sm" style="width: 140px;">
                   <button type="button" class="btn btn-outline-secondary qty-btn" data-type="general"
                     data-decrement>−</button>
@@ -251,7 +253,27 @@
             <strong class="fs-5">Total:</strong>
             <span id="final-total" class="fs-5 fw-bold">$0.00</span>
           </div>
-     
+         
+        
+        {% if is_expired.general_booked_percentage >= 90 %}
+          <div class="alert d-flex alert-info mb-2 col-md-6">
+            <i class="ci-info fs-lg pe-1 mt-1 me-2"></i>
+            <div>
+                {{ is_expired.general_booked_percentage }}% booked · {{ is_expired.general_left }} ticket{{ is_expired.general_left|pluralize }} left.
+            </div>
+            </div>
+
+        {% elif is_expired.general_booked_percentage >= 80 %}
+      <div class="alert d-flex alert-info mb-2 col-md-6">
+            <i class="ci-info fs-lg pe-1 mt-1 me-2"></i>
+            <div>
+                {{ is_expired.general_booked_percentage }}% seat booked.
+            </div>
+            </div>
+        {% endif %}
+    </div>
+
+   
       {%if is_expired.general_left > 0 %}
           {% if is_expired.expired %}
           <button type="submit" disabled class="btn btn-dark  rounded-pill fw-semibold" data-bs-toggle="tooltip"

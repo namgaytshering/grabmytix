@@ -189,6 +189,22 @@ def get_movie_datetime_local(flimshow):
         "economy_left": economy_available - economy_booked,
         "general_left": general_available - general_booked,
         "vip_left": vip_available - vip_booked,
+        
+            # Booking percentages
+        "economy_booked_percentage": (
+            round((economy_booked / economy_available) * 100, 1)
+            if economy_available > 0 else 0
+        ),
+
+        "general_booked_percentage": (
+            round((general_booked / general_available) * 100, 1)
+            if general_available > 0 else 0
+        ),
+
+        "vip_booked_percentage": (
+            round((vip_booked / vip_available) * 100, 1)
+            if vip_available > 0 else 0
+        ),
     }
 
 def home_view(request):
@@ -198,6 +214,8 @@ def home_view(request):
     upcoming = Filmshow.objects.filter(status=1).select_related('film').order_by('state', '-show_date', 'show_time')
     past_movies  = Film.objects.annotate(total=Count('filmshow'), inactive=Count('filmshow', filter=Q(filmshow__status=0))).filter(total__gt=0, total=F('inactive')).order_by('-created_at')
     #filter(show_date__gte=now.date())
+    
+
     context = {'movies':movies,'events':events,'upcomings':upcoming,'past_movies':past_movies}
     return render(request, 'home/index.html',context)
 
