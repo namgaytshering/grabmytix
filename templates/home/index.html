@@ -8,87 +8,64 @@
     border: 0px
   }
 
-   .show-list {
-        height: auto;
-        overflow: visible;
-    }
+  .show-list {
+    height: auto;
+    overflow: visible;
+  }
 
-    @media (min-width: 768px) {
-        .show-list  {
-            height: 300px;
-            overflow-y: auto;
-        }
+  @media (min-width: 768px) {
+    .show-list {
+      height: 300px;
+      overflow-y: auto;
     }
-  
+  }
 </style>
 <div class="container-fluid">
   {%if not movies %}
- <section class="alert mt-3 text-body-emphasis bg-info-subtle border-0 py-4 mb-1">
-  <div class="container">
-    <div class="row align-items-center">
+  <section class="alert mt-3 text-body-emphasis bg-info-subtle border-0 py-4 mb-1">
+    <div class="container">
+      <div class="row align-items-center">
 
-      <!-- Image Slider -->
-      <div class="col-md-4 mb-4 mb-md-0 d-none d-md-block">
-        <div
-          class="swiper"
-          id="images"
-          data-swiper='{
+        <!-- Image Slider -->
+        <div class="col-md-4 mb-4 mb-md-0 d-none d-md-block">
+          <div class="swiper" id="images" data-swiper='{
             "allowTouchMove": false,
             "effect": "flip",
             "flipEffect": {
               "slideShadows": false
             },
             "loop": true
-          }'
-        >
-          <div class="swiper-wrapper">
+          }'>
+            <div class="swiper-wrapper">
 
-            <div class="swiper-slide d-flex justify-content-center align-items-center">
-              <img
-                src="/media/grabmytix_world.svg"
-                alt="GrabMyTix worldwide ticketing"
-                class="img-fluid rounded slider-image"
-                style="width: 300px;"
-              >
+              <div class="swiper-slide d-flex justify-content-center align-items-center">
+                <img src="/media/grabmytix_world.svg" alt="GrabMyTix worldwide ticketing"
+                  class="img-fluid rounded slider-image" style="width: 300px;">
+              </div>
+
+              <div class="swiper-slide d-flex justify-content-center align-items-center">
+                <img src="/media/free_grabmytix.svg" alt="Host free events with GrabMyTix"
+                  class="img-fluid rounded slider-image" style="width: 300px;">
+              </div>
+
+              <div class="swiper-slide d-flex justify-content-center align-items-center">
+                <img src="/media/transparent_grabmytix.svg" alt="GrabMyTix transparent ticketing"
+                  class="img-fluid rounded slider-image" style="width: 300px;">
+              </div>
+
+              <div class="swiper-slide d-flex justify-content-center align-items-center">
+                <img src="/media/watch_movies.svg" alt="Watch movies with GrabMyTix"
+                  class="img-fluid rounded slider-image" style="width: 300px;">
+              </div>
+
             </div>
-
-            <div class="swiper-slide d-flex justify-content-center align-items-center">
-              <img
-                src="/media/free_grabmytix.svg"
-                alt="Host free events with GrabMyTix"
-                class="img-fluid rounded slider-image"
-                    style="width: 300px;"
-              >
-            </div>
-
-            <div class="swiper-slide d-flex justify-content-center align-items-center">
-              <img
-                src="/media/transparent_grabmytix.svg"
-                alt="GrabMyTix transparent ticketing"
-                class="img-fluid rounded slider-image"
-                    style="width: 300px;"
-              >
-            </div>
-
-            <div class="swiper-slide d-flex justify-content-center align-items-center">
-              <img
-                src="/media/watch_movies.svg"
-                alt="Watch movies with GrabMyTix"
-                class="img-fluid rounded slider-image"
-                    style="width: 300px;"
-              >
-            </div>
-
           </div>
         </div>
-      </div>
 
-      <!-- Content Slider -->
-      <div class="col-md-7 offset-md-1 ps-xl-5">
+        <!-- Content Slider -->
+        <div class="col-md-7 offset-md-1 ps-xl-5">
 
-        <div
-          class="swiper"
-          data-swiper='{
+          <div class="swiper" data-swiper='{
             "spaceBetween": 32,
             "loop": true,
             "speed": 600,
@@ -97,103 +74,94 @@
               "prevEl": "#prev-btn",
               "nextEl": "#next-btn"
             }
-          }'
-        >
+          }'>
 
-          <div class="swiper-wrapper">
+            <div class="swiper-wrapper">
 
-            <!-- Slide 1 -->
-            <div class="swiper-slide pb-4">
-              <h2 class="text-pretty">Sell Tickets Worldwide</h2>
+              <!-- Slide 1 -->
+              <div class="swiper-slide pb-4">
+                <h2 class="text-pretty">Sell Tickets Worldwide</h2>
 
-              <p>
-                Connecting people everywhere with seamless ticketing
-                solutions, empowering events and businesses without borders.
-              </p>
+                <p>
+                  Connecting people everywhere with seamless ticketing
+                  solutions, empowering events and businesses without borders.
+                </p>
 
-              <a href="/about/" class="btn btn-md btn-danger">
-                <i class="ci-ticket"></i>
-                <span class="ms-2">Learn more about us</span>
-                <i class="ci-chevron-right ms-2"></i>
-              </a>
+                <a href="/about/" class="btn btn-md btn-danger">
+                  <i class="ci-ticket"></i>
+                  <span class="ms-2">Learn more about us</span>
+                  <i class="ci-chevron-right ms-2"></i>
+                </a>
+              </div>
+
+              <!-- Slide 2 -->
+              <div class="swiper-slide pb-4">
+                <h2 class="text-pretty">Host Free Events</h2>
+
+                <p>
+                  Host free events or social causes on GrabMyTix.
+                  Our platform services are completely free when tickets are free.
+                </p>
+
+                <a href="/about/" class="btn btn-md btn-danger">
+                  <i class="ci-ticket"></i>
+                  <span class="ms-2">Learn more about us</span>
+                  <i class="ci-chevron-right ms-2"></i>
+                </a>
+              </div>
+
+              <!-- Slide 3 -->
+              <div class="swiper-slide pb-4">
+                <h2 class="text-pretty">Trust & Transparency</h2>
+
+                <p>
+                  Partners enjoy transparent, real-time access to bookings,
+                  payments, sales and transactions through their dashboard.
+                </p>
+
+                <a href="/about/" class="btn btn-md btn-danger">
+                  <i class="ci-ticket"></i>
+                  <span class="ms-2">Learn more about us</span>
+                  <i class="ci-chevron-right ms-2"></i>
+                </a>
+              </div>
+
+              <!-- Slide 4 -->
+              <div class="swiper-slide pb-4">
+                <h2 class="text-pretty">Great Stories Begin Here</h2>
+
+                <p>
+                  Discover unforgettable movie experiences with GrabMyTix,
+                  where new stories and cinematic adventures begin.
+                </p>
+
+                <a href="/about/" class="btn btn-md btn-danger">
+                  <i class="ci-ticket"></i>
+                  <span class="ms-2">Learn more about us</span>
+                  <i class="ci-chevron-right ms-2"></i>
+                </a>
+              </div>
+
             </div>
-
-            <!-- Slide 2 -->
-            <div class="swiper-slide pb-4">
-              <h2 class="text-pretty">Host Free Events</h2>
-
-              <p>
-                Host free events or social causes on GrabMyTix.
-                Our platform services are completely free when tickets are free.
-              </p>
-
-              <a href="/about/" class="btn btn-md btn-danger">
-                <i class="ci-ticket"></i>
-                <span class="ms-2">Learn more about us</span>
-                <i class="ci-chevron-right ms-2"></i>
-              </a>
-            </div>
-
-            <!-- Slide 3 -->
-            <div class="swiper-slide pb-4">
-              <h2 class="text-pretty">Trust & Transparency</h2>
-
-              <p>
-                Partners enjoy transparent, real-time access to bookings,
-                payments, sales and transactions through their dashboard.
-              </p>
-
-              <a href="/about/" class="btn btn-md btn-danger">
-                <i class="ci-ticket"></i>
-                <span class="ms-2">Learn more about us</span>
-                <i class="ci-chevron-right ms-2"></i>
-              </a>
-            </div>
-
-            <!-- Slide 4 -->
-            <div class="swiper-slide pb-4">
-              <h2 class="text-pretty">Great Stories Begin Here</h2>
-
-              <p>
-                Discover unforgettable movie experiences with GrabMyTix,
-                where new stories and cinematic adventures begin.
-              </p>
-
-              <a href="/about/" class="btn btn-md btn-danger">
-                <i class="ci-ticket"></i>
-                <span class="ms-2">Learn more about us</span>
-                <i class="ci-chevron-right ms-2"></i>
-              </a>
-            </div>
-
           </div>
+
+          <!-- Navigation -->
+          <div class="d-flex justify-content-center justify-content-md-start">
+            <button type="button" class="btn btn-icon btn-outline-secondary animate-slide-start rounded-circle me-1"
+              id="prev-btn" aria-label="Previous slide">
+              <i class="ci-chevron-left fs-lg animate-target"></i>
+            </button>
+
+            <button type="button" class="btn btn-icon btn-outline-secondary animate-slide-end rounded-circle"
+              id="next-btn" aria-label="Next slide">
+              <i class="ci-chevron-right fs-lg animate-target"></i>
+            </button>
+          </div>
+
         </div>
-
-        <!-- Navigation -->
-        <div class="d-flex justify-content-center justify-content-md-start">
-          <button
-            type="button"
-            class="btn btn-icon btn-outline-secondary animate-slide-start rounded-circle me-1"
-            id="prev-btn"
-            aria-label="Previous slide"
-          >
-            <i class="ci-chevron-left fs-lg animate-target"></i>
-          </button>
-
-          <button
-            type="button"
-            class="btn btn-icon btn-outline-secondary animate-slide-end rounded-circle"
-            id="next-btn"
-            aria-label="Next slide"
-          >
-            <i class="ci-chevron-right fs-lg animate-target"></i>
-          </button>
-        </div>
-
       </div>
     </div>
-  </div>
-</section>
+  </section>
   {%endif%}
   <div class=" mt-2    border-bottom">
 
@@ -222,209 +190,207 @@
         </ul> -->
 
     {% if movies %}
-<section class=" mt-4 mb-5">
+    <section class=" mt-4 mb-5">
 
-    <!-- Section heading -->
-    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+      <!-- Section heading -->
+      <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
         <div>
-             
-            <h2 class="fw-bold mb-1 mt-2">Upcoming Movies</h2>
-            <p class="text-body-secondary mb-0">
-                Find a screening near you and book your tickets.
-            </p>
-        </div>
-    </div>
 
-    {% for movie in movies %}
-    <article class="row g-0 mb-4 overflow-hidden rounded-5   shadow-sm">
+          <h2 class="fw-bold mb-1 mt-2">Upcoming Movies</h2>
+          <p class="text-body-secondary mb-0">
+            Find a screening near you and book your tickets.
+          </p>
+        </div>
+      </div>
+
+      {% for movie in movies %}
+      <article class="row g-0 mb-4 overflow-hidden rounded-5   shadow-sm">
 
         <!-- Movie Poster -->
         <div class="col-md-5 {% if forloop.counter|divisibleby:2 %}order-md-2{% endif %}">
-            <div class="position-relative h-100 overflow-hidden"
-                 style="min-height: 280px;">
+          <div class="position-relative h-100 overflow-hidden" style="min-height: 280px;">
 
-                <img
-                    src="/media/{{ movie.poster_image }}"
-                    alt="{{ movie.title }} poster"
-                    loading="lazy"
-                    class="position-absolute top-0 start-0 w-100 h-100"
-                    style="object-fit: cover; object-position: center;">
+            <img src="/media/{{ movie.poster_image }}" alt="{{ movie.title }} poster" loading="lazy"
+              class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover; object-position: center;">
 
-                 
-            </div>
+
+          </div>
         </div>
 
 
         <!-- Movie Information -->
         <div class="col-md-7   {% if forloop.counter|divisibleby:2 %}order-md-1{% endif %}">
-            <div class="d-flex   flex-column h-100 p-sm-2 p-lg-4">
+          <div class="d-flex   flex-column h-100 p-sm-2 p-lg-4">
 
-                <!-- Title -->
-                <div class="mb-4">
-                    <h3 class="fw-bold mb-3 ">
-                        {{ movie.title }}
-                    </h3>
+            <!-- Title -->
+            <div class="mb-4">
+              <h3 class="fw-bold mb-3 ">
+                {{ movie.title }}
+              </h3>
 
-                    <!-- Movie metadata -->
-                    <div class="d-flex flex-wrap gap-3 text-body-secondary small">
+              <!-- Movie metadata -->
+              <div class="d-flex flex-wrap gap-3 text-body-secondary small">
 
-                       <span class="d-inline-flex align-items-center">
-                            <i class="ci-film me-1"></i>
-                        {{ movie.genre }}
-                        </span>
-                        <span class="d-inline-flex align-items-center">
-                            <i class="ci-clock fs-base me-2"></i>
-                            {{ movie.duration }} hr{{ movie.duration|pluralize }}
-                        </span>
+                <span class="d-inline-flex align-items-center">
+                  <i class="ci-film me-1"></i>
+                  {{ movie.genre }}
+                </span>
+                <span class="d-inline-flex align-items-center">
+                  <i class="ci-clock fs-base me-2"></i>
+                  {{ movie.duration }} hr{{ movie.duration|pluralize }}
+                </span>
 
-                        {% if movie.language %}
-                        <span class="d-inline-flex align-items-center">
-                            <i class="ci-globe fs-base me-2"></i>
-                            {{ movie.language }}
+                {% if movie.language %}
+                <span class="d-inline-flex align-items-center">
+                  <i class="ci-globe fs-base me-2"></i>
+                  {{ movie.language }}
+                </span>
+                {% endif %}
+
+                <button type="button"
+                  class="btn btn-link btn-sm text-success text-decoration-none p-0 d-inline-flex align-items-center"
+                  data-bs-toggle="modal" data-bs-trailer-url="{{ movie.trailer }}" data-bs-target="#trailer">
+                  <i class="ci-play-circle fs-base me-2"></i>
+                  Watch trailer
+                </button>
+
+              </div>
+            </div>
+
+
+            <!-- Description -->
+            <div class="mb-4 d-none d-md-block">
+              <p class="text-body-secondary mb-0">
+                {{ movie.description|striptags|truncatewords:35 }}
+              </p>
+            </div>
+
+
+            <!-- Screening locations -->
+            <div class="mb-4">
+
+              <h6 class="fw-bold mb-3">
+                <i class="ci-map-pin text-success me-2"></i>
+                Screening Locations
+              </h6>
+
+              <div class="row g-3">
+                {% with screening_count=movie.prepared_filmshows %}
+                {% if screening_count %}
+
+                {% for show in movie.prepared_filmshows %}
+                {% if show.status == 1 %}
+
+                <div class="col-12 col-lg-6">
+                  <div
+                    class="  align-items-sm-center justify-content-between gap-3 h-100 p-3 rounded-3 border bg-body">
+
+                    <!-- Screening Details -->
+                    <div class="flex-grow-1 min-w-0">
+
+                      <div class="fw-semibold text-body">
+                        {{ show.theater_name|default:show.state.name }}
+                      </div>
+
+                      <div class="small text-body-secondary mt-2">
+                        <i class="ci-map-pin me-1"></i>
+                        {{ show.state.name|default:show.state|capfirst }}
+                      </div>
+
+                      <div class="small text-body-secondary mt-1">
+                        <i class="ci-calendar me-1"></i>
+                        {{ show.show_date|date:"d M Y" }}
+
+                        {% if show.show_time %}
+                        <span class="ms-2">
+                          <i class="ci-clock me-1"></i>
+                          {{ show.show_time|time:"h:i A" }}
                         </span>
                         {% endif %}
-
-                        <button type="button"
-                                class="btn btn-link btn-sm text-success text-decoration-none p-0 d-inline-flex align-items-center"
-                                data-bs-toggle="modal"
-                                data-bs-trailer-url="{{ movie.trailer }}"
-                                data-bs-target="#trailer">
-                            <i class="ci-play-circle fs-base me-2"></i>
-                            Watch trailer
-                        </button>
+                      </div>
 
                     </div>
-                </div>
 
+                    <!-- Ticket Status / Button -->
+                    <div class="mt-2 align-self-sm-center">
 
-                <!-- Description -->
-                <div class="mb-4 d-none d-md-block">
-                    <p class="text-body-secondary mb-0">
-                        {{ movie.description|striptags|truncatewords:35 }}
-                    </p>
-                </div>
+                      {% if show.is_expired %}
+                      <span class="badge bg-secondary rounded-pill">
+                        Show Ended
+                      </span>
 
+                      {% elif show.all_full %}
+                      <span class="badge bg-warning text-dark rounded-pill">
+                        <i class="ci-lock me-1"></i>
+                        Sold Out
+                      </span>
 
-                <!-- Screening locations -->
-                <div class="mb-4">
-
-                    <h6 class="fw-bold mb-3">
-                        <i class="ci-map-pin text-success me-2"></i>
-                        Screening Locations
-                    </h6>
-
-                    {% with screening_count=movie.prepared_filmshows %}
-                        {% if screening_count %}
-
-                            <div class="d-flex flex-column gap-2 show-list " >
-
-                                {% for show in movie.prepared_filmshows %}
-                                    {% if show.status == 1 %}
-                                   
-                                        <div class=" align-items-center justify-content-between gap-3 p-3 rounded-3 border bg-body">
-                                          <div  >
-                                                    {{ show.theater_name|default:show.state.name }}
-                                                </div>
-                                            <div class="min-w-0">
-
-                                               
-
-                                                <div class="small text-body-secondary mt-1">
-                                                    <i class="ci-map-pin me-1"></i>
-                                                    {{ show.state.name|default:show.state|capfirst }}
-                                                </div>
-
-                                                <div class="small text-body-secondary mt-1">
-                                                    <i class="ci-calendar me-1"></i>
-                                                    {{ show.show_date|date:"d M Y" }}
-
-                                                    {% if show.show_time %}
-                                                        <span class="ms-2">
-                                                            <i class="ci-clock me-1"></i>
-                                                            {{ show.show_time|time:"h:i A" }}
-                                                        </span>
-                                                    {% endif %}
-                                                </div>
-
-                                            </div>
-
-                                            <div class="flex-shrink-0 mt-sm-3 text-lg-end">
-
-                                                {% if show.is_expired %}
-                                                    <span class="badge bg-secondary rounded-pill">
-                                                        Show Ended
-                                                    </span>
-
-                                                {% elif show.all_full %}
-                                                    <span class="badge bg-warning rounded-pill">
-                                                        <i class="ci-lock me-1"></i>
-                                                        100% Booked
-                                                    </span>
-
-                                                {% else %}
-                                                    <a href="/show/{{ show.slug }}" class="btn btn-sm btn-danger">
-                                              <i class="ci-ticket"></i>&nbsp;Grab a Ticket&nbsp;<i class="ci-chevron-right"></i>
-                                            </a>
-                                                {% endif %}
-
-                                            </div>
-
-                                        </div>
-
-                                    {% endif %}
-                                {% endfor %}
-
-                            </div>
-
-                        {% else %}
-                            <p class="small text-body-secondary mb-0">
-                                Screening details will be announced soon.
-                            </p>
-                        {% endif %}
-                    {% endwith %}
-
-                </div>
-
-
-                <!-- Action -->
-                <div class="mt-auto pt-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
-
-                    <span class="small text-body-secondary">
+                      {% else %}
+                      <a href="/show/{{ show.slug }}" class="btn btn-sm btn-danger text-nowrap">
                         <i class="ci-ticket me-1"></i>
-                        Book your preferred screening
-                    </span>
-
-                    <a href="/{{ movie.slug }}"
-                       class="btn btn-info">
-                        View all Shows
+                        Grab a Ticket
                         <i class="ci-chevron-right ms-1"></i>
-                    </a>
+                      </a>
+                      {% endif %}
 
+                    </div>
+
+                  </div>
                 </div>
+
+                {% endif %}
+                {% endfor %}
+
+                {% else %}
+                <div class="col-12">
+                  <p class="small text-body-secondary mb-0">
+                    Screening details will be announced soon.
+                  </p>
+                </div>
+                {% endif %}
+                {% endwith %}
+              </div>
+
 
             </div>
+
+
+            <!-- Action -->
+            <div class="mt-auto pt-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+              <span class="small text-body-secondary">
+                <i class="ci-ticket me-1"></i>
+                Book your preferred screening
+              </span>
+
+              <a href="/{{ movie.slug }}" class="btn btn-info">
+                View all Shows
+                <i class="ci-chevron-right ms-1"></i>
+              </a>
+
+            </div>
+
+          </div>
         </div>
 
-    </article>
-    {% endfor %}
+      </article>
+      {% endfor %}
 
-</section>
-{% endif %}
- 
-  {% if past_movies %}
+    </section>
+    {% endif %}
+
+    {% if past_movies %}
 
     <section class="mt-2 pt-4">
 
 
       <!-- Section Header -->
 
-      <div
-        class="d-flex align-items-end justify-content-between mb-3"
-      >
+      <div class="d-flex align-items-end justify-content-between mb-3">
 
         <div>
 
-           
+
 
           <h2 class="h3 fw-bold mt-1 mb-1">
 
@@ -447,22 +413,16 @@
 
         <div class="d-none d-sm-flex gap-2">
 
-          <button
-            type="button"
-            class="offers-prev btn btn-icon btn-outline-secondary bg-body rounded-circle"
-            aria-label="Previous movies"
-          >
+          <button type="button" class="offers-prev btn btn-icon btn-outline-secondary bg-body rounded-circle"
+            aria-label="Previous movies">
 
             <i class="ci-chevron-left"></i>
 
           </button>
 
 
-          <button
-            type="button"
-            class="offers-next btn btn-icon btn-outline-secondary bg-body rounded-circle"
-            aria-label="Next movies"
-          >
+          <button type="button" class="offers-next btn btn-icon btn-outline-secondary bg-body rounded-circle"
+            aria-label="Next movies">
 
             <i class="ci-chevron-right"></i>
 
@@ -481,9 +441,7 @@
       <div class="position-relative mx-md-1">
 
 
-        <div
-          class="swiper py-3 px-sm-2"
-          data-swiper='{
+        <div class="swiper py-3 px-sm-2" data-swiper='{
             "slidesPerView": 1.5,
             "spaceBetween": 16,
             "loop": false,
@@ -509,12 +467,11 @@
                 "spaceBetween": 28
               }
             }
-          }'
-        >
+          }'>
 
 
           <div class="swiper-wrapper">
- 
+
 
             {% for m in past_movies %}
 
@@ -525,43 +482,27 @@
 
             <div class="swiper-slide">
 
-              <article
-                class="card h-100 border-0 shadow-sm overflow-hidden"
-              >
+              <article class="card h-100 border-0 shadow-sm overflow-hidden">
 
 
                 <!-- Poster -->
 
-                <a
-                  href="/{{ m.slug }}"
-                  class="d-block position-relative overflow-hidden"
-                >
+                <a href="/{{ m.slug }}" class="d-block position-relative overflow-hidden">
 
-                  <div
-                    class="ratio"
-                    style="--cz-aspect-ratio: calc(200 / 258 * 100%)"
-                  >
+                  <div class="ratio" style="--cz-aspect-ratio: calc(200 / 258 * 100%)">
 
-                    <img
-                      src="/media/{{ m.poster_image }}"
-                      alt="{{ m.title }}"
-                      class="w-100 h-100 object-fit-cover hover-effect-target"
-                      loading="lazy"
-                    >
+                    <img src="/media/{{ m.poster_image }}" alt="{{ m.title }}"
+                      class="w-100 h-100 object-fit-cover hover-effect-target" loading="lazy">
 
                   </div>
 
 
                   <!-- Archive Label -->
 
-                  <div
-                    class="position-absolute bottom-0 start-0 end-0 p-3"
-                    style="background: linear-gradient(transparent, rgba(0,0,0,.75));"
-                  >
+                  <div class="position-absolute bottom-0 start-0 end-0 p-3"
+                    style="background: linear-gradient(transparent, rgba(0,0,0,.75));">
 
-                    <span
-                      class="badge rounded-pill bg-dark bg-opacity-75"
-                    >
+                    <span class="badge rounded-pill bg-dark bg-opacity-75">
 
                       Previously Screened
 
@@ -579,11 +520,8 @@
 
                   <h3 class="h6 fw-bold mb-3 text-truncate">
 
-                    <a
-                      href="/{{ m.slug }}"
-                      class="text-decoration-none text-body hover-effect-underline"
-                      title="{{ m.title }}"
-                    >
+                    <a href="/{{ m.slug }}" class="text-decoration-none text-body hover-effect-underline"
+                      title="{{ m.title }}">
 
                       {{ m.title }}
 
@@ -592,10 +530,7 @@
                   </h3>
 
 
-                  <a
-                    href="/{{ m.slug }}"
-                    class="btn btn-danger btn-sm w-100"
-                  >
+                  <a href="/{{ m.slug }}" class="btn btn-danger btn-sm w-100">
 
                     Learn More
 
@@ -621,26 +556,18 @@
 
         <!-- Mobile Navigation -->
 
-        <div
-          class="d-flex justify-content-center gap-2 mt-3 d-sm-none"
-        >
+        <div class="d-flex justify-content-center gap-2 mt-3 d-sm-none">
 
-          <button
-            type="button"
-            class="offers-prev btn btn-icon btn-outline-secondary bg-body rounded-circle"
-            aria-label="Previous movies"
-          >
+          <button type="button" class="offers-prev btn btn-icon btn-outline-secondary bg-body rounded-circle"
+            aria-label="Previous movies">
 
             <i class="ci-chevron-left"></i>
 
           </button>
 
 
-          <button
-            type="button"
-            class="offers-next btn btn-icon btn-outline-secondary bg-body rounded-circle"
-            aria-label="Next movies"
-          >
+          <button type="button" class="offers-next btn btn-icon btn-outline-secondary bg-body rounded-circle"
+            aria-label="Next movies">
 
             <i class="ci-chevron-right"></i>
 
@@ -651,11 +578,11 @@
 
       </div>
 
- 
 
-    {% endif %}
 
- </section>
+      {% endif %}
+
+    </section>
     <div class="alert   alert-white pt-5 p-0" role="alert">
       <h1 class="alert-heading mb-2"><span class="ci-gift fs-md ">&nbsp;Upcoming Events</span> </h1>
     </div>

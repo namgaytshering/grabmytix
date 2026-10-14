@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from db.models import *
+from collections import OrderedDict
 import qrcode
 from io import BytesIO
 import base64
@@ -211,7 +212,7 @@ def home_view(request):
     now = timezone.now() 
     movies = Film.objects.annotate(filmshow_count=Count('filmshow')).filter(filmshow_count__gt=0,filmshow__status=1).order_by('created_at') # filmshow__show_date__gte=now.date()
     events = Event.objects.filter(status=1).order_by('-created_at','-show_date')[:4]
-    upcoming = Filmshow.objects.filter(status=1).select_related('film').order_by('state', '-show_date', 'show_time')
+    upcoming = Filmshow.objects.filter(status=1).select_related('film').order_by('show_date', 'show_time')
     past_movies  = Film.objects.annotate(total=Count('filmshow'), inactive=Count('filmshow', filter=Q(filmshow__status=0))).filter(total__gt=0, total=F('inactive')).order_by('-created_at')
     #filter(show_date__gte=now.date())
     # Calculate availability separately for every Filmshow
@@ -559,13 +560,96 @@ def eventdetail_view(request,slug_text):
     context= {'event':event,'form':form,'is_expired':is_expired,'booking_summary':booking_summary}
     return render(request, 'home/eventdetail.html',context)
 
-def movies_view(request):
-    now = timezone.now() 
-    upcoming = Filmshow.objects.filter(status=1).select_related('film').order_by('state', 'show_date', 'show_time')
-    past_movies = Film.objects.annotate(total=Count('filmshow'), inactive=Count('filmshow', filter=Q(filmshow__status=0))).filter(total__gt=0, total=F('inactive')).order_by('-created_at')
-    context = {'upcomings':upcoming,'past_movies':past_movies}
-    return render(request, 'home/movies.html',context)
+# def movies_view(request):
+#     now = timezone.now() 
+#     upcoming = Filmshow.objects.filter(status=1).select_related('film').order_by('state', 'show_date', 'show_time')
+#     past_movies = Film.objects.annotate(total=Count('filmshow'), inactive=Count('filmshow', filter=Q(filmshow__status=0))).filter(total__gt=0, total=F('inactive')).order_by('-created_at')
+#     context = {'upcomings':upcoming,'past_movies':past_movies}
+#     return render(request, 'home/movies.html',context)
 
+def movies_view(request):
+    # 1. Fetch active screenings with related film and state in one query.
+    # Keep status=1 as your active screening condition.
+    upcomings = list(
+        Filmshow.objects
+        .filter(status=1)
+        .select_related("film", "state")
+        .order_by(
+            "film__title",
+            "state__state_short",
+            "show_date",
+            "show_time",
+        )
+    )
+
+    # 2. Calculate availability for each screening.
+    for show in upcomings:
+        availability = get_movie_datetime_local(show)
+
+        show.is_expired = availability["expired"]
+        show.all_full = availability["all_full"]
+        show.economy_left = availability["economy_left"]
+        show.general_left = availability["general_left"]
+        show.vip_left = availability["vip_left"]
+
+    # 3. Group screenings by film, then by state.
+    movie_groups = OrderedDict()
+
+    for show in upcomings:
+        film_id = show.film_id
+
+        if film_id not in movie_groups:
+            movie_groups[film_id] = {
+                "film": show.film,
+                "states": [],
+                "_state_map": {},
+            }
+
+        movie_group = movie_groups[film_id]
+        state_id = show.state_id
+
+        if state_id not in movie_group["_state_map"]:
+            state_group = {
+                "state": show.state,
+                "shows": [],
+            }
+
+            movie_group["_state_map"][state_id] = state_group
+            movie_group["states"].append(state_group)
+
+        movie_group["_state_map"][state_id]["shows"].append(show)
+
+    # 4. Remove internal lookup dictionaries before passing data to the template.
+    for movie_group in movie_groups.values():
+        movie_group.pop("_state_map")
+
+    # 5. Find films whose screenings are all inactive.
+    past_movies = (
+        Film.objects
+        .annotate(
+            total=Count("filmshow"),
+            inactive=Count(
+                "filmshow",
+                filter=Q(filmshow__status=0),
+            ),
+        )
+        .filter(
+            total__gt=0,
+            total=F("inactive"),
+        )
+        .order_by("-created_at")
+        .distinct()
+    )
+
+    # 6. Pass the prepared data to the template.
+    context = {
+        "upcomings": upcomings,
+        "movie_groups": list(movie_groups.values()),
+        "past_movies": past_movies,
+    }
+
+    return render(request, "home/movies.html", context)
+    
 def events_view(request):
     events = Event.objects.filter(status=1).order_by('-created_at')
     past = Event.objects.filter(status=0).order_by('-created_at')
