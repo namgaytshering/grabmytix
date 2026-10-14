@@ -7,6 +7,18 @@
     color: #fff !important;
     border: 0px
   }
+
+   .show-list {
+        height: auto;
+        overflow: visible;
+    }
+
+    @media (min-width: 768px) {
+        .show-list  {
+            height: 300px;
+            overflow-y: auto;
+        }
+    }
   
 </style>
 <div class="container-fluid">
@@ -209,87 +221,195 @@
             {% endfor %}
         </ul> -->
 
-    {%if movies %}
-    <!-- Recipes + Top departments -->
-    <section class=" mt-2 p-0  mb-sm-3 mb-lg-4">
-      <h1 class="alert-heading  mb-4 mt-3 ">
-        <span class="ci-film  animate-target fs-md"> &nbsp; Upcoming movies </span>
+    {% if movies %}
+<section class=" mt-4 mb-5">
 
-      </h1>
-      
-      {% for movie in movies %}
-      <div class="row mb-4">
-        {% if not forloop.counter|divisibleby:2 %}
-        <!-- Even: Image on left -->
-        <div class="col-md-5 order-md-1 mb-2 mb-md-0">
-          <div class="position-relative h-100 bg-body-tertiary rounded-5 overflow-hidden">
-            <div class="d-none d-md-block" style="height: 440px"></div>
-            <div class="d-none d-sm-block d-md-none" style="height: 350px"></div>
-            <div class="d-sm-none" style="height: 250px"></div>
-            <img src="/media/{{ movie.poster_image }}"
-              class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Image">
-          </div>
+    <!-- Section heading -->
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+        <div>
+             
+            <h2 class="fw-bold mb-1 mt-2">Upcoming Movies</h2>
+            <p class="text-body-secondary mb-0">
+                Find a screening near you and book your tickets.
+            </p>
         </div>
-        <div class="col-md-7 order-md-2">
-          {% else %}
-          <!-- Odd: Image on right -->
-          <div class="col-md-5 order-md-2 mb-4 mb-md-0">
-            <div class="position-relative h-100 bg-body-tertiary rounded-5 overflow-hidden">
-              <div class="d-none d-md-block" style="height: 440px"></div>
-              <div class="d-none d-sm-block d-md-none" style="height: 350px"></div>
-              <div class="d-sm-none" style="height: 250px"></div>
-              <img src="/media/{{ movie.poster_image }}"
-                class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Image">
-            </div>
-          </div>
-          <div class="col-md-7 order-md-1">
-            {% endif %}
+    </div>
 
-            <div class="d-flex align-items-center h-100 bg-body-tertiary rounded-5 p-4 p-xl-5">
-              <div class="p-sm-3 p-xxl-2">
-                <h1 class="text-pretty">{{ movie.title }}</h1>
-                <div class="d-flex flex-wrap gap-2 mb-2 fs-sm text-body-secondary">
-                  <div class="d-flex align-items-center text-nowrap">
-                    <i class="ci-clock fs-base me-2"></i>
-                    {{ movie.duration }} hr{{ movie.duration|pluralize }}
-                  </div>
-                  <div class="d-flex align-items-center text-nowrap">
-                    <i class="ci-zap fs-base me-2"></i>
-                    {{ movie.genre }}
-                      
-                  </div>
-                  <div class="d-flex align-items-center text-nowrap cursor-pointer" data-bs-toggle="modal"
-                    data-bs-trailer-url="{{ movie.trailer }}" data-bs-target="#trailer">
-                    <i class="ci-play-circle text-success fs-base me-2"></i>Trailer
-                  </div>
-                </div>
-                <div class="d-none d-md-block">
-                  <p>{{ movie.description|safe|linebreaks|truncatewords:30 }}</p>
-                </div>
-                <b>Screening in: </b><br />
-                <div class="mb-3">
-                  {% for address in movie.filmshow.all %}
-                  {% if address.status == 1%}
-                  <small class="d-block mb-1 ">
-                    <i class="ci-check"></i> {{ address.state|capfirst }}
-                    - {{ address.show_date|date:"d M" }}
-                    <!-- , {{ address.show_time|time:"h:i A" }}
-                     -->
-                     
-                  </small>
-                  {%endif%}
-                  {% endfor %}
-                </div>
-                <a href="/{{ movie.slug }}" class="btn btn-md btn-danger">
-                  <i class="ci-ticket"></i>&nbsp;Grab a Ticket&nbsp;<i class="ci-chevron-right"></i>
-                </a>
-              </div>
+    {% for movie in movies %}
+    <article class="row g-0 mb-4 overflow-hidden rounded-5   shadow-sm">
+
+        <!-- Movie Poster -->
+        <div class="col-md-5 {% if forloop.counter|divisibleby:2 %}order-md-2{% endif %}">
+            <div class="position-relative h-100 overflow-hidden"
+                 style="min-height: 280px;">
+
+                <img
+                    src="/media/{{ movie.poster_image }}"
+                    alt="{{ movie.title }} poster"
+                    loading="lazy"
+                    class="position-absolute top-0 start-0 w-100 h-100"
+                    style="object-fit: cover; object-position: center;">
+
+                 
             </div>
-          </div>
         </div>
-        {% endfor %}
-    </section>
-    {%endif%}
+
+
+        <!-- Movie Information -->
+        <div class="col-md-7   {% if forloop.counter|divisibleby:2 %}order-md-1{% endif %}">
+            <div class="d-flex   flex-column h-100 p-sm-2 p-lg-4">
+
+                <!-- Title -->
+                <div class="mb-4">
+                    <h3 class="fw-bold mb-3 ">
+                        {{ movie.title }}
+                    </h3>
+
+                    <!-- Movie metadata -->
+                    <div class="d-flex flex-wrap gap-3 text-body-secondary small">
+
+                       <span class="d-inline-flex align-items-center">
+                            <i class="ci-film me-1"></i>
+                        {{ movie.genre }}
+                        </span>
+                        <span class="d-inline-flex align-items-center">
+                            <i class="ci-clock fs-base me-2"></i>
+                            {{ movie.duration }} hr{{ movie.duration|pluralize }}
+                        </span>
+
+                        {% if movie.language %}
+                        <span class="d-inline-flex align-items-center">
+                            <i class="ci-globe fs-base me-2"></i>
+                            {{ movie.language }}
+                        </span>
+                        {% endif %}
+
+                        <button type="button"
+                                class="btn btn-link btn-sm text-success text-decoration-none p-0 d-inline-flex align-items-center"
+                                data-bs-toggle="modal"
+                                data-bs-trailer-url="{{ movie.trailer }}"
+                                data-bs-target="#trailer">
+                            <i class="ci-play-circle fs-base me-2"></i>
+                            Watch trailer
+                        </button>
+
+                    </div>
+                </div>
+
+
+                <!-- Description -->
+                <div class="mb-4 d-none d-md-block">
+                    <p class="text-body-secondary mb-0">
+                        {{ movie.description|striptags|truncatewords:35 }}
+                    </p>
+                </div>
+
+
+                <!-- Screening locations -->
+                <div class="mb-4">
+
+                    <h6 class="fw-bold mb-3">
+                        <i class="ci-map-pin text-success me-2"></i>
+                        Screening Locations
+                    </h6>
+
+                    {% with screening_count=movie.prepared_filmshows %}
+                        {% if screening_count %}
+
+                            <div class="d-flex flex-column gap-2 show-list " >
+
+                                {% for show in movie.prepared_filmshows %}
+                                    {% if show.status == 1 %}
+                                   
+                                        <div class=" align-items-center justify-content-between gap-3 p-3 rounded-3 border bg-body">
+                                          <div  >
+                                                    {{ show.theater_name|default:show.state.name }}
+                                                </div>
+                                            <div class="min-w-0">
+
+                                               
+
+                                                <div class="small text-body-secondary mt-1">
+                                                    <i class="ci-map-pin me-1"></i>
+                                                    {{ show.state.name|default:show.state|capfirst }}
+                                                </div>
+
+                                                <div class="small text-body-secondary mt-1">
+                                                    <i class="ci-calendar me-1"></i>
+                                                    {{ show.show_date|date:"d M Y" }}
+
+                                                    {% if show.show_time %}
+                                                        <span class="ms-2">
+                                                            <i class="ci-clock me-1"></i>
+                                                            {{ show.show_time|time:"h:i A" }}
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+
+                                            </div>
+
+                                            <div class="flex-shrink-0 mt-sm-3 text-lg-end">
+
+                                                {% if show.is_expired %}
+                                                    <span class="badge bg-secondary rounded-pill">
+                                                        Show Ended
+                                                    </span>
+
+                                                {% elif show.all_full %}
+                                                    <span class="badge bg-warning rounded-pill">
+                                                        <i class="ci-lock me-1"></i>
+                                                        100% Booked
+                                                    </span>
+
+                                                {% else %}
+                                                    <a href="/show/{{ show.slug }}" class="btn btn-sm btn-danger">
+                                              <i class="ci-ticket"></i>&nbsp;Grab a Ticket&nbsp;<i class="ci-chevron-right"></i>
+                                            </a>
+                                                {% endif %}
+
+                                            </div>
+
+                                        </div>
+
+                                    {% endif %}
+                                {% endfor %}
+
+                            </div>
+
+                        {% else %}
+                            <p class="small text-body-secondary mb-0">
+                                Screening details will be announced soon.
+                            </p>
+                        {% endif %}
+                    {% endwith %}
+
+                </div>
+
+
+                <!-- Action -->
+                <div class="mt-auto pt-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+                    <span class="small text-body-secondary">
+                        <i class="ci-ticket me-1"></i>
+                        Book your preferred screening
+                    </span>
+
+                    <a href="/{{ movie.slug }}"
+                       class="btn btn-info">
+                        View all Shows
+                        <i class="ci-chevron-right ms-1"></i>
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+
+    </article>
+    {% endfor %}
+
+</section>
+{% endif %}
  
   {% if past_movies %}
 

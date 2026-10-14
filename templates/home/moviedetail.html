@@ -1,3 +1,4 @@
+
 {% extends "../includes/base.html" %}
 
 {% block title %}
@@ -5,14 +6,13 @@
 {% endblock title %}
 
 {% block meta %}
-
 <meta name="description" content="{% if shows %}Book tickets for {{ movie.title }}. Upcoming shows in {% for show in shows %}{{ show.state.state_short|upper }} on {{ show.show_date|date:'M d, Y' }}{% if not forloop.last %}, {% endif %}{% endfor %}.{% else %}Book tickets for {{ movie.title }} online with GrabMyTix. Secure and easy movie ticket booking.{% endif %}">
 
 <meta name="keywords" content="{{ movie.title }}, {{ movie.genre }}, movie tickets, book movie tickets online, GrabMyTix">
 <meta name="author" content="GrabMyTix">
 
 <meta property="og:title" content="{{ movie.title }} | GrabMyTix">
-<meta property="og:description" content="{% if shows %}Now showing: {{ movie.title }}. Available in {% for show in shows %}{{ show.state.state_short|upper }} on {{ show.show_date|date:'M d, Y' }}{% if not forloop.last %}, {% endif %}{% endfor %}.{% else %}Book {{ movie.title }} tickets online with GrabMyTix.{% endif %}">
+<meta property="og:description" content="Book {{ movie.title }} tickets online with GrabMyTix.">
 <meta property="og:image" content="https://www.grabmytix.com/media/{{ movie.poster_image }}">
 <meta property="og:image:alt" content="{{ movie.title }} movie poster">
 <meta property="og:url" content="https://www.grabmytix.com/{{ movie.slug }}/">
@@ -22,221 +22,407 @@
 
 {% block content %}
 <main class="content-wrapper">
-  <section class="position-relative" style="height: 40vh; min-height: 450px; overflow: hidden;">
 
-    <!-- Blurred Background -->
-    <div class="position-absolute top-0 start-0 w-100 h-100" style="
-      background-image: url('/media/{{ movie.poster_image }}');
-      background-size: cover;
-      background-position: top;
-      filter: blur(20px);
-      transform: scale(1.1);
-      z-index: 1;">
-    </div>
+    <!-- Movie Hero -->
+    <section class="position-relative"
+             style="height: 40vh; min-height: 450px; overflow: hidden;">
 
-    <!-- Dark overlay -->
-    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0,0,0,0.25); z-index: 2;">
-    </div>
-
-    <!-- Foreground image (same height as section) -->
-    <div class="position-relative d-flex justify-content-center align-items-center h-100" style="z-index: 3;">
-      <img src="/media/{{ movie.poster_image }}" alt="{{ movie.title }} Poster" style="
-           height: 100%;
-           object-fit: contain;
-           object-position: top;
-           filter: brightness(1.01);
-         ">
-    </div>
-
-    <!-- Hero text -->
-    <div class="position-absolute bottom-0 start-0 p-4 text-white w-100" style="z-index: 4;  ">
-      <h1 class="fw-bold text-white  alert-heading mb-2 h3">{{ movie.title }}</h1>
-      <h5 class="text-white">{{ movie.genre }}</h5>
-      <p class="mb-1">
-        <i class="ci-clock"></i> {{ movie.duration }} hr{{ movie.duration|pluralize }}
-      </p>
-      <small><b>Director:</b> {{ movie.director }}</small><br>
-      <small><b>Language:</b> {{ movie.language }}</small><br>
-    </div>
-  </section>
-
-  <!-- Movie Details Section -->
-  <section class="container pb-4 pb-md-5">
-    <!-- Messages -->
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-      {{ message }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endfor %}
-    {% endif %}
-
-    <!-- Show Locations -->
-    <section class="mt-5">
-      <div class="  mb-4">
-    
-        <h1 class="alert-heading mb-2">Pick a Show Location</h1>
-        <p class="text-muted">Browse available shows by state and choose your preferred theater and time.</p>
-      </div>
-      <!-- Flush list group to render items edge-to-edge in a parent container (e.g., cards) -->
-{% if shows %}
-{% regroup shows by state.state_short as state_list %}
-
-{% if state_list %}
-<ul class="nav nav-tabs mb-4" id="showTabs" role="tablist">
-
-  {% if state_list|length > 1 %}
-    <!-- All Tab -->
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button">
-        All&nbsp;<i class="ci-chevron-right"></i> &nbsp;
-      </button>
-    </li>
-
-    <!-- State Tabs -->
-    {% for state in state_list %}
-   <li class="nav-item" role="">
-  <button class="nav-link text" id="tab-{{ state.grouper|slugify }}" data-bs-toggle="tab"
-          data-bs-target="#state-{{ state.grouper|slugify }}" type="button">
-    {{ state.grouper|upper }} &nbsp;<i class="ci-chevron-right"></i>  <!-- Full state name -->
-  </button>
-</li>
-    {% endfor %}
-
-  {% else %}
-    <!-- Only one state → show a single active tab -->
-   <li class="nav-item text-start ">
-  <button class="nav-link text-start active" id="tab-{{ state_list.0.grouper|slugify }}" data-bs-toggle="tab"
-          data-bs-target="#state-{{ state_list.0.grouper|slugify }}" type="button">
-   Showing in  {{ state_list.0.list.0.state.name|capfirst }}
-  </button>
-</li>
-  {% endif %}
-
-</ul>
-{% endif %}  
-</ul>
-
-<div class="tab-content" id="showTabsContent">
-
-  <!-- ALL SHOWS -->
-  <div class="tab-pane fade show active" id="all">
-   
-    <div class="row g-3">
-      {% for show in shows %}
-      <div class="col-md-6 col-lg-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body d-flex flex-column">
-
-            <h6 class="card-title">{{ show.theater_name|capfirst }}</h6>
-            <p class=" small mb-1">
-            <b>  <i class="bi bi-geo-alt"></i>
-                {{ show.state.name|capfirst }}</b>
-            </p>
-
-            <p class="mb-2 small">
-              <i class="bi bi-calendar-event"></i> {{ show.show_date }}
-              <i class="bi bi-clock ms-2"></i> {{ show.show_time|date:'h:i A' }}
-            </p>
-
-            <div class="mt-auto d-flex justify-content-between align-items-center">
-              <span class="fw-bold text-danger fs-6">
-                {{ show.currency }} {{ show.price }}
-              </span>
-
-              {% if show.status == 0 %}
-                <span class="badge bg-secondary">Expired</span>
-              {% else %}
-                <a href="/show/{{ show.slug }}" class="btn btn-sm btn-danger">
-          <i class="ci-ticket"></i> &nbsp; Grab a ticket <i
-              class="ci-chevron-right"></i>
-                </a>
-              {% endif %}
-            </div>
-
-          </div>
+        <!-- Blurred Background -->
+        <div class="position-absolute top-0 start-0 w-100 h-100"
+             style="
+                background-image: url('/media/{{ movie.poster_image }}');
+                background-size: cover;
+                background-position: top;
+                filter: blur(20px);
+                transform: scale(1.1);
+                z-index: 1;">
         </div>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
 
-  <!-- STATE TABS -->
-  {% for state in state_list %}
-  <div class="tab-pane fade" id="state-{{ state.grouper|slugify }}">
- 
-    <div class="row g-3">
-      {% for show in state.list %}
-      <div class="col-md-6 col-lg-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body d-flex flex-column">
-
-            <h6 class="card-title">{{ show.theater_name|capfirst }}</h6>
-            <p class="  small  mb-1">
-             <b> <i class="bi bi-geo-alt"></i>
-               {{ show.state|capfirst }}</b>
-            </p>
-
-            <p class="mb-2 small">
-              <i class="bi bi-calendar-event"></i> {{ show.show_date }}
-              <i class="bi bi-clock ms-2"></i> {{ show.show_time|date:'h:i A' }}
-            </p>
-
-            <div class="mt-auto d-flex justify-content-between align-items-center">
-              <span class="fw-bold text-danger fs-6">
-                {{ show.currency }} {{ show.price }}
-              </span>
-
-              {% if show.status == 0 %}
-                <span class="badge bg-secondary">Expired</span>
-              {% else %}
-                <a href="/show/{{ show.slug }}" class="btn btn-sm btn-danger">
-               <i class="ci-ticket"></i> &nbsp; Grab a ticket <i class="ci-chevron-right"></i>
-                </a>
-              {% endif %}
-            </div>
-
-          </div>
+        <!-- Dark Overlay -->
+        <div class="position-absolute top-0 start-0 w-100 h-100"
+             style="background: rgba(0,0,0,0.25); z-index: 2;">
         </div>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-  {% endfor %}
 
-</div>
+        <!-- Movie Poster -->
+        <div class="position-relative d-flex justify-content-center align-items-center h-100"
+             style="z-index: 3;">
+            <img src="/media/{{ movie.poster_image }}"
+                 alt="{{ movie.title }} Poster"
+                 style="
+                    height: 100%;
+                    max-width: 100%;
+                    object-fit: contain;
+                    object-position: top;
+                    filter: brightness(1.01);">
+        </div>
 
-{% else %}
-<p class="fst-italic text-center">No shows available at the moment.</p>
-{% endif %}
+        <!-- Movie Information -->
+        <div class="position-absolute bottom-0 start-0 p-4 text-white w-100"
+             style="z-index: 4;">
 
-    
+            <h1 class="fw-bold text-white mb-2 h3">
+                {{ movie.title }}
+            </h1>
+
+            <h5 class="text-white">{{ movie.genre }}</h5>
+
+            <p class="mb-1">
+                <i class="ci-clock"></i>
+                {{ movie.duration }} hr{{ movie.duration|pluralize }}
+            </p>
+
+            <small>
+                <b>Director:</b> {{ movie.director }}
+            </small>
+            <br>
+
+            <small>
+                <b>Language:</b> {{ movie.language }}
+            </small>
+
+        </div>
     </section>
 
 
+    <!-- Movie Details -->
+    <section class="container pb-4 pb-md-5">
 
-    <div>
-      <!-- Summary -->
-      <section class="mt-md-2   mb-lg-4">
-        <h2 class="alert-heading mb-3 mt-4">About {{movie.title|capfirst}}</h2>
-         <p>   
-      <small><b>Cast:</b><i> {{ movie.cast|capfirst }}</i></small>
-      </p>
-        <p class="mb-0  " style="line-height: 1.6;">
-          {{ movie.description|safe }}
-        </p>
-      </section>
-      <div>
-        <iframe width="100%" height="400" src="{{ movie.trailer }}" title="Trailer for {{ movie.title }}"
-          frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
-        </iframe>
-      </div>
-    </div>
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show"
+                     role="alert">
+                    {{ message }}
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
 
 
-  </section>
+        <!-- Show Locations -->
+        <section class="mt-5">
+
+            <div class="mb-4">
+                <h2 class="mb-2">Pick a Show Location</h2>
+
+                <p class="text-muted">
+                    Browse available shows by state and choose your preferred theater and time.
+                </p>
+            </div>
+
+
+            {% if shows %}
+
+                {% regroup shows by state.state_short as state_list %}
+
+                <!-- State Navigation Tabs -->
+                <ul class="nav nav-tabs mb-4"
+                    id="showTabs"
+                    role="tablist">
+
+                    {% if state_list|length > 1 %}
+
+                        <!-- All Shows Tab -->
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active"
+                                    id="all-tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#all"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="all"
+                                    aria-selected="true">
+                                All <i class="ci-chevron-right"></i>
+                            </button>
+                        </li>
+
+                        <!-- Individual State Tabs -->
+                        {% for state in state_list %}
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link"
+                                        id="tab-{{ state.grouper|slugify }}"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#state-{{ state.grouper|slugify }}"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="state-{{ state.grouper|slugify }}"
+                                        aria-selected="false">
+                                    {{ state.grouper|upper }}
+                                    <i class="ci-chevron-right"></i>
+                                </button>
+                            </li>
+                        {% endfor %}
+
+                    {% else %}
+
+                        <!-- Single State -->
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active"
+                                    id="tab-{{ state_list.0.grouper|slugify }}"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#state-{{ state_list.0.grouper|slugify }}"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="state-{{ state_list.0.grouper|slugify }}"
+                                    aria-selected="true">
+                                Showing in {{ state_list.0.list.0.state.name|capfirst }}
+                            </button>
+                        </li>
+
+                    {% endif %}
+
+                </ul>
+
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="showTabsContent">
+
+
+                    <!-- ALL SHOWS TAB -->
+                    {% if state_list|length > 1 %}
+
+                        <div class="tab-pane fade show active"
+                             id="all"
+                             role="tabpanel"
+                             aria-labelledby="all-tab">
+
+                            <div class="row g-3">
+
+                                {% for show in shows %}
+
+                                    <div class="col-md-6 col-lg-4">
+
+                                        <div class="card shadow-sm border-0 h-100">
+
+                                            <div class="card-body d-flex flex-column">
+
+                                                <!-- Theater -->
+                                                <h6 class="card-title">
+                                                    {{ show.theater_name|capfirst }}
+                                                </h6>
+
+                                                <!-- Location -->
+                                                <p class="small mb-1">
+                                                    <b>
+                                                        <i class="bi bi-geo-alt"></i>
+                                                        {{ show.state.name|capfirst }}
+                                                    </b>
+                                                </p>
+
+                                                <!-- Date and Time -->
+                                                <p class="mb-3 small">
+                                                    <i class="bi bi-calendar-event"></i>
+                                                    {{ show.show_date|date:"d M Y" }}
+
+                                                    <i class="bi bi-clock ms-2"></i>
+                                                    {{ show.show_time|time:"h:i A" }}
+                                                </p>
+
+
+                                                <!-- Availability / Price / Booking -->
+                                                <div class="mt-auto">
+
+                                                    {% if show.is_expired %}
+
+                                                        <!-- Ended Show: Status Only -->
+                                                        <span class="badge bg-secondary rounded-pill">
+                                                            Show Ended
+                                                        </span>
+
+                                                    {% elif show.all_full %}
+
+                                                        <!-- Sold Out: Status Only -->
+                                                        <span class="badge bg-warning rounded-pill">
+                                                            <i class="ci-lock me-1"></i>
+                                                            100% Booked
+                                                        </span>
+
+                                                    {% else %}
+
+                                                        <!-- Available: Price and Booking Button -->
+                                                        <div class="d-flex justify-content-between align-items-center gap-2">
+
+                                                            <span class="fw-bold text-danger fs-6">
+                                                                {{ show.currency }} {{ show.price }}
+                                                            </span>
+
+                                                            <a href="/show/{{ show.slug }}"
+                                                               class="btn btn-sm btn-danger">
+                                                                <i class="ci-ticket"></i>
+                                                                Grab a ticket
+                                                                <i class="ci-chevron-right"></i>
+                                                            </a>
+
+                                                        </div>
+
+                                                    {% endif %}
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+                        </div>
+
+                    {% endif %}
+
+
+
+                    <!-- INDIVIDUAL STATE TABS -->
+                    {% for state in state_list %}
+
+                        <div class="tab-pane fade {% if state_list|length == 1 %}show active{% endif %}"
+                             id="state-{{ state.grouper|slugify }}"
+                             role="tabpanel"
+                             aria-labelledby="tab-{{ state.grouper|slugify }}">
+
+                            <div class="row g-3">
+
+                                {% for show in state.list %}
+
+                                    <div class="col-md-6 col-lg-4">
+
+                                        <div class="card shadow-sm border-0 h-100">
+
+                                            <div class="card-body d-flex flex-column">
+
+                                                <!-- Theater -->
+                                                <h6 class="card-title">
+                                                    {{ show.theater_name|capfirst }}
+                                                </h6>
+
+                                                <!-- Location -->
+                                                <p class="small mb-1">
+                                                    <b>
+                                                        <i class="bi bi-geo-alt"></i>
+                                                        {{ show.state.name|capfirst }}
+                                                    </b>
+                                                </p>
+
+                                                <!-- Date and Time -->
+                                                <p class="mb-3 small">
+                                                    <i class="bi bi-calendar-event"></i>
+                                                    {{ show.show_date|date:"d M Y" }}
+
+                                                    <i class="bi bi-clock ms-2"></i>
+                                                    {{ show.show_time|time:"h:i A" }}
+                                                </p>
+
+
+                                                <!-- Availability / Price / Booking -->
+                                                <div class="mt-auto">
+
+                                                    {% if show.is_expired %}
+
+                                                        <!-- Ended Show: Status Only -->
+                                                        <span class="badge bg-secondary rounded-pill">
+                                                            Show Ended
+                                                        </span>
+
+                                                    {% elif show.all_full %}
+
+                                                        <!-- Sold Out: Status Only -->
+                                                        <span class="badge bg-warning rounded-pill">
+                                                            <i class="ci-lock me-1"></i>
+                                                            100% Booked
+                                                        </span>
+
+                                                    {% else %}
+
+                                                        <!-- Available: Price and Booking Button -->
+                                                        <div class="d-flex justify-content-between align-items-center gap-2">
+
+                                                            <span class="fw-bold text-danger fs-6">
+                                                                {{ show.currency }} {{ show.price }}
+                                                            </span>
+
+                                                            <a href="/show/{{ show.slug }}"
+                                                               class="btn btn-sm btn-danger">
+                                                                <i class="ci-ticket"></i>
+                                                                Grab a ticket
+                                                                <i class="ci-chevron-right"></i>
+                                                            </a>
+
+                                                        </div>
+
+                                                    {% endif %}
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <p class="fst-italic text-center">
+                    No shows available at the moment.
+                </p>
+
+            {% endif %}
+
+        </section>
+
+
+
+        <!-- Movie Summary -->
+        <section class="mt-md-2 mb-lg-4">
+
+            <h2 class="mb-3 mt-4">
+                About {{ movie.title|capfirst }}
+            </h2>
+
+            <p>
+                <small>
+                    <b>Cast:</b>
+                    <i>{{ movie.cast|capfirst }}</i>
+                </small>
+            </p>
+
+            <p class="mb-0" style="line-height: 1.6;">
+                {{ movie.description|safe }}
+            </p>
+
+        </section>
+
+
+
+        <!-- Movie Trailer -->
+        <div>
+            <iframe width="100%"
+                    height="400"
+                    src="{{ movie.trailer }}"
+                    title="Trailer for {{ movie.title }}"
+                    frameborder="0"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen>
+            </iframe>
+        </div>
+
+    </section>
+
 </main>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 {% endblock content %}

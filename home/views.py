@@ -214,7 +214,24 @@ def home_view(request):
     upcoming = Filmshow.objects.filter(status=1).select_related('film').order_by('state', '-show_date', 'show_time')
     past_movies  = Film.objects.annotate(total=Count('filmshow'), inactive=Count('filmshow', filter=Q(filmshow__status=0))).filter(total__gt=0, total=F('inactive')).order_by('-created_at')
     #filter(show_date__gte=now.date())
-    
+    # Calculate availability separately for every Filmshow
+    for show in upcoming:
+        availability = get_movie_datetime_local(show)
+
+        show.is_expired = availability["expired"]
+        show.all_full = availability["all_full"]
+        show.economy_left = availability["economy_left"]
+        show.general_left = availability["general_left"]
+        show.vip_left = availability["vip_left"]
+
+    # Group prepared Filmshow objects under their Film
+    shows_by_film = {}
+
+    for show in upcoming:
+        shows_by_film.setdefault(show.film_id, []).append(show)
+
+    for movie in movies:
+        movie.prepared_filmshows = shows_by_film.get(movie.id, [])
 
     context = {'movies':movies,'events':events,'upcomings':upcoming,'past_movies':past_movies}
     return render(request, 'home/index.html',context)
@@ -322,6 +339,16 @@ def moviedetail_view(request,slug_text):
     movie = get_object_or_404(Film, slug=slug_text)
     
     shows = Filmshow.objects.filter(film=movie,status=1).select_related('state').order_by('-state__state_short', 'show_date', 'show_time')
+    # Calculate availability for each Filmshow
+    for show in shows:
+        availability = get_movie_datetime_local(show)
+
+        show.is_expired = availability["expired"]
+        show.all_full = availability["all_full"]
+
+        show.economy_left = availability["economy_left"]
+        show.general_left = availability["general_left"]
+        show.vip_left = availability["vip_left"]
     # if request.user.is_authenticated:
     #     name = request.user.name
     

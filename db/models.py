@@ -155,7 +155,7 @@ class Film(models.Model):
         return self.title
     
 class Filmshow(models.Model):
-    slug = models.SlugField( unique=True, blank=True)
+    slug = models.SlugField( max_length=500,unique=True, blank=True)
     film = models.ForeignKey(Film, on_delete=models.CASCADE,related_name='filmshow')
     theater_name = models.CharField(max_length=255)
     show_date = models.DateField()
